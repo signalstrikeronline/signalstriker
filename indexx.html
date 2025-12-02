@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoSignals AI | Bybit Partner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000',
+                        accent: '#f7a600',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: white;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(90deg, #f7a600 0%, #ffcc00 100%);
+        }
+        
+        .card-glow {
+            box-shadow: 0 0 15px rgba(247, 166, 0, 0.3);
+        }
+        
+        .signal-up {
+            color: #00ff00;
+        }
+        
+        .signal-down {
+            color: #ff0000;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f7a600 0%, #ffcc00 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(247, 166, 0, 0.5);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            background: rgba(247, 166, 0, 0.1);
+            border: 1px solid rgba(247, 166, 0, 0.3);
+        }
+        
+        .coin-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #f7a600;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .typing-animation {
+            overflow: hidden;
+            border-right: 2px solid #f7a600;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #f7a600 }
+        }
+        
+        .slide-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease-out;
+        }
+        
+        .slide-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .chart-container {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-line {
+            fill: none;
+            stroke: #f7a600;
+            stroke-width: 2;
+        }
+        
+        .chart-area {
+            fill: url(#areaGradient);
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full accent-gradient flex items-center justify-center">
+                    <i class="fas fa-chart-line text-black"></i>
+                </div>
+                <span class="text-xl font-bold">CryptoSignals<span class="text-accent">AI</span></span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="hover:text-accent transition-colors">Home</a>
+                <a href="#signals" class="hover:text-accent transition-colors">Signals</a>
+                <a href="#tutorials" class="hover:text-accent transition-colors">Tutorials</a>
+                <a href="#market" class="hover:text-accent transition-colors">Market</a>
+                <a href="#rewards" class="hover:text-accent transition-colors">Rewards</a>
+                <a href="#packages" class="hover:text-accent transition-colors">Packages</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button id="loginBtn" class="px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors">
+                    Login with Bybit
+                </button>
+                <button class="md:hidden text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-20 px-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 typing-animation">
+                AI-Powered <span class="text-accent">Crypto Signals</span>
+            </h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-10 slide-in">
+                Advanced machine learning algorithms analyze market data to deliver accurate trading signals and trends.
+            </p>
+            
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6 mb-16">
+                <button class="px-8 py-3 bg-accent text-black font-bold rounded-lg text-lg hover:bg-yellow-500 transition-colors">
+                    Get Started
+                </button>
+                <button class="px-8 py-3 border border-accent text-accent font-bold rounded-lg text-lg hover:bg-accent hover:text-black transition-colors">
+                    Watch Demo
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="bg-gray-900 p-6 rounded-xl card-glow slide-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">AI Analysis</h3>
+                    <p class="text-gray-400">Our algorithms process terabytes of data to predict market movements.</p>
+                </div>
+                
+                <div class="bg-gray-900 p-6 rounded-xl card-glow slide-in" style="animation-delay: 0.2s">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Real-time Signals</h3>
+                    <p class="text-gray-400">Get instant notifications for entry and exit points with high probability.</p>
+                </div>
+                
+                <div class="bg-gray-900 p-6 rounded-xl card-glow slide-in" style="animation-delay: 0.4s">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-pie text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Portfolio Tracking</h3>
+                    <p class="text-gray-400">Monitor your crypto investments with advanced analytics and insights.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Signals Section -->
+    <section id="signals" class="py-20 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Live Trading Signals</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Our AI models generate signals for various cryptocurrencies with high accuracy rates.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Signal Card 1 -->
+                <div class="bg-gray-800 rounded-xl p-6 card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
+                                <span class="font-bold text-black">B</span>
+                            </div>
+                            <span class="font-bold">BTC/USDT</span>
+                        </div>
+                        <span class="signal-up font-bold">+4.2%</span>
+                    </div>
+                    
+                    <div class="chart-container mb-4">
+                        <svg viewBox="0 0 300 120" class="w-full h-full">
+                            <defs>
+                                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#f7a600" stop-opacity="0.3" />
+                                    <stop offset="100%" stop-color="#f7a600" stop-opacity="0" />
+                                </linearGradient>
+                            </defs>
+                            <path class="chart-line" d="M0,80 L50,60 L100,90 L150,40 L200,70 L250,30 L300,50" />
+                            <path class="chart-area" d="M0,80 L50,60 L100,90 L150,40 L200,70 L250,30 L300,50 L300,120 L0,120 Z" />
+                        </svg>
+                    </div>
+                    
+                    <div class="flex justify-between text-sm text-gray-400">
+                        <span>Entry: $42,150</span>
+                        <span>Target: $44,200</span>
+                        <span>Stop: $41,000</span>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-green-900 text-green-300 px-2 py-1 rounded">Strong Buy</span>
+                        <span class="text-xs text-gray-400">Accuracy: 92%</span>
+                    </div>
+                </div>
+                
+                <!-- Signal Card 2 -->
+                <div class="bg-gray-800 rounded-xl p-6 card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                                <span class="font-bold text-white">E</span>
+                            </div>
+                            <span class="font-bold">ETH/USDT</span>
+                        </div>
+                        <span class="signal-up font-bold">+2.8%</span>
+                    </div>
+                    
+                    <div class="chart-container mb-4">
+                        <svg viewBox="0 0 300 120" class="w-full h-full">
+                            <path class="chart-line" d="M0,60 L50,80 L100,50 L150,70 L200,40 L250,60 L300,30" />
+                            <path class="chart-area" d="M0,60 L50,80 L100,50 L150,70 L200,40 L250,60 L300,30 L300,120 L0,120 Z" />
+                        </svg>
+                    </div>
+                    
+                    <div class="flex justify-between text-sm text-gray-400">
+                        <span>Entry: $2,850</span>
+                        <span>Target: $2,950</span>
+                        <span>Stop: $2,780</span>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-green-900 text-green-300 px-2 py-1 rounded">Buy</span>
+                        <span class="text-xs text-gray-400">Accuracy: 87%</span>
+                    </div>
+                </div>
+                
+                <!-- Signal Card 3 -->
+                <div class="bg-gray-800 rounded-xl p-6 card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                                <span class="font-bold text-white">S</span>
+                            </div>
+                            <span class="font-bold">SOL/USDT</span>
+                        </div>
+                        <span class="signal-down font-bold">-1.5%</span>
+                    </div>
+                    
+                    <div class="chart-container mb-4">
+                        <svg viewBox="0 0 300 120" class="w-full h-full">
+                            <path class="chart-line" d="M0,40 L50,60 L100,30 L150,50 L200,20 L250,40 L300,10" />
+                            <path class="chart-area" d="M0,40 L50,60 L100,30 L150,50 L200,20 L250,40 L300,10 L300,120 L0,120 Z" />
+                        </svg>
+                    </div>
+                    
+                    <div class="flex justify-between text-sm text-gray-400">
+                        <span>Entry: $98.50</span>
+                        <span>Target: $95.20</span>
+                        <span>Stop: $102.00</span>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <span class="text-xs bg-red-900 text-red-300 px-2 py-1 rounded">Sell</span>
+                        <span class="text-xs text-gray-400">Accuracy: 84%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button class="px-6 py-3 border border-accent text-accent rounded-lg font-semibold hover:bg-accent hover:text-black transition-colors">
+                    View All Signals
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tutorials Section -->
+    <section id="tutorials" class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Trading Tutorials</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Learn trading strategies and how to use our signals effectively.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tutorial 1 -->
+                <div class="bg-gray-800 rounded-xl overflow-hidden card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-lg accent-gradient flex items-center justify-center">
+                                <i class="fas fa-play text-black"></i>
+                            </div>
+                            <span class="text-xs bg-accent text-black px-2 py-1 rounded">Beginner</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Introduction to Crypto Trading</h3>
+                        <p class="text-gray-400 mb-4">Learn the basics of cryptocurrency trading and how to get started.</p>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span><i class="far fa-clock mr-1"></i> 15 min</span>
+                            <span><i class="far fa-eye mr-1"></i> 2.4k views</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tutorial 2 -->
+                <div class="bg-gray-800 rounded-xl overflow-hidden card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-lg accent-gradient flex items-center justify-center">
+                                <i class="fas fa-chart-line text-black"></i>
+                            </div>
+                            <span class="text-xs bg-accent text-black px-2 py-1 rounded">Intermediate</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Technical Analysis Masterclass</h3>
+                        <p class="text-gray-400 mb-4">Deep dive into chart patterns, indicators, and market structure.</p>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span><i class="far fa-clock mr-1"></i> 42 min</span>
+                            <span><i class="far fa-eye mr-1"></i> 1.8k views</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tutorial 3 -->
+                <div class="bg-gray-800 rounded-xl overflow-hidden card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-lg accent-gradient flex items-center justify-center">
+                                <i class="fas fa-robot text-black"></i>
+                            </div>
+                            <span class="text-xs bg-accent text-black px-2 py-1 rounded">Advanced</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">AI Signal Interpretation</h3>
+                        <p class="text-gray-400 mb-4">Learn how to effectively use our AI-generated trading signals.</p>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span><i class="far fa-clock mr-1"></i> 28 min</span>
+                            <span><i class="far fa-eye mr-1"></i> 1.2k views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button class="px-6 py-3 bg-accent text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors">
+                    Browse All Tutorials
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Data Section -->
+    <section id="market" class="py-20 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Market Overview</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Real-time cryptocurrency market data and trends.</p>
+            
+            <div class="bg-gray-800 rounded-xl p-6 mb-8 card-glow">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold mb-4 md:mb-0">Top Gainers & Losers</h3>
+                    <div class="flex space-x-4">
+                        <button class="px-4 py-2 bg-accent text-black font-semibold rounded-lg">24h</button>
+                        <button class="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-accent hover:text-accent">7d</button>
+                        <button class="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:border-accent hover:text-accent">30d</button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-3">Asset</th>
+                                <th class="text-right py-3">Price</th>
+                                <th class="text-right py-3">24h Change</th>
+                                <th class="text-right py-3">Market Cap</th>
+                                <th class="text-right py-3">Volume</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700 hover:bg-gray-750">
+                                <td class="py-3">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center mr-3">
+                                            <span class="font-bold text-black">B</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold">Bitcoin</div>
+                                            <div class="text-gray-400 text-sm">BTC</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right py-3">$42,150.32</td>
+                                <td class="text-right py-3 signal-up">+4.2%</td>
+                                <td class="text-right py-3">$827B</td>
+                                <td class="text-right py-3">$24.5B</td>
+                            </tr>
+                            <tr class="border-b border-gray-700 hover:bg-gray-750">
+                                <td class="py-3">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                                            <span class="font-bold text-white">E</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold">Ethereum</div>
+                                            <div class="text-gray-400 text-sm">ETH</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right py-3">$2,850.75</td>
+                                <td class="text-right py-3 signal-up">+2.8%</td>
+                                <td class="text-right py-3">$342B</td>
+                                <td class="text-right py-3">$14.2B</td>
+                            </tr>
+                            <tr class="border-b border-gray-700 hover:bg-gray-750">
+                                <td class="py-3">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center mr-3">
+                                            <span class="font-bold text-white">S</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold">Solana</div>
+                                            <div class="text-gray-400 text-sm">SOL</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right py-3">$98.50</td>
+                                <td class="text-right py-3 signal-down">-1.5%</td>
+                                <td class="text-right py-3">$42.8B</td>
+                                <td class="text-right py-3">$3.2B</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                    <h3 class="text-xl font-bold mb-4">Fear & Greed Index</h3>
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="relative">
+                            <div class="w-40 h-40 rounded-full border-8 border-gray-700 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-accent">72</div>
+                                    <div class="text-gray-400">Greed</div>
+                                </div>
+                            </div>
+                            <div class="absolute top-0 left-0 w-full h-full">
+                                <div class="w-full h-full rounded-full border-8 border-transparent border-t-accent border-r-accent transform -rotate-45"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-center">Market sentiment is currently in greed territory, indicating increased buying pressure.</p>
+                </div>
+                
+                <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                    <h3 class="text-xl font-bold mb-4">Market Trends</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>DeFi Sector</span>
+                                <span class="signal-up">+8.3%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>NFT Market</span>
+                                <span class="signal-down">-2.1%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 35%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Layer 1 Protocols</span>
+                                <span class="signal-up">+5.7%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 52%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Meme Coins</span>
+                                <span class="signal-up">+12.4%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rewards Section -->
+    <section id="rewards" class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Exclusive Rewards</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Claim your bonus rewards when you sign up and trade on Bybit.</p>
+            
+            <div class="bg-gray-800 rounded-xl p-8 max-w-4xl mx-auto card-glow">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                        <h3 class="text-2xl font-bold mb-4">Limited Time Offer!</h3>
+                        <p class="text-gray-300 mb-6">New users can earn up to <span class="text-accent font-bold">$30,100</span> in bonuses when they make their first deposit and trade on Bybit.</p>
+                        
+                        <div class="mb-6">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-semibold">Reward Slots Available</span>
+                                <span id="slotsCount" class="font-bold text-accent">92%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="slotsProgress" class="progress-fill" style="width: 92%"></div>
+                            </div>
+                            <p id="slotsMessage" class="text-sm text-gray-400 mt-2">Hurry! Only a few slots remaining.</p>
+                        </div>
+                        
+                        <div class="bg-gray-900 rounded-lg p-4 mb-6">
+                            <h4 class="font-bold mb-2 text-accent">How to claim your rewards:</h4>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                                <li>Sign up as a new user on Bybit</li>
+                                <li>Fulfill the deposit and trading criteria within 14 days</li>
+                                <li>Claim your bonuses in the Rewards Hub</li>
+                            </ol>
+                        </div>
+                        
+                        <button id="claimRewardsBtn" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors">
+                            Claim Your Rewards Now
+                        </button>
+                    </div>
+                    
+                    <div class="md:w-1/2 relative">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-900 rounded-lg p-4 text-center">
+                                <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-gift text-black text-xl"></i>
+                                </div>
+                                <h4 class="font-bold mb-1">Airdrops</h4>
+                                <p class="text-sm text-gray-400">Our native token</p>
+                            </div>
+                            <div class="bg-gray-900 rounded-lg p-4 text-center">
+                                <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-coins text-black text-xl"></i>
+                                </div>
+                                <h4 class="font-bold mb-1">Token Bag</h4>
+                                <p class="text-sm text-gray-400">Substantial amount</p>
+                            </div>
+                            <div class="bg-gray-900 rounded-lg p-4 text-center">
+                                <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-palette text-black text-xl"></i>
+                                </div>
+                                <h4 class="font-bold mb-1">NFTs</h4>
+                                <p class="text-sm text-gray-400">Exclusive collection</p>
+                            </div>
+                            <div class="bg-gray-900 rounded-lg p-4 text-center">
+                                <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-star text-black text-xl"></i>
+                                </div>
+                                <h4 class="font-bold mb-1">Premium</h4>
+                                <p class="text-sm text-gray-400">VIP access</p>
+                            </div>
+                        </div>
+                        
+                        <div class="absolute -top-4 -right-4 w-24 h-24">
+                            <div class="relative w-full h-full">
+                                <div class="absolute inset-0 pulse-ring rounded-full"></div>
+                                <div class="absolute inset-0 bg-accent rounded-full flex items-center justify-center">
+                                    <span class="text-black font-bold">HOT</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Packages Section -->
+    <section id="packages" class="py-20 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Subscription Packages</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Choose the plan that fits your trading needs.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Free Plan -->
+                <div class="bg-gray-800 rounded-xl p-6 card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Free</h3>
+                        <div class="text-4xl font-bold text-accent mb-4">$0<span class="text-lg text-gray-400">/month</span></div>
+                        <p class="text-gray-400">Basic access to crypto signals</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>3 Daily Signals</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Basic Market Data</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Community Access</span>
+                        </li>
+                        <li class="flex items-center text-gray-500">
+                            <i class="fas fa-times mr-3"></i>
+                            <span>AI Predictions</span>
+                        </li>
+                        <li class="flex items-center text-gray-500">
+                            <i class="fas fa-times mr-3"></i>
+                            <span>Portfolio Tracking</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                        Get Started
+                    </button>
+                </div>
+                
+                <!-- Pro Plan -->
+                <div class="bg-gray-800 rounded-xl p-6 card-glow relative hover:transform hover:scale-105 transition-all duration-300 border-2 border-accent">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-accent text-black px-4 py-1 rounded-full font-bold">
+                        MOST POPULAR
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold mb-2">Pro Trader</h3>
+                        <div class="text-4xl font-bold text-accent mb-4">$29.99<span class="text-lg text-gray-400">/month</span></div>
+                        <p class="text-gray-400">Advanced signals and analytics</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Unlimited Signals</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Advanced Market Data</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>AI Predictions</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Portfolio Tracking</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Priority Support</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors">
+                        Subscribe Now
+                    </button>
+                </div>
+                
+                <!-- VIP Plan -->
+                <div class="bg-gray-800 rounded-xl p-6 card-glow hover:transform hover:scale-105 transition-all duration-300">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold mb-2">VIP</h3>
+                        <div class="text-4xl font-bold text-accent mb-4">$99.99<span class="text-lg text-gray-400">/month</span></div>
+                        <p class="text-gray-400">Institutional grade tools</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>All Pro Features</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Early Signal Access</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Custom AI Models</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>1-on-1 Coaching</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-accent mr-3"></i>
+                            <span>Whale Alert Notifications</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                        Go VIP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 px-4 border-t border-gray-800">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 rounded-full accent-gradient flex items-center justify-center">
+                            <i class="fas fa-chart-line text-black"></i>
+                        </div>
+                        <span class="text-xl font-bold">CryptoSignals<span class="text-accent">AI</span></span>
+                    </div>
+                    <p class="text-gray-400 max-w-md">AI-powered cryptocurrency signals and market analysis. Official Bybit Partner.</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-telegram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-discord text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-youtube text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 CryptoSignals AI. All rights reserved. | Official Bybit Partner</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Login with Bybit</h2>
+                <button id="closeLoginModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-400 mb-2" for="bybitId">Bybit ID</label>
+                    <input type="text" id="bybitId" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter your Bybit ID">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-400 mb-2" for="password">Password</label>
+                    <input type="password" id="password" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter your password">
+                </div>
+                
+                <button type="submit" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors mb-4">
+                    Login
+                </button>
+                
+                <div class="text-center">
+                    <p class="text-gray-400">Don't have a Bybit account? <button type="button" id="signupRedirect" class="text-accent hover:underline">Sign up here</button></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bybit Partner Modal -->
+    <div id="bybitModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Bybit Exclusive Offer</h2>
+                <button id="closeBybitModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center mr-3">
+                        <i class="fas fa-gift text-black"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">Hello Bybit Partners! 👋🏻</h3>
+                </div>
+                
+                <p class="text-gray-300 mb-4">Hook your users up with the best deposit rewards on the market!</p>
+                <p class="text-gray-300 mb-6">Your users will earn up to <span class="text-accent font-bold">$30,100</span> when they make their first deposit and trade on Bybit!</p>
+                
+                <div class="bg-gray-700 rounded-lg p-4 mb-6">
+                    <h4 class="font-bold mb-3 text-accent">How can users get started?</h4>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                        <li>Sign up as a new user</li>
+                        <li>Fulfill the deposit and trading criteria to unlock bonuses within 14 days</li>
+                        <li>Claim their bonuses in our Rewards Hub!</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="flex flex-col space-y-4">
+                <button id="hasBybitAccount" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors">
+                    I have a Bybit account
+                </button>
+                <button id="noBybitAccount" class="w-full py-3 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                    I don't have a Bybit account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginBtn = document.getElementById('loginBtn');
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const bybitModal = document.getElementById('bybitModal');
+        const closeBybitModal = document.getElementById('closeBybitModal');
+        const claimRewardsBtn = document.getElementById('claimRewardsBtn');
+        const hasBybitAccount = document.getElementById('hasBybitAccount');
+        const noBybitAccount = document.getElementById('noBybitAccount');
+        const signupRedirect = document.getElementById('signupRedirect');
+        const loginForm = document.getElementById('loginForm');
+        
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.slide-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Modal controls
+        loginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+        
+        closeLoginModal.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+        
+        closeBybitModal.addEventListener('click', () => {
+            bybitModal.style.display = 'none';
+        });
+        
+        claimRewardsBtn.addEventListener('click', () => {
+            bybitModal.style.display = 'flex';
+        });
+        
+        hasBybitAccount.addEventListener('click', () => {
+            bybitModal.style.display = 'none';
+            loginModal.style.display = 'flex';
+        });
+        
+        noBybitAccount.addEventListener('click', () => {
+            window.open('https://partner.bybit.com/b/WEBAPP', '_blank');
+        });
+        
+        signupRedirect.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+            window.open('https://partner.bybit.com/b/WEBAPP', '_blank');
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+            if (e.target === bybitModal) {
+                bybitModal.style.display = 'none';
+            }
+        });
+        
+        // Login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const bybitId = document.getElementById('bybitId').value;
+            const password = document.getElementById('password').value;
+            
+            // In a real app, you would send this to your backend
+            console.log('Login attempt with:', { bybitId, password });
+            
+            // For demo purposes, just close the modal
+            loginModal.style.display = 'none';
+            alert('Login successful! (This is a demo)');
+        });
+        
+        // Simulate real-time data updates
+        function updateMarketData() {
+            const btcChange = document.querySelector('.signal-up');
+            const ethChange = document.querySelectorAll('.signal-up')[1];
+            const solChange = document.querySelector('.signal-down');
+            
+            // Random small fluctuations for demo
+            const btcChangeValue = parseFloat(btcChange.textContent);
+            const ethChangeValue = parseFloat(ethChange.textContent);
+            const solChangeValue = parseFloat(solChange.textContent);
+            
+            btcChange.textContent = `${(btcChangeValue + (Math.random() - 0.5) * 0.2).toFixed(2)}%`;
+            ethChange.textContent = `${(ethChangeValue + (Math.random() - 0.5) * 0.2).toFixed(2)}%`;
+            solChange.textContent = `${(solChangeValue + (Math.random() - 0.5) * 0.2).toFixed(2)}%`;
+        }
+        
+        // Update market data every 5 seconds
+        setInterval(updateMarketData, 5000);
+        
+        // Reward slots simulation
+        let visitCount = localStorage.getItem('visitCount') || 0;
+        visitCount = parseInt(visitCount) + 1;
+        localStorage.setItem('visitCount', visitCount);
+        
+        const slotsProgress = document.getElementById('slotsProgress');
+        const slotsCount = document.getElementById('slotsCount');
+        const slotsMessage = document.getElementById('slotsMessage');
+        
+        // Simulate decreasing slots based on visits
+        function updateRewardSlots() {
+            let slotsPercentage = 92 - (visitCount * 2);
+            if (slotsPercentage < 0) slotsPercentage = 0;
+            
+            slotsProgress.style.width = `${slotsPercentage}%`;
+            slotsCount.textContent = `${slotsPercentage}%`;
+            
+            if (visitCount >= 6) {
+                slotsMessage.textContent = 'Hurry! Offer ending very soon!';
+                slotsMessage.classList.add('text-red-400');
+            }
+        }
+        
+        updateRewardSlots();
+        
+        // Animated counter for stats
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value + '%';
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Initialize animated counters
+        const accuracyElements = document.querySelectorAll('.text-xs.text-gray-400');
+        accuracyElements.forEach(el => {
+            if (el.textContent.includes('Accuracy:')) {
+                const accuracyValue = parseInt(el.textContent.split(': ')[1]);
+                animateValue(el, 0, accuracyValue, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
