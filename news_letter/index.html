@@ -1,894 +1,252 @@
-// Dashboard functionality for SignalStrike.online
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Initialize dashboard
-    initDashboard();
-    
-    // DOM Elements
-    const alertsContainer = document.getElementById('alertsContainer');
-    const generateAlertBtn = document.getElementById('generateAlertBtn');
-    const clearAlertsBtn = document.getElementById('clearAlertsBtn');
-    const sentimentInput = document.getElementById('sentimentInput');
-    const analyzeSentimentBtn = document.getElementById('analyzeSentimentBtn');
-    const sentimentResult = document.getElementById('sentimentResult');
-    const assetInput = document.getElementById('assetInput');
-    const trackAssetBtn = document.getElementById('trackAssetBtn');
-    const assetTracker = document.getElementById('assetTracker');
-    const newsTitle = document.getElementById('newsTitle');
-    const generateFakeNewsBtn = document.getElementById('generateFakeNewsBtn');
-    const fakeNewsResult = document.getElementById('fakeNewsResult');
-    const resetNewsBtn = document.getElementById('resetNewsBtn');
-    const newsletterEmail = document.getElementById('newsletterEmail');
-    const newsletterSelect = document.getElementById('newsletterSelect');
-    const subscribeBtn = document.getElementById('subscribeBtn');
-    const newslettersList = document.getElementById('newslettersList');
-    const generateReportBtn = document.getElementById('generateReportBtn');
-    const simulateMarketBtn = document.getElementById('simulateMarketBtn');
-    const exportDataBtn = document.getElementById('exportDataBtn');
-    const notificationBtn = document.getElementById('notificationBtn');
-    const notificationPanel = document.getElementById('notificationPanel');
-    
-    // Dashboard state
-    let dashboardState = {
-        alerts: [],
-        trackedAssets: [],
-        newsletters: [],
-        sentimentHistory: [],
-        activityLog: [],
-        totalAlerts: 0,
-        avgSentiment: 0
-    };
-    
-    // Sample data for demonstration [citation:1][citation:2][citation:4]
-    const alertTypes = [
-        { type: 'info', icon: 'info-circle', label: 'Market Update' },
-        { type: 'success', icon: 'check-circle', label: 'Signal Generated' },
-        { type: 'warning', icon: 'exclamation-triangle', label: 'Volatility Alert' },
-        { type: 'danger', icon: 'times-circle', label: 'Risk Warning' }
-    ];
-    
-    const sampleAssets = [
-        { symbol: 'BTC', name: 'Bitcoin', price: 65432.10, change: 2.34 },
-        { symbol: 'ETH', name: 'Ethereum', price: 3456.78, change: 1.23 },
-        { symbol: 'TSLA', name: 'Tesla Inc', price: 245.67, change: -0.56 },
-        { symbol: 'AAPL', name: 'Apple Inc', price: 189.45, change: 0.89 },
-        { symbol: 'NVDA', name: 'NVIDIA Corp', price: 987.65, change: 3.45 }
-    ];
-    
-    const sampleNewsletters = [
-        { id: 1, name: 'Daily Market Brief', type: 'daily', subscribed: true },
-        { id: 2, name: 'Weekly Technical Analysis', type: 'weekly', subscribed: true },
-        { id: 3, name: 'Real-time Signal Alerts', type: 'alerts', subscribed: false },
-        { id: 4, name: 'Quarterly Research Reports', type: 'research', subscribed: true }
-    ];
-    
-    // Fake news manipulation patterns [citation:2]
-    const fakeNewsModifiers = [
-        { pattern: /stock/g, replacement: 'ROCKET' },
-        { pattern: /market/g, replacement: 'EXTREME MARKET' },
-        { pattern: /rise/g, replacement: 'SKYROCKET' },
-        { pattern: /fall/g, replacement: 'CRASH' },
-        { pattern: /invest/g, replacement: 'BET BIG ON' },
-        { pattern: /company/g, replacement: 'GAME-CHANGER' },
-        { pattern: /price/g, replacement: 'UNBELIEVABLE PRICE' },
-        { pattern: /\bgood\b/g, replacement: 'INCREDIBLE' },
-        { pattern: /\bbad\b/g, replacement: 'DISASTROUS' }
-    ];
-    
-    // Initialize dashboard
-    function initDashboard() {
-        console.log('Initializing SignalStrike Dashboard...');
-        
-        // Load sample data
-        dashboardState.newsletters = [...sampleNewsletters];
-        
-        // Generate initial alerts
-        generateSampleAlerts(3);
-        
-        // Load sample assets
-        sampleAssets.slice(0, 2).forEach(asset => {
-            addTrackedAsset(asset);
-        });
-        
-        // Initialize charts
-        initSentimentChart();
-        
-        // Initialize newsletters list
-        renderNewsletters();
-        
-        // Initialize activity log
-        logActivity('Dashboard initialized', 'system');
-        
-        // Update stats
-        updateDashboardStats();
-        
-        // Setup event listeners
-        setupEventListeners();
-    }
-    
-    // Setup event listeners
-    function setupEventListeners() {
-        // Alert generation
-        generateAlertBtn.addEventListener('click', generateRandomAlert);
-        clearAlertsBtn.addEventListener('click', clearAllAlerts);
-        
-        // Sentiment analysis [citation:3][citation:7]
-        analyzeSentimentBtn.addEventListener('click', analyzeSentiment);
-        sentimentInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') analyzeSentiment();
-        });
-        
-        // Asset tracking [citation:4]
-        trackAssetBtn.addEventListener('click', trackNewAsset);
-        assetInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') trackNewAsset();
-        });
-        
-        // Fake news generator [citation:2]
-        generateFakeNewsBtn.addEventListener('click', generateFakeNews);
-        resetNewsBtn.addEventListener('click', resetNewsGenerator);
-        
-        // Newsletter management
-        subscribeBtn.addEventListener('click', subscribeToNewsletter);
-        
-        // Dashboard actions
-        generateReportBtn.addEventListener('click', generateDailyReport);
-        simulateMarketBtn.addEventListener('click', simulateMarketEvent);
-        exportDataBtn.addEventListener('click', exportDashboardData);
-        
-        // Notifications
-        notificationBtn.addEventListener('click', toggleNotifications);
-        
-        // Close notifications when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!notificationPanel.contains(e.target) && !notificationBtn.contains(e.target)) {
-                notificationPanel.classList.add('hidden');
-            }
-        });
-    }
-    
-    // Generate random alert
-    function generateRandomAlert() {
-        const alertType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
-        const messages = [
-            "Unusual volume detected in $BTC options market",
-            "RSI divergence spotted on NASDAQ 100 chart",
-            "Fed interest rate decision causing market volatility",
-            "New support level formed at $62,500 for Bitcoin",
-            "Ethereum gas fees dropped by 35% overnight",
-            "Golden cross forming on S&P 500 daily chart",
-            "Market sentiment shifting to risk-off mode",
-            "Institutional inflow detected in crypto markets"
-        ];
-        
-        const alert = {
-            id: Date.now(),
-            type: alertType.type,
-            icon: alertType.icon,
-            label: alertType.label,
-            message: messages[Math.floor(Math.random() * messages.length)],
-            timestamp: new Date().toLocaleTimeString(),
-            priority: Math.random() > 0.7 ? 'high' : 'normal'
-        };
-        
-        dashboardState.alerts.unshift(alert);
-        dashboardState.totalAlerts++;
-        
-        renderAlerts();
-        logActivity(`New ${alert.type} alert generated: ${alert.message}`, 'alert');
-        updateDashboardStats();
-        
-        // Show notification
-        showNotification('New Alert', alert.message, alert.type);
-    }
-    
-    // Generate sample alerts on load
-    function generateSampleAlerts(count) {
-        for (let i = 0; i < count; i++) {
-            setTimeout(() => generateRandomAlert(), i * 300);
-        }
-    }
-    
-    // Render alerts to DOM
-    function renderAlerts() {
-        alertsContainer.innerHTML = '';
-        
-        dashboardState.alerts.forEach(alert => {
-            const alertElement = document.createElement('div');
-            alertElement.className = `alert alert-${alert.type} fade-in`;
-            alertElement.innerHTML = `
-                <div class="flex items-start w-full">
-                    <div class="mr-3 mt-0.5">
-                        <i class="fas fa-${alert.icon} text-lg"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between">
-                            <span class="font-semibold">${alert.label}</span>
-                            <span class="text-xs text-gray-500">${alert.timestamp}</span>
-                        </div>
-                        <p class="mt-1">${alert.message}</p>
-                        ${alert.priority === 'high' ? 
-                            '<span class="inline-block mt-1 px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full">High Priority</span>' : ''}
-                    </div>
-                    <button class="ml-2 text-gray-400 hover:text-gray-600" onclick="removeAlert(${alert.id})">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            alertsContainer.appendChild(alertElement);
-        });
-    }
-    
-    // Remove specific alert
-    window.removeAlert = function(alertId) {
-        dashboardState.alerts = dashboardState.alerts.filter(alert => alert.id !== alertId);
-        renderAlerts();
-        updateDashboardStats();
-        logActivity('Alert removed', 'user');
-    };
-    
-    // Clear all alerts
-    function clearAllAlerts() {
-        if (dashboardState.alerts.length === 0) return;
-        
-        if (confirm('Clear all alerts?')) {
-            dashboardState.alerts = [];
-            renderAlerts();
-            updateDashboardStats();
-            logActivity('All alerts cleared', 'user');
-        }
-    }
-    
-    // Analyze sentiment using a simplified version [citation:3][citation:7]
-    function analyzeSentiment() {
-        const text = sentimentInput.value.trim();
-        if (!text) {
-            sentimentResult.innerHTML = '<div class="alert alert-warning">Please enter text to analyze</div>';
-            return;
-        }
-        
-        // Simple sentiment analysis (demo version)
-        const positiveWords = ['bullish', 'growth', 'profit', 'gain', 'rise', 'positive', 'strong', 'buy', 'opportunity'];
-        const negativeWords = ['bearish', 'loss', 'drop', 'fall', 'negative', 'weak', 'sell', 'risk', 'crash'];
-        
-        const words = text.toLowerCase().split(/\s+/);
-        let score = 0;
-        
-        words.forEach(word => {
-            if (positiveWords.includes(word)) score++;
-            if (negativeWords.includes(word)) score--;
-        });
-        
-        // Normalize score
-        const normalizedScore = Math.max(-1, Math.min(1, score / 10));
-        
-        // Determine sentiment
-        let sentiment, color, icon;
-        if (normalizedScore > 0.3) {
-            sentiment = 'Bullish';
-            color = 'green';
-            icon = 'arrow-up';
-        } else if (normalizedScore < -0.3) {
-            sentiment = 'Bearish';
-            color = 'red';
-            icon = 'arrow-down';
-        } else {
-            sentiment = 'Neutral';
-            color = 'gray';
-            icon = 'minus';
-        }
-        
-        // Update chart
-        updateSentimentChart(normalizedScore);
-        
-        // Display result
-        sentimentResult.innerHTML = `
-            <div class="p-4 rounded-lg bg-${color}-50 border border-${color}-200">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="flex items-center">
-                            <i class="fas fa-${icon} text-${color}-600 text-xl mr-2"></i>
-                            <span class="text-lg font-bold text-${color}-700">${sentiment}</span>
-                        </div>
-                        <div class="mt-2">
-                            <div class="text-sm text-gray-600">Sentiment Score: <span class="font-mono">${normalizedScore.toFixed(2)}</span></div>
-                            <div class="text-xs text-gray-500 mt-1">"${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"</div>
-                        </div>
-                    </div>
-                    <div class="text-3xl font-bold text-${color}-600">${(normalizedScore * 100).toFixed(0)}</div>
-                </div>
-                <div class="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div class="h-full bg-${color}-500 rounded-full" style="width: ${((normalizedScore + 1) / 2 * 100)}%"></div>
-                </div>
-            </div>
-        `;
-        
-        // Add to history
-        dashboardState.sentimentHistory.push({
-            text: text.substring(0, 100),
-            score: normalizedScore,
-            sentiment: sentiment,
-            timestamp: new Date().toISOString()
-        });
-        
-        logActivity(`Sentiment analyzed: ${sentiment} (${normalizedScore.toFixed(2)})`, 'analysis');
-        updateDashboardStats();
-    }
-    
-    // Initialize sentiment chart
-    function initSentimentChart() {
-        const ctx = document.getElementById('sentimentChart').getContext('2d');
-        
-        // Sample sentiment data
-        const timestamps = Array.from({length: 10}, (_, i) => `Day ${i + 1}`);
-        const scores = Array.from({length: 10}, () => (Math.random() * 2 - 1));
-        
-        window.sentimentChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: timestamps,
-                datasets: [{
-                    label: 'Market Sentiment',
-                    data: scores,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        min: -1,
-                        max: 1,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    }
-    
-    // Update sentiment chart
-    function updateSentimentChart(newScore) {
-        if (!window.sentimentChart) return;
-        
-        // Add new data point
-        const newLabel = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        window.sentimentChart.data.labels.push(newLabel);
-        window.sentimentChart.data.datasets[0].data.push(newScore);
-        
-        // Keep only last 10 points
-        if (window.sentimentChart.data.labels.length > 10) {
-            window.sentimentChart.data.labels.shift();
-            window.sentimentChart.data.datasets[0].data.shift();
-        }
-        
-        window.sentimentChart.update();
-    }
-    
-    // Track new asset [citation:4]
-    function trackNewAsset() {
-        const symbol = assetInput.value.trim().toUpperCase();
-        if (!symbol) {
-            alert('Please enter an asset symbol');
-            return;
-        }
-        
-        // Check if already tracked
-        if (dashboardState.trackedAssets.some(asset => asset.symbol === symbol)) {
-            alert(`${symbol} is already being tracked`);
-            return;
-        }
-        
-        // Find or create asset
-        let asset = sampleAssets.find(a => a.symbol === symbol);
-        if (!asset) {
-            // Create mock asset
-            asset = {
-                symbol: symbol,
-                name: `${symbol} Corporation`,
-                price: (Math.random() * 1000).toFixed(2),
-                change: (Math.random() * 10 - 5).toFixed(2)
-            };
-        }
-        
-        addTrackedAsset(asset);
-        assetInput.value = '';
-        
-        logActivity(`Started tracking ${symbol}`, 'tracking');
-        updateDashboardStats();
-    }
-    
-    // Add tracked asset to DOM
-    function addTrackedAsset(asset) {
-        dashboardState.trackedAssets.push(asset);
-        
-        const assetElement = document.createElement('div');
-        assetElement.className = 'asset-card fade-in';
-        assetElement.innerHTML = `
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalStrike Dashboard - Market Intelligence Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans h-full">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <div>
-                    <div class="font-bold">${asset.symbol}</div>
-                    <div class="text-sm text-gray-600">${asset.name}</div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold">$${parseFloat(asset.price).toLocaleString()}</div>
-                    <div class="text-sm ${asset.change >= 0 ? 'asset-up' : 'asset-down'}">
-                        <i class="fas fa-${asset.change >= 0 ? 'arrow-up' : 'arrow-down'} mr-1"></i>
-                        ${asset.change >= 0 ? '+' : ''}${asset.change}%
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg">
+                        <i class="fas fa-bolt text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">SignalStrike<span class="text-blue-600">.online</span></h1>
+                        <p class="text-sm text-gray-500">Real-time Market Intelligence Dashboard</p>
                     </div>
                 </div>
-            </div>
-            <div class="mt-2 flex justify-between text-xs text-gray-500">
-                <span>Last update: ${new Date().toLocaleTimeString()}</span>
-                <button class="text-red-500 hover:text-red-700" onclick="removeTrackedAsset('${asset.symbol}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-        
-        assetTracker.appendChild(assetElement);
-    }
-    
-    // Remove tracked asset
-    window.removeTrackedAsset = function(symbol) {
-        dashboardState.trackedAssets = dashboardState.trackedAssets.filter(asset => asset.symbol !== symbol);
-        
-        // Re-render tracker
-        assetTracker.innerHTML = '';
-        dashboardState.trackedAssets.forEach(asset => addTrackedAsset(asset));
-        
-        logActivity(`Stopped tracking ${symbol}`, 'tracking');
-        updateDashboardStats();
-    };
-    
-    // Generate fake news [citation:2]
-    function generateFakeNews() {
-        const originalTitle = newsTitle.value.trim();
-        if (!originalTitle) {
-            alert('Please enter a news title');
-            return;
-        }
-        
-        let fakeTitle = originalTitle;
-        
-        // Apply manipulation patterns
-        fakeNewsModifiers.forEach(mod => {
-            fakeTitle = fakeTitle.replace(mod.pattern, mod.replacement);
-        });
-        
-        // Add sensational phrases
-        const sensationalPhrases = [
-            "SHOCKING NEW DEVELOPMENT: ",
-            "EXPOSED: ",
-            "YOU WON'T BELIEVE THIS: ",
-            "BREAKING: ",
-            "URGENT: "
-        ];
-        
-        if (Math.random() > 0.5) {
-            fakeTitle = sensationalPhrases[Math.floor(Math.random() * sensationalPhrases.length)] + fakeTitle;
-        }
-        
-        // Add exclamation
-        if (!fakeTitle.endsWith('!')) {
-            fakeTitle += '!';
-        }
-        
-        // Show result
-        fakeNewsResult.innerHTML = `
-            <div>
-                <div class="font-bold text-red-600 mb-2">
-                    <i class="fas fa-exclamation-triangle mr-1"></i>
-                    Fake News Version (Demo)
-                </div>
-                <div class="text-gray-600 text-sm mb-2">Original: "${originalTitle}"</div>
-                <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div class="font-bold text-lg">${fakeTitle}</div>
-                    <div class="mt-2 text-sm text-gray-700">
-                        <p>This demonstrates how news can be manipulated. Always verify information from multiple reliable sources.</p>
-                        <p class="mt-1 font-medium">Manipulation techniques used:</p>
-                        <ul class="list-disc pl-5 mt-1">
-                            <li>Emotional language amplification</li>
-                            <li>Sensationalist prefixes</li>
-                            <li>Word replacement for dramatic effect</li>
-                            <li>Exclamation for urgency</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        fakeNewsResult.classList.remove('hidden');
-        logActivity('Generated fake news demo', 'demo');
-    }
-    
-    // Reset news generator
-    function resetNewsGenerator() {
-        newsTitle.value = '';
-        fakeNewsResult.classList.add('hidden');
-    }
-    
-    // Subscribe to newsletter
-    function subscribeToNewsletter() {
-        const email = newsletterEmail.value.trim();
-        const type = newsletterSelect.value;
-        
-        if (!email || !type) {
-            alert('Please enter email and select newsletter type');
-            return;
-        }
-        
-        // Validate email
-        if (!isValidEmail(email)) {
-            alert('Please enter a valid email address');
-            return;
-        }
-        
-        // Find newsletter
-        const newsletter = sampleNewsletters.find(n => n.type === type);
-        if (!newsletter) {
-            alert('Please select a valid newsletter type');
-            return;
-        }
-        
-        // Update subscription
-        newsletter.subscribed = true;
-        
-        // Add to dashboard
-        dashboardState.newsletters = [...sampleNewsletters];
-        
-        // Show success
-        alert(`Subscribed to ${newsletter.name}! Confirmation sent to ${email}`);
-        
-        // Reset form
-        newsletterEmail.value = '';
-        newsletterSelect.value = '';
-        
-        // Update display
-        renderNewsletters();
-        logActivity(`Subscribed to ${newsletter.name}`, 'newsletter');
-        updateDashboardStats();
-    }
-    
-    // Render newsletters list
-    function renderNewsletters() {
-        newslettersList.innerHTML = '';
-        
-        dashboardState.newsletters.forEach(newsletter => {
-            const item = document.createElement('div');
-            item.className = `newsletter-item ${newsletter.subscribed ? 'active' : ''}`;
-            item.innerHTML = `
-                <div>
-                    <div class="font-medium">${newsletter.name}</div>
-                    <div class="text-xs text-gray-500">${getNewsletterFrequency(newsletter.type)}</div>
-                </div>
-                <div>
-                    ${newsletter.subscribed ? 
-                        '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Subscribed</span>' :
-                        '<button class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded-full hover:bg-gray-300" onclick="toggleNewsletter(${newsletter.id})">Subscribe</button>'
-                    }
-                </div>
-            `;
-            newslettersList.appendChild(item);
-        });
-    }
-    
-    // Toggle newsletter subscription
-    window.toggleNewsletter = function(id) {
-        const newsletter = sampleNewsletters.find(n => n.id === id);
-        if (newsletter) {
-            newsletter.subscribed = !newsletter.subscribed;
-            dashboardState.newsletters = [...sampleNewsletters];
-            renderNewsletters();
-            updateDashboardStats();
-            
-            const action = newsletter.subscribed ? 'Subscribed to' : 'Unsubscribed from';
-            logActivity(`${action} ${newsletter.name}`, 'newsletter');
-        }
-    };
-    
-    // Get newsletter frequency
-    function getNewsletterFrequency(type) {
-        const frequencies = {
-            daily: 'Daily updates',
-            weekly: 'Weekly digest',
-            alerts: 'Real-time alerts',
-            research: 'Quarterly reports'
-        };
-        return frequencies[type] || 'Periodic updates';
-    }
-    
-    // Generate daily report
-    function generateDailyReport() {
-        const report = {
-            date: new Date().toLocaleDateString(),
-            totalAlerts: dashboardState.alerts.length,
-            trackedAssets: dashboardState.trackedAssets.length,
-            avgSentiment: dashboardState.avgSentiment,
-            activeNewsletters: dashboardState.newsletters.filter(n => n.subscribed).length
-        };
-        
-        // Show report in alert
-        const reportHTML = `
-            <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h3 class="font-bold text-lg text-blue-700 mb-2">Daily Report Generated</h3>
-                <div class="space-y-1 text-sm">
-                    <div><span class="font-medium">Date:</span> ${report.date}</div>
-                    <div><span class="font-medium">Active Alerts:</span> ${report.totalAlerts}</div>
-                    <div><span class="font-medium">Tracked Assets:</span> ${report.trackedAssets}</div>
-                    <div><span class="font-medium">Avg Sentiment:</span> ${report.avgSentiment.toFixed(2)}</div>
-                    <div><span class="font-medium">Newsletters:</span> ${report.activeNewsletters} active</div>
-                </div>
-                <div class="mt-3 text-xs text-blue-600">
-                    Report has been saved to your dashboard history.
-                </div>
-            </div>
-        `;
-        
-        // Add as alert
-        const alert = {
-            id: Date.now(),
-            type: 'info',
-            icon: 'file-alt',
-            label: 'Report Generated',
-            message: `Daily report for ${report.date} created`,
-            timestamp: new Date().toLocaleTimeString()
-        };
-        
-        dashboardState.alerts.unshift(alert);
-        renderAlerts();
-        
-        logActivity('Generated daily report', 'report');
-        updateDashboardStats();
-        
-        // Show notification
-        showNotification('Report Generated', 'Daily report has been created successfully', 'info');
-    }
-    
-    // Simulate market event
-    function simulateMarketEvent() {
-        const events = [
-            { type: 'flash_crash', message: 'Simulated flash crash in tech stocks', impact: 'high' },
-            { type: 'fed_announcement', message: 'Simulated Fed interest rate decision', impact: 'medium' },
-            { type: 'earnings_surprise', message: 'Simulated major earnings surprise', impact: 'medium' },
-            { type: 'crypto_surge', message: 'Simulated cryptocurrency market surge', impact: 'high' }
-        ];
-        
-        const event = events[Math.floor(Math.random() * events.length)];
-        
-        // Create alert for the event
-        const alert = {
-            id: Date.now(),
-            type: event.impact === 'high' ? 'danger' : 'warning',
-            icon: event.impact === 'high' ? 'bolt' : 'bullhorn',
-            label: 'Market Simulation',
-            message: `[SIMULATION] ${event.message}`,
-            timestamp: new Date().toLocaleTimeString(),
-            priority: 'high'
-        };
-        
-        dashboardState.alerts.unshift(alert);
-        renderAlerts();
-        
-        // Update some asset prices
-        if (dashboardState.trackedAssets.length > 0) {
-            dashboardState.trackedAssets.forEach(asset => {
-                const change = (Math.random() * 8 - 4).toFixed(2); // -4% to +4%
-                asset.change = parseFloat(change);
-                asset.price = (parseFloat(asset.price) * (1 + parseFloat(change)/100)).toFixed(2);
-            });
-            
-            // Re-render assets
-            assetTracker.innerHTML = '';
-            dashboardState.trackedAssets.forEach(asset => addTrackedAsset(asset));
-        }
-        
-        logActivity(`Simulated market event: ${event.type}`, 'simulation');
-        updateDashboardStats();
-        
-        // Show notification
-        showNotification('Market Simulation', event.message, event.impact === 'high' ? 'danger' : 'warning');
-    }
-    
-    // Export dashboard data
-    function exportDashboardData() {
-        const exportData = {
-            exportDate: new Date().toISOString(),
-            dashboard: dashboardState,
-            summary: {
-                totalAlerts: dashboardState.alerts.length,
-                trackedAssets: dashboardState.trackedAssets.length,
-                newsletters: dashboardState.newsletters.filter(n => n.subscribed).length,
-                recentActivity: dashboardState.activityLog.slice(-5)
-            }
-        };
-        
-        // Create download link
-        const dataStr = JSON.stringify(exportData, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        
-        const exportFileDefaultName = `signalstrike-export-${new Date().toISOString().split('T')[0]}.json`;
-        
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
-        
-        logActivity('Exported dashboard data', 'export');
-        
-        // Show confirmation
-        showNotification('Export Complete', 'Dashboard data exported successfully', 'success');
-    }
-    
-    // Toggle notifications panel
-    function toggleNotifications() {
-        notificationPanel.classList.toggle('hidden');
-        
-        if (!notificationPanel.classList.contains('hidden')) {
-            loadNotifications();
-        }
-    }
-    
-    // Load notifications
-    function loadNotifications() {
-        const notifications = [
-            { id: 1, title: 'New Signal Detected', message: 'Bullish pattern forming on BTC/USD', time: '2 min ago', read: false },
-            { id: 2, title: 'Newsletter Updated', message: 'Weekly analysis report is now available', time: '1 hour ago', read: true },
-            { id: 3, title: 'System Update', message: 'Dashboard performance improvements deployed', time: '3 hours ago', read: true },
-            { id: 4, title: 'Market Alert', message: 'High volatility expected during NY session', time: '5 hours ago', read: true }
-        ];
-        
-        notificationPanel.innerHTML = `
-            <div class="p-3 border-b">
-                <div class="flex justify-between items-center">
-                    <span class="font-bold">Notifications</span>
-                    <button class="text-sm text-blue-600 hover:text-blue-800">Mark all read</button>
-                </div>
-            </div>
-            <div class="max-h-96 overflow-y-auto">
-                ${notifications.map(notif => `
-                    <div class="notification-item ${notif.read ? '' : 'bg-blue-50'}">
-                        <div class="flex justify-between">
-                            <div class="font-medium">${notif.title}</div>
-                            <div class="text-xs text-gray-500">${notif.time}</div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="notificationBtn" class="relative p-2 text-gray-600 hover:text-blue-600">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                        </button>
+                        <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-lg z-50">
+                            <!-- Notification content will be populated by JS -->
                         </div>
-                        <div class="text-sm text-gray-600 mt-1">${notif.message}</div>
                     </div>
-                `).join('')}
-            </div>
-        `;
-    }
-    
-    // Show notification toast
-    function showNotification(title, message, type = 'info') {
-        // Create toast element
-        const toast = document.createElement('div');
-        toast.className = `fixed top-4 right-4 z-50 max-w-sm alert alert-${type} fade-in shadow-lg`;
-        toast.innerHTML = `
-            <div class="flex items-start">
-                <div class="mr-3 mt-0.5">
-                    <i class="fas fa-${getNotificationIcon(type)}"></i>
-                </div>
-                <div class="flex-grow">
-                    <div class="font-bold">${title}</div>
-                    <div class="text-sm">${message}</div>
-                </div>
-                <button class="ml-2 text-gray-500 hover:text-gray-700" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-        
-        // Add to body
-        document.body.appendChild(toast);
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (toast.parentElement) {
-                toast.remove();
-            }
-        }, 5000);
-    }
-    
-    // Get notification icon based on type
-    function getNotificationIcon(type) {
-        const icons = {
-            info: 'info-circle',
-            success: 'check-circle',
-            warning: 'exclamation-triangle',
-            danger: 'times-circle'
-        };
-        return icons[type] || 'bell';
-    }
-    
-    // Log activity
-    function logActivity(message, type = 'info') {
-        const activity = {
-            timestamp: new Date().toLocaleTimeString(),
-            message: message,
-            type: type
-        };
-        
-        dashboardState.activityLog.unshift(activity);
-        
-        // Keep only last 10 activities
-        if (dashboardState.activityLog.length > 10) {
-            dashboardState.activityLog.pop();
-        }
-        
-        // Update activity log display
-        updateActivityLog();
-    }
-    
-    // Update activity log display
-    function updateActivityLog() {
-        const activityLog = document.getElementById('activityLog');
-        if (!activityLog) return;
-        
-        activityLog.innerHTML = dashboardState.activityLog.map(activity => `
-            <div class="flex items-start">
-                <div class="mr-2 mt-0.5">
-                    <i class="fas fa-${getActivityIcon(activity.type)} text-sm text-gray-400"></i>
-                </div>
-                <div class="flex-grow">
-                    <div class="text-gray-700">${activity.message}</div>
-                    <div class="text-xs text-gray-500">${activity.timestamp}</div>
+                    <div class="relative">
+                        <button class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="User" class="h-8 w-8 rounded-full">
+                            <span class="font-medium">Trader_42</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        `).join('');
-    }
-    
-    // Get activity icon
-    function getActivityIcon(type) {
-        const icons = {
-            alert: 'exclamation-circle',
-            analysis: 'chart-bar',
-            tracking: 'search',
-            newsletter: 'envelope',
-            report: 'file-alt',
-            simulation: 'bolt',
-            export: 'download',
-            system: 'cog',
-            user: 'user',
-            demo: 'flask'
-        };
-        return icons[type] || 'circle';
-    }
-    
-    // Update dashboard stats
-    function updateDashboardStats() {
-        // Calculate average sentiment
-        if (dashboardState.sentimentHistory.length > 0) {
-            const total = dashboardState.sentimentHistory.reduce((sum, item) => sum + item.score, 0);
-            dashboardState.avgSentiment = total / dashboardState.sentimentHistory.length;
-        }
-        
-        // Update DOM elements
-        document.getElementById('totalAlerts').textContent = dashboardState.alerts.length;
-        document.getElementById('sentimentScore').textContent = dashboardState.avgSentiment.toFixed(2);
-        document.getElementById('trackedAssets').textContent = dashboardState.trackedAssets.length;
-        document.getElementById('newslettersCount').textContent = 
-            dashboardState.newsletters.filter(n => n.subscribed).length;
-    }
-    
-    // Utility function: Validate email
-    function isValidEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    }
-});
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Alerts & Signals -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Real-time Alerts -->
+                <section class="bg-white rounded-xl shadow-md p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold flex items-center">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                            Real-time Market Alerts
+                        </h2>
+                        <div class="flex space-x-2">
+                            <button id="generateAlertBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                <i class="fas fa-plus mr-1"></i> Generate Alert
+                            </button>
+                            <button id="clearAlertsBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
+                                Clear All
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="alertsContainer" class="space-y-3">
+                        <!-- Alerts will be populated by JavaScript -->
+                    </div>
+                </section>
+                
+                <!-- Market Trends & Sentiment -->
+                <section class="bg-white rounded-xl shadow-md p-5">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-chart-line text-green-500 mr-2"></i>
+                        Market Trends & Sentiment Analysis
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Sentiment Chart -->
+                        <div>
+                            <h3 class="font-semibold mb-3">Market Sentiment</h3>
+                            <canvas id="sentimentChart" height="200"></canvas>
+                            <div id="sentimentResult" class="mt-3 p-3 rounded-lg text-center">
+                                <!-- Sentiment analysis result will appear here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Price Tracker -->
+                        <div>
+                            <h3 class="font-semibold mb-3">Asset Tracker</h3>
+                            <div class="mb-4">
+                                <div class="flex space-x-2">
+                                    <input type="text" id="assetInput" placeholder="Enter symbol (e.g., BTC, TSLA)" class="flex-grow p-2 border rounded-lg">
+                                    <button id="trackAssetBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                        Track
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="assetTracker" class="space-y-3">
+                                <!-- Tracked assets will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sentiment Analysis Input -->
+                    <div class="mt-6">
+                        <h3 class="font-semibold mb-2">Analyze News Sentiment</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" id="sentimentInput" placeholder="Enter news headline or text to analyze" class="flex-grow p-3 border rounded-lg">
+                            <button id="analyzeSentimentBtn" class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700">
+                                Analyze
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Fake News Generator (Educational/Demo) -->
+                <section class="bg-white rounded-xl shadow-md p-5">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-newspaper text-red-500 mr-2"></i>
+                        News Generator (Demo)
+                    </h2>
+                    <p class="text-gray-600 mb-4 text-sm">This demo shows how news headlines can be manipulated. Use responsibly.</p>
+                    
+                    <div class="mb-4">
+                        <input type="text" id="newsTitle" placeholder="Enter original news title" class="w-full p-3 border rounded-lg mb-2">
+                        <div class="flex space-x-2">
+                            <button id="generateFakeNewsBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                                Generate Fake Version
+                            </button>
+                            <button id="resetNewsBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                    <div id="fakeNewsResult" class="p-4 border-2 border-dashed border-gray-300 rounded-lg hidden">
+                        <!-- Fake news result will appear here -->
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Right Column: Newsletters & Controls -->
+            <div class="space-y-6">
+                
+                <!-- Newsletter Management -->
+                <section class="bg-white rounded-xl shadow-md p-5">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-envelope text-blue-500 mr-2"></i>
+                        Newsletter Subscriptions
+                    </h2>
+                    
+                    <div id="newslettersList" class="space-y-3 mb-4">
+                        <!-- Newsletter subscriptions will appear here -->
+                    </div>
+                    
+                    <div class="border-t pt-4">
+                        <h3 class="font-semibold mb-3">Add Newsletter</h3>
+                        <div class="flex space-x-2">
+                            <input type="email" id="newsletterEmail" placeholder="Your email" class="flex-grow p-2 border rounded-lg">
+                            <button id="subscribeBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                                Subscribe
+                            </button>
+                        </div>
+                        <div class="mt-3">
+                            <select id="newsletterSelect" class="w-full p-2 border rounded-lg">
+                                <option value="">Select newsletter type</option>
+                                <option value="daily">Daily Market Brief</option>
+                                <option value="weekly">Weekly Analysis</option>
+                                <option value="alerts">Real-time Alerts</option>
+                                <option value="research">Deep Research Reports</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Dashboard Stats -->
+                <section class="bg-white rounded-xl shadow-md p-5">
+                    <h2 class="text-xl font-bold mb-4">Dashboard Stats</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="text-blue-600 text-2xl font-bold" id="totalAlerts">0</div>
+                            <div class="text-sm text-gray-600">Active Alerts</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <div class="text-green-600 text-2xl font-bold" id="sentimentScore">0.0</div>
+                            <div class="text-sm text-gray-600">Avg. Sentiment</div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="text-purple-600 text-2xl font-bold" id="trackedAssets">0</div>
+                            <div class="text-sm text-gray-600">Tracked Assets</div>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <div class="text-yellow-600 text-2xl font-bold" id="newslettersCount">0</div>
+                            <div class="text-sm text-gray-600">Newsletters</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-semibold mb-3">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <button id="generateReportBtn" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                                Generate Daily Report
+                            </button>
+                            <button id="simulateMarketBtn" class="w-full bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-black transition">
+                                Simulate Market Event
+                            </button>
+                            <button id="exportDataBtn" class="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition">
+                                Export Dashboard Data
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Recent Activity -->
+                <section class="bg-white rounded-xl shadow-md p-5">
+                    <h2 class="text-xl font-bold mb-4">Recent Activity</h2>
+                    <div id="activityLog" class="space-y-3 text-sm">
+                        <!-- Activity logs will appear here -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-8 py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold">SignalStrike<span class="text-blue-400">.online</span></h3>
+                    <p class="text-gray-400">Market Intelligence Platform</p>
+                </div>
+                <div class="text-gray-400 text-sm">
+                    <p>© 2025 SignalStrike. This is a demo dashboard for educational purposes.</p>
+                    <p class="mt-1">Market data is simulated. Not financial advice.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="dashboard.js"></script>
+</body>
+</html>
