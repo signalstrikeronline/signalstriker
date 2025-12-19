@@ -1,0 +1,168 @@
+/* Custom styles for SignalStrike dashboard */
+:root {
+    --primary-blue: #3b82f6;
+    --success-green: #10b981;
+    --warning-yellow: #f59e0b;
+    --danger-red: #ef4444;
+    --info-purple: #8b5cf6;
+}
+
+/* Alert styles based on Flowbite/Tailwind patterns [citation:1][citation:5] */
+.alert {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.alert-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-left: 4px solid var(--primary-blue);
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid var(--success-green);
+}
+
+.alert-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid var(--warning-yellow);
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid var(--danger-red);
+}
+
+.alert-dark {
+    background-color: #1f2937;
+    color: #f9fafb;
+    border-left: 4px solid #111827;
+}
+
+/* Notification styles */
+.notification-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+    background-color: #f9fafb;
+}
+
+/* Sentiment indicators */
+.sentiment-positive {
+    background: linear-gradient(90deg, #10b98120, #10b98110);
+    border-left: 4px solid #10b981;
+}
+
+.sentiment-negative {
+    background: linear-gradient(90deg, #ef444420, #ef444410);
+    border-left: 4px solid #ef4444;
+}
+
+.sentiment-neutral {
+    background: linear-gradient(90deg, #6b728020, #6b728010);
+    border-left: 4px solid #6b7280;
+}
+
+/* Asset card styles */
+.asset-card {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.asset-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.asset-up {
+    color: var(--success-green);
+}
+
+.asset-down {
+    color: var(--danger-red);
+}
+
+/* Newsletter item */
+.newsletter-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+}
+
+.newsletter-item.active {
+    background-color: #e0f2fe;
+    border-left: 3px solid var(--primary-blue);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Chart container */
+.chart-container {
+    position: relative;
+    height: 200px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .alert {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .asset-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
