@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Casino Royale | 20+ Real Cash Payout Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000',
+                        accent: '#f7a600',
+                        crypto: '#00ff88',
+                        'card-bg': '#111827',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'rainbow': 'rainbow 2s linear infinite',
+                        'coin-spin': 'coin-spin 1s linear infinite',
+                        'jackpot': 'jackpot 0.5s ease-in-out infinite',
+                        'neon-glow': 'neon-glow 2s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        rainbow: {
+                            '0%': { filter: 'hue-rotate(0deg)' },
+                            '100%': { filter: 'hue-rotate(360deg)' },
+                        },
+                        'coin-spin': {
+                            '0%': { transform: 'rotateY(0deg)' },
+                            '100%': { transform: 'rotateY(360deg)' },
+                        },
+                        jackpot: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: 1 },
+                            '50%': { transform: 'scale(1.1)', opacity: 0.8 },
+                        },
+                        'neon-glow': {
+                            '0%, 100%': { boxShadow: '0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 30px #00ff88' },
+                            '50%': { boxShadow: '0 0 20px #f7a600, 0 0 30px #f7a600, 0 0 40px #f7a600' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+        }
+        
+        .crypto-gradient {
+            background: linear-gradient(90deg, #00ff88 0%, #f7a600 50%, #00ffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .card-glow {
+            box-shadow: 0 0 20px rgba(247, 166, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .card-glow:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.4), 0 0 40px rgba(247, 166, 0, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .neon-border {
+            border: 2px solid transparent;
+            background: linear-gradient(#111827, #111827) padding-box,
+                        linear-gradient(90deg, #00ff88, #f7a600, #00ffff) border-box;
+        }
+        
+        .live-badge {
+            animation: pulse 1.5s infinite;
+        }
+        
+        .payout-badge {
+            background: linear-gradient(90deg, #00ff88 0%, #00cc66 100%);
+            color: black;
+        }
+        
+        .game-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .game-card:hover::before {
+            opacity: 1;
+        }
+        
+        .coin {
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        
+        .coin-front, .coin-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .coin-back {
+            transform: rotateY(180deg);
+        }
+        
+        .spinning {
+            animation: coin-spin 1s linear infinite;
+        }
+        
+        .jackpot-text {
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 2s linear infinite, jackpot 0.5s ease-in-out infinite;
+        }
+        
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #00ff88;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .game-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, rgba(0,255,136,0.2) 0%, rgba(247,166,0,0.2) 100%);
+        }
+        
+        .chip {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .chip:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .chip:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .chip:nth-child(3) { bottom: 15%; left: 20%; animation-delay: 2s; }
+        .chip:nth-child(4) { bottom: 25%; right: 10%; animation-delay: 3s; }
+        
+        .leaderboard-row {
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.01);
+        }
+        
+        .category-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #f7a600;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <!-- Live Stats Marquee -->
+    <div class="bg-black border-b border-gray-800 py-2">
+        <div class="marquee-container">
+            <div class="marquee-content">
+                <span class="px-8">
+                    <span class="text-crypto font-bold">LIVE:</span> 
+                    <span class="mx-4">🎯 CryptoMonopoly just paid out <span class="text-accent font-bold">$5,420</span> to player <span class="text-crypto">@CryptoKing</span></span> •
+                    <span class="mx-4">🔥 <span class="text-accent font-bold">33</span> new members joined the Trading Clan in the last hour</span> •
+                    <span class="mx-4">💰 <span class="text-crypto font-bold">$12.8K</span> total paid out in last 24 hours</span> •
+                    <span class="mx-4">🎰 CryptoRoulette hit <span class="text-accent font-bold">38x</span> multiplier for player <span class="text-crypto">@Bitcoin_Betty</span></span> •
+                    <span class="mx-4">🏆 Top winner today: <span class="text-accent font-bold">@SatoshiSam</span> with <span class="text-crypto">$8,750</span> winnings</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-crypto to-accent flex items-center justify-center">
+                        <i class="fas fa-coins text-black text-xl"></i>
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
+                        <div class="live-dot"></div>
+                    </div>
+                </div>
+                <span class="text-xl font-bold">CRYPTO<span class="crypto-gradient">CASINO</span>ROYALE</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#games" class="hover:text-accent transition-colors font-semibold">Games</a>
+                <a href="#jackpots" class="hover:text-accent transition-colors font-semibold">Jackpots</a>
+                <a href="#leaderboard" class="hover:text-accent transition-colors font-semibold">Leaderboard</a>
+                <a href="#payouts" class="hover:text-accent transition-colors font-semibold">Payouts</a>
+                <a href="#clans" class="hover:text-accent transition-colors font-semibold">Trading Clans</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-lg">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-sm">Wallet: <span class="text-crypto font-bold" id="walletBalance">$4,287.50</span></span>
+                </div>
+                <button class="bybit-modal-btn px-4 py-2 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors">
+                    <i class="fas fa-wallet mr-2"></i>Deposit
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-12 px-4 relative overflow-hidden">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <div class="inline-flex items-center px-4 py-2 bg-gray-900 rounded-full mb-6">
+                        <div class="live-dot mr-2"></div>
+                        <span class="text-crypto font-bold">LIVE CRYPTO GAMES</span>
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                        <span class="crypto-gradient">20+ REAL CASH</span><br>
+                        CRYPTO GAMES
+                    </h1>
+                    
+                    <p class="text-xl text-gray-300 mb-8">
+                        Play, win, and cash out instantly. Join thousands of crypto gamers winning 
+                        <span class="text-accent font-bold">real money</span> every minute.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 mb-10">
+                        <button class="play-now-btn px-8 py-4 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                            <i class="fas fa-play mr-2"></i>PLAY NOW
+                        </button>
+                        <button class="px-8 py-4 border-2 border-crypto text-crypto font-bold rounded-lg text-lg hover:bg-crypto hover:text-black transition-colors">
+                            <i class="fas fa-gift mr-2"></i>FREE $10 BONUS
+                        </button>
+                    </div>
+                    
+                    <!-- Live Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="stat-card rounded-xl p-4">
+                            <div class="text-2xl font-bold text-crypto" id="activePlayers">4,287</div>
+                            <div class="text-gray-400 text-sm">Players Online</div>
+                        </div>
+                        <div class="stat-card rounded-xl p-4">
+                            <div class="text-2xl font-bold text-accent" id="lastPayout">3 min</div>
+                            <div class="text-gray-400 text-sm">Last Payout</div>
+                        </div>
+                        <div class="stat-card rounded-xl p-4">
+                            <div class="text-2xl font-bold text-white" id="dailyWins">$12.8K</div>
+                            <div class="text-gray-400 text-sm">Paid Today</div>
+                        </div>
+                        <div class="stat-card rounded-xl p-4">
+                            <div class="text-2xl font-bold text-crypto" id="newMembers">33</div>
+                            <div class="text-gray-400 text-sm">New Clan Members</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <!-- Animated Jackpot Display -->
+                    <div class="bg-gray-900 rounded-2xl p-8 neon-border mb-8">
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400 mb-2">PROGRESSIVE JACKPOT</div>
+                            <div class="jackpot-text text-4xl md:text-5xl font-bold mb-4" id="jackpotAmount">$247,850</div>
+                            <div class="text-gray-400 mb-6">Next draw in: <span class="text-accent font-bold" id="jackpotTimer">12:45:33</span></div>
+                            <button class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg hover:opacity-90 transition-colors">
+                                <i class="fas fa-crown mr-2"></i>BUY JACKPOT TICKET
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Winners -->
+                    <div class="bg-gray-900 rounded-2xl p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-trophy text-accent mr-2"></i> Recent Winners
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-crypto to-accent flex items-center justify-center mr-3">
+                                        <span class="text-black font-bold">B</span>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">@Bitcoin_Baron</div>
+                                        <div class="text-xs text-gray-400">Crypto Roulette</div>
+                                    </div>
+                                </div>
+                                <div class="text-crypto font-bold">+$2,850</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mr-3">
+                                        <span class="text-white font-bold">E</span>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">@EthereumQueen</div>
+                                        <div class="text-xs text-gray-400">Crypto Blackjack</div>
+                                    </div>
+                                </div>
+                                <div class="text-crypto font-bold">+$1,425</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center mr-3">
+                                        <span class="text-white font-bold">S</span>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">@SolanaSam</div>
+                                        <div class="text-xs text-gray-400">Crypto Bingo</div>
+                                    </div>
+                                </div>
+                                <div class="text-crypto font-bold">+$3,210</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating crypto chips -->
+                    <div class="chip bg-gradient-to-r from-crypto to-accent text-black">$100</div>
+                    <div class="chip bg-gradient-to-r from-purple-500 to-pink-500 text-white">$500</div>
+                    <div class="chip bg-gradient-to-r from-blue-500 to-cyan-500 text-white">$1K</div>
+                    <div class="chip bg-gradient-to-r from-red-500 to-orange-500 text-white">$5K</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Grid -->
+    <section id="games" class="py-16 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">🔥 HOT GAMES 🔥</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto mb-8">Play our 20+ crypto games with instant real cash payouts</p>
+                
+                <div class="flex flex-wrap justify-center gap-2 mb-10">
+                    <button class="category-tag bg-crypto text-black">All Games</button>
+                    <button class="category-tag bg-gray-800 text-white">Slots</button>
+                    <button class="category-tag bg-gray-800 text-white">Table Games</button>
+                    <button class="category-tag bg-gray-800 text-white">Live Casino</button>
+                    <button class="category-tag bg-gray-800 text-white">Crypto Games</button>
+                    <button class="category-tag bg-gray-800 text-white">Skill Games</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Game 1: Crypto Monopoly -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-chess-board text-crypto"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">PAYOUT: 3 HRS AGO</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 2.4K playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Monopoly</h3>
+                    <p class="text-gray-400 text-sm mb-4">Buy, sell, and trade crypto properties. Collect rent in real crypto!</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$25,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$420</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">97.2%</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="monopoly">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+                
+                <!-- Game 2: Crypto Blackjack -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-club text-black"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">LIVE DEALER</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 1.8K playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Blackjack</h3>
+                    <p class="text-gray-400 text-sm mb-4">Beat the dealer with crypto cards. Live dealers 24/7.</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$50,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$750</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">99.5%</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="blackjack">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+                
+                <!-- Game 3: Crypto Roulette -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-dharmachakra text-red-500"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">38X HIT TODAY</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 3.2K playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Roulette</h3>
+                    <p class="text-gray-400 text-sm mb-4">Spin the crypto wheel. 38x multipliers available!</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$100,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$1,250</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">97.3%</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="roulette">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+                
+                <!-- Game 4: Crypto Bingo -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-th-large text-blue-500"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">JACKPOT: $25K</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 4.1K playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Bingo</h3>
+                    <p class="text-gray-400 text-sm mb-4">Crypto-themed bingo with progressive jackpots.</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$25,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$320</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">96.8%</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="bingo">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+                
+                <!-- Game 5: Crypto Tap & Win -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-hand-pointer text-yellow-500"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">EASY WIN</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 5.6K playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Tap & Win</h3>
+                    <p class="text-gray-400 text-sm mb-4">Tap crypto boxes for instant cash prizes.</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$10,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$85</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">98.1%</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="tapwin">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+                
+                <!-- Game 6: Crypto Dice -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-dice text-green-500"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">98% RTP</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 1.2K playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Dice</h3>
+                    <p class="text-gray-400 text-sm mb-4">High-low dice game with crypto betting.</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$15,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$450</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">98.0%</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="dice">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+                
+                <!-- Game 7: Crypto Poker -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-spade text-red-500"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">TOURNAMENT</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 890 playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Poker</h3>
+                    <p class="text-gray-400 text-sm mb-4">Texas Hold'em with crypto buy-ins and real cash prizes.</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$75,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$2,150</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">Skill Based</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="poker">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+                
+                <!-- Game 8: Crypto Slots -->
+                <div class="game-card bg-card-bg rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="game-icon">
+                            <i class="fas fa-sliders-h text-purple-500"></i>
+                        </div>
+                        <div class="text-right">
+                            <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">PROGRESSIVE</div>
+                            <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> 3.7K playing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-2">Crypto Slots</h3>
+                    <p class="text-gray-400 text-sm mb-4">Bitcoin-themed slots with free spin bonuses.</p>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-sm">
+                            <div class="text-gray-400">Max Win</div>
+                            <div class="text-crypto font-bold">$500,000</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">Avg Payout</div>
+                            <div class="text-accent font-bold">$1,850</div>
+                        </div>
+                        <div class="text-sm">
+                            <div class="text-gray-400">RTP</div>
+                            <div class="text-green-500 font-bold">96.5%</div>
+                        </div>
+                    </div>
+                    
+                    <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="slots">
+                        <i class="fas fa-play mr-2"></i>PLAY NOW
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Show More Button -->
+            <div class="text-center mt-12">
+                <button id="showMoreGames" class="px-8 py-3 border-2 border-crypto text-crypto font-bold rounded-lg text-lg hover:bg-crypto hover:text-black transition-colors">
+                    <i class="fas fa-chevron-down mr-2"></i>SHOW ALL 20+ GAMES
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Payouts -->
+    <section id="payouts" class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">💸 RECENT CASH PAYOUTS 💸</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Real players winning real money right now</p>
+            </div>
+            
+            <div class="bg-card-bg rounded-2xl p-6 neon-border">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-history text-accent mr-2"></i> Live Payout Feed
+                    </h3>
+                    <div class="flex items-center">
+                        <div class="live-dot mr-2"></div>
+                        <span class="text-crypto font-bold">UPDATING LIVE</span>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-3">Player</th>
+                                <th class="text-left py-3">Game</th>
+                                <th class="text-left py-3">Amount</th>
+                                <th class="text-left py-3">Time</th>
+                                <th class="text-left py-3">Transaction</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payoutFeed">
+                            <!-- Payouts will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button id="loadMorePayouts" class="px-6 py-2 border border-gray-600 text-gray-400 rounded-lg hover:border-crypto hover:text-crypto transition-colors">
+                        <i class="fas fa-sync-alt mr-2"></i>Load More Payouts
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section id="leaderboard" class="py-16 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">🏆 TOP TRADERS & WINNERS 🏆</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Join the Trading Clans and compete for top spots</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Daily Winners -->
+                <div class="bg-card-bg rounded-2xl p-6 neon-border">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-crown text-accent mr-2"></i> Daily Winners
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="leaderboard-row bg-gray-800 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-500 to-accent flex items-center justify-center mr-4 font-bold">
+                                    1
+                                </div>
+                                <div>
+                                    <div class="font-bold">@CryptoKing</div>
+                                    <div class="text-sm text-gray-400">Crypto Monopoly</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-crypto font-bold text-xl">$5,420</div>
+                                <div class="text-xs text-gray-400">3 hours ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-row bg-gray-800 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 flex items-center justify-center mr-4 font-bold">
+                                    2
+                                </div>
+                                <div>
+                                    <div class="font-bold">@SatoshiSam</div>
+                                    <div class="text-sm text-gray-400">Crypto Poker</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-crypto font-bold text-xl">$4,875</div>
+                                <div class="text-xs text-gray-400">5 hours ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-row bg-gray-800 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-orange-700 to-orange-500 flex items-center justify-center mr-4 font-bold">
+                                    3
+                                </div>
+                                <div>
+                                    <div class="font-bold">@Bitcoin_Betty</div>
+                                    <div class="text-sm text-gray-400">Crypto Roulette</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-crypto font-bold text-xl">$3,210</div>
+                                <div class="text-xs text-gray-400">7 hours ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trading Clans -->
+                <div class="bg-card-bg rounded-2xl p-6 neon-border">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-users text-accent mr-2"></i> Active Trading Clans
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="leaderboard-row bg-gray-800 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="relative mr-4">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-crypto to-accent flex items-center justify-center">
+                                        <i class="fas fa-dragon text-black"></i>
+                                    </div>
+                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-xs">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Dragon Clan</div>
+                                    <div class="text-sm text-gray-400">+33 members today</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-crypto font-bold text-xl">1,247</div>
+                                <div class="text-xs text-gray-400">Total Members</div>
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-row bg-gray-800 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="relative mr-4">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                                        <i class="fas fa-crown text-white"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Royal Trading Guild</div>
+                                    <div class="text-sm text-gray-400">VIP only</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-accent font-bold text-xl">892</div>
+                                <div class="text-xs text-gray-400">Elite Traders</div>
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-row bg-gray-800 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="relative mr-4">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+                                        <i class="fas fa-wolf-pack-battalion text-white"></i>
+                                    </div>
+                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-xs">
+                                        <i class="fas fa-fire"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Wolf Pack</div>
+                                    <div class="text-sm text-gray-400">Hot streak active</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-crypto font-bold text-xl">2,158</div>
+                                <div class="text-xs text-gray-400">Active Now</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-gradient-to-r from-gray-900 to-black rounded-xl border-l-4 border-crypto">
+                        <p class="text-sm">
+                            <i class="fas fa-bolt text-crypto mr-2"></i>
+                            <span class="font-bold">33 new members</span> joined trading clans in the last hour. 
+                            <a href="#" class="text-accent hover:underline">Join a clan now!</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4">
+        <div class="container mx-auto">
+            <div class="bg-gradient-to-r from-gray-900 to-black rounded-3xl p-12 text-center relative overflow-hidden neon-glow">
+                <div class="relative z-10">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                        READY TO <span class="crypto-gradient">WIN REAL CASH</span>?
+                    </h2>
+                    <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                        Join thousands of crypto gamers winning real money every minute. 
+                        Instant deposits, instant withdrawals.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center gap-6">
+                        <button class="px-8 py-4 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                            <i class="fas fa-play mr-2"></i>PLAY FREE DEMO
+                        </button>
+                        <button class="px-8 py-4 border-2 border-crypto text-crypto font-bold rounded-lg text-lg hover:bg-crypto hover:text-black transition-colors">
+                            <i class="fas fa-gem mr-2"></i>GET $100 BONUS
+                        </button>
+                        <button class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg text-lg hover:opacity-90 transition-colors">
+                            <i class="fas fa-users mr-2"></i>JOIN TRADING CLAN
+                        </button>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mt-8">
+                        <i class="fas fa-shield-alt text-accent mr-1"></i>
+                        Provably Fair • Instant Withdrawals • 24/7 Support
+                    </p>
+                </div>
+                
+                <!-- Floating coins in background -->
+                <div class="absolute top-0 left-0 w-full h-full">
+                    <div class="coin absolute top-1/4 left-1/4 spinning" style="width: 60px; height: 60px;">
+                        <div class="coin-front bg-gradient-to-r from-yellow-500 to-accent rounded-full"></div>
+                        <div class="coin-back bg-gradient-to-r from-gray-800 to-gray-900 rounded-full border-2 border-accent">
+                            <span class="text-accent font-bold">BTC</span>
+                        </div>
+                    </div>
+                    <div class="coin absolute top-1/2 right-1/4 spinning" style="width: 40px; height: 40px; animation-delay: 0.2s;">
+                        <div class="coin-front bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"></div>
+                        <div class="coin-back bg-gradient-to-r from-gray-800 to-gray-900 rounded-full border-2 border-blue-500">
+                            <span class="text-blue-500 font-bold">ETH</span>
+                        </div>
+                    </div>
+                    <div class="coin absolute bottom-1/3 left-1/3 spinning" style="width: 50px; height: 50px; animation-delay: 0.4s;">
+                        <div class="coin-front bg-gradient-to-r from-green-500 to-crypto rounded-full"></div>
+                        <div class="coin-back bg-gradient-to-r from-gray-800 to-gray-900 rounded-full border-2 border-green-500">
+                            <span class="text-green-500 font-bold">SOL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 px-4 border-t border-gray-800">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-crypto to-accent flex items-center justify-center">
+                            <i class="fas fa-coins text-black"></i>
+                        </div>
+                        <span class="text-xl font-bold">CRYPTO<span class="crypto-gradient">CASINO</span>ROYALE</span>
+                    </div>
+                    <p class="text-gray-400">20+ real cash crypto games. Instant payouts, provably fair.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-lg">Games</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-crypto transition-colors">Crypto Monopoly</a></li>
+                        <li><a href="#" class="hover:text-crypto transition-colors">Crypto Blackjack</a></li>
+                        <li><a href="#" class="hover:text-crypto transition-colors">Crypto Roulette</a></li>
+                        <li><a href="#" class="hover:text-crypto transition-colors">Crypto Bingo</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-lg">Features</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-crypto transition-colors">Real Cash Payouts</a></li>
+                        <li><a href="#" class="hover:text-crypto transition-colors">Trading Clans</a></li>
+                        <li><a href="#" class="hover:text-crypto transition-colors">Provably Fair</a></li>
+                        <li><a href="#" class="hover:text-crypto transition-colors">Live Support</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-lg">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-crypto hover:text-black transition-colors">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-crypto hover:text-black transition-colors">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-crypto hover:text-black transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-crypto hover:text-black transition-colors">
+                            <i class="fab fa-reddit"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 Crypto Casino Royale. All games are provably fair. Must be 18+ to play. Play responsibly.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const playButtons = document.querySelectorAll('.play-game-btn, .play-now-btn');
+        const showMoreGamesBtn = document.getElementById('showMoreGames');
+        const loadMorePayoutsBtn = document.getElementById('loadMorePayouts');
+        const payoutFeed = document.getElementById('payoutFeed');
+        
+        // Live stats elements
+        const activePlayers = document.getElementById('activePlayers');
+        const lastPayout = document.getElementById('lastPayout');
+        const dailyWins = document.getElementById('dailyWins');
+        const newMembers = document.getElementById('newMembers');
+        const walletBalance = document.getElementById('walletBalance');
+        const jackpotAmount = document.getElementById('jackpotAmount');
+        const jackpotTimer = document.getElementById('jackpotTimer');
+        
+        // Sample payout data
+        const payoutData = [
+            { player: '@CryptoKing', game: 'Crypto Monopoly', amount: '$5,420', time: '3 hours ago', tx: '0x8a3f...c2d4' },
+            { player: '@Bitcoin_Betty', game: 'Crypto Roulette', amount: '$3,210', time: '7 hours ago', tx: '0x5b2e...f9a1' },
+            { player: '@SatoshiSam', game: 'Crypto Poker', amount: '$4,875', time: '5 hours ago', tx: '0x9c3d...a7b2' },
+            { player: '@EthereumQueen', game: 'Crypto Blackjack', amount: '$1,425', time: '1 hour ago', tx: '0x2f8b...e6c5' },
+            { player: '@SolanaSam', game: 'Crypto Bingo', amount: '$2,100', time: '2 hours ago', tx: '0x7d1a...b3f9' },
+            { player: '@DogeMaster', game: 'Crypto Slots', amount: '$8,750', time: '30 minutes ago', tx: '0x4e2c...d8f7' },
+            { player: '@CardanoCarl', game: 'Crypto Dice', amount: '$1,850', time: '4 hours ago', tx: '0x6a9d...c1e3' },
+            { player: '@ChainlinkLarry', game: 'Crypto Tap & Win', amount: '$920', time: '15 minutes ago', tx: '0x3b5f...a9d2' },
+        ];
+        
+        // Game data for additional games
+        const additionalGames = [
+            { name: 'Crypto Crash', icon: 'fas fa-chart-line', color: 'text-red-500', players: '2.1K', badge: 'HIGH RISK', maxWin: '$100K', avgPayout: '$2,500', rtp: '98.2%' },
+            { name: 'Crypto Plinko', icon: 'fas fa-circle-notch', color: 'text-pink-500', players: '3.5K', badge: 'POPULAR', maxWin: '$50K', avgPayout: '$950', rtp: '97.5%' },
+            { name: 'Crypto Mines', icon: 'fas fa-bomb', color: 'text-orange-500', players: '1.8K', badge: 'STRATEGY', maxWin: '$75K', avgPayout: '$1,800', rtp: 'Skill Based' },
+            { name: 'Crypto Wheel', icon: 'fas fa-redo', color: 'text-cyan-500', players: '4.2K', badge: 'SPIN TO WIN', maxWin: '$25K', avgPayout: '$650', rtp: '96.8%' },
+            { name: 'Crypto Keno', icon: 'fas fa-list-ol', color: 'text-purple-500', players: '1.5K', badge: 'LOTTERY', maxWin: '$100K', avgPayout: '$3,200', rtp: '95.5%' },
+            { name: 'Crypto Hi-Lo', icon: 'fas fa-sort-amount-up', color: 'text-blue-500', players: '1.2K', badge: 'PREDICTION', maxWin: '$30K', avgPayout: '$750', rtp: '97.1%' },
+            { name: 'Crypto Limbo', icon: 'fas fa-infinity', color: 'text-green-500', players: '980', badge: 'MULTIPLIERS', maxWin: '$500K', avgPayout: '$5,250', rtp: '99.0%' },
+            { name: 'Crypto Hilo', icon: 'fas fa-random', color: 'text-yellow-500', players: '1.6K', badge: 'FAST PLAY', maxWin: '$15K', avgPayout: '$420', rtp: '97.8%' },
+            { name: 'Crypto Video Poker', icon: 'fas fa-video', color: 'text-red-400', players: '720', badge: 'SKILL GAME', maxWin: '$60K', avgPayout: '$1,950', rtp: 'Skill Based' },
+            { name: 'Crypto Baccarat', icon: 'fas fa-gem', color: 'text-pink-400', players: '890', badge: 'LIVE DEALER', maxWin: '$80K', avgPayout: '$2,850', rtp: '98.9%' },
+            { name: 'Crypto Sic Bo', icon: 'fas fa-dice-three', color: 'text-cyan-400', players: '540', badge: 'ASIAN GAME', maxWin: '$40K', avgPayout: '$1,250', rtp: '97.2%' },
+            { name: 'Crypto War', icon: 'fas fa-fist-raised', color: 'text-orange-400', players: '1.1K', badge: 'SIMPLE', maxWin: '$10K', avgPayout: '$280', rtp: '98.5%' },
+        ];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize payout feed
+            updatePayoutFeed();
+            
+            // Update live stats
+            updateLiveStats();
+            
+            // Start jackpot timer
+            startJackpotTimer();
+            
+            // Update stats every 30 seconds
+            setInterval(updateLiveStats, 30000);
+            
+            // Update jackpot amount every 10 seconds
+            setInterval(updateJackpotAmount, 10000);
+            
+            // Add floating chips animation
+            createFloatingChips();
+        });
+        
+        // Play game button handler
+        playButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const game = this.getAttribute('data-game') || 'random';
+                
+                // Animation effect
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+                
+                // In a real app, this would redirect to the game
+                console.log(`Launching game: ${game}`);
+                
+                // Show success message
+                showNotification(`Launching ${game}... Get ready to win!`);
+                
+                // Simulate wallet update
+                const currentBalance = parseFloat(walletBalance.textContent.replace('$', '').replace(',', ''));
+                walletBalance.textContent = `$${(currentBalance - 10).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            });
+        });
+        
+        // Show more games
+        showMoreGamesBtn.addEventListener('click', function() {
+            const gamesContainer = document.querySelector('#games .grid');
+            let gamesShown = 8;
+            
+            additionalGames.forEach((game, index) => {
+                if (index < 12) { // Show 12 more games
+                    setTimeout(() => {
+                        const gameCard = createGameCard(game, gamesShown + index + 1);
+                        gamesContainer.appendChild(gameCard);
+                        
+                        // Add animation
+                        gameCard.style.opacity = '0';
+                        gameCard.style.transform = 'translateY(20px)';
+                        
+                        setTimeout(() => {
+                            gameCard.style.transition = 'all 0.5s ease';
+                            gameCard.style.opacity = '1';
+                            gameCard.style.transform = 'translateY(0)';
+                        }, 50);
+                    }, index * 100);
+                }
+            });
+            
+            // Hide the button after clicking
+            setTimeout(() => {
+                this.style.display = 'none';
+            }, 1500);
+        });
+        
+        // Create game card element
+        function createGameCard(game, number) {
+            const card = document.createElement('div');
+            card.className = 'game-card bg-card-bg rounded-2xl p-6 card-glow neon-border';
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div class="game-icon" style="background: linear-gradient(135deg, rgba(0,255,136,0.2) 0%, rgba(247,166,0,0.2) 100%);">
+                        <i class="${game.icon} ${game.color}"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="payout-badge text-xs font-bold px-3 py-1 rounded-full inline-block">${game.badge}</div>
+                        <div class="text-accent text-sm mt-1"><i class="fas fa-users mr-1"></i> ${game.players} playing</div>
+                    </div>
+                </div>
+                
+                <h3 class="text-xl font-bold mb-2">${game.name}</h3>
+                <p class="text-gray-400 text-sm mb-4">Crypto version of the popular game with real cash prizes.</p>
+                
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-sm">
+                        <div class="text-gray-400">Max Win</div>
+                        <div class="text-crypto font-bold">${game.maxWin}</div>
+                    </div>
+                    <div class="text-sm">
+                        <div class="text-gray-400">Avg Payout</div>
+                        <div class="text-accent font-bold">${game.avgPayout}</div>
+                    </div>
+                    <div class="text-sm">
+                        <div class="text-gray-400">RTP</div>
+                        <div class="${game.rtp === 'Skill Based' ? 'text-blue-400' : 'text-green-500'} font-bold">${game.rtp}</div>
+                    </div>
+                </div>
+                
+                <button class="play-game-btn w-full py-3 bg-gradient-to-r from-crypto to-accent text-black font-bold rounded-lg hover:opacity-90 transition-colors" data-game="${game.name.toLowerCase().replace(' ', '')}">
+                    <i class="fas fa-play mr-2"></i>PLAY NOW
+                </button>
+            `;
+            
+            // Add event listener to new play button
+            const playBtn = card.querySelector('.play-game-btn');
+            playBtn.addEventListener('click', function() {
+                const gameName = this.getAttribute('data-game');
+                showNotification(`Launching ${gameName}... Good luck!`);
+            });
+            
+            return card;
+        }
+        
+        // Update payout feed
+        function updatePayoutFeed() {
+            payoutFeed.innerHTML = '';
+            
+            payoutData.forEach((payout, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-800 hover:bg-gray-800 transition-colors';
+                row.innerHTML = `
+                    <td class="py-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-crypto to-accent flex items-center justify-center mr-3">
+                                <span class="text-black font-bold">${payout.player.charAt(1)}</span>
+                            </div>
+                            <span class="font-semibold">${payout.player}</span>
+                        </div>
+                    </td>
+                    <td class="py-4">${payout.game}</td>
+                    <td class="py-4">
+                        <span class="font-bold text-crypto">${payout.amount}</span>
+                    </td>
+                    <td class="py-4">
+                        <span class="text-gray-400">${payout.time}</span>
+                    </td>
+                    <td class="py-4">
+                        <span class="text-xs bg-gray-800 px-2 py-1 rounded font-mono">${payout.tx}</span>
+                    </td>
+                `;
+                payoutFeed.appendChild(row);
+            });
+        }
+        
+        // Load more payouts
+        loadMorePayoutsBtn.addEventListener('click', function() {
+            // Simulate loading
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+            
+            setTimeout(() => {
+                // Add more sample payouts
+                const newPayouts = [
+                    { player: '@RippleRick', game: 'Crypto Crash', amount: '$6,420', time: '10 minutes ago', tx: '0x1a2b...c3d4' },
+                    { player: '@LitecoinLisa', game: 'Crypto Plinko', amount: '$3,150', time: '25 minutes ago', tx: '0x5e6f...g7h8' },
+                    { player: '@PolygonPaul', game: 'Crypto Mines', amount: '$4,820', time: '45 minutes ago', tx: '0x9i0j...k1l2' },
+                    { player: '@AvalancheAnna', game: 'Crypto Wheel', amount: '$2,750', time: '1 hour ago', tx: '0x3m4n...o5p6' },
+                ];
+                
+                newPayouts.forEach(payout => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-800 hover:bg-gray-800 transition-colors';
+                    row.innerHTML = `
+                        <td class="py-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold">${payout.player.charAt(1)}</span>
+                                </div>
+                                <span class="font-semibold">${payout.player}</span>
+                            </div>
+                        </td>
+                        <td class="py-4">${payout.game}</td>
+                        <td class="py-4">
+                            <span class="font-bold text-crypto">${payout.amount}</span>
+                        </td>
+                        <td class="py-4">
+                            <span class="text-gray-400">${payout.time}</span>
+                        </td>
+                        <td class="py-4">
+                            <span class="text-xs bg-gray-800 px-2 py-1 rounded font-mono">${payout.tx}</span>
+                        </td>
+                    `;
+                    payoutFeed.appendChild(row);
+                });
+                
+                this.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Load More Payouts';
+                showNotification('New payout data loaded!');
+            }, 1000);
+        });
+        
+        // Update live stats
+        function updateLiveStats() {
+            // Update active players (random fluctuation)
+            const currentPlayers = parseInt(activePlayers.textContent.replace(/,/g, ''));
+            const playerChange = Math.floor(Math.random() * 200) - 100;
+            const newPlayers = Math.max(3000, currentPlayers + playerChange);
+            activePlayers.textContent = newPlayers.toLocaleString();
+            
+            // Update last payout time
+            const times = ['3 min', '5 min', '7 min', '10 min', '15 min', '20 min'];
+            lastPayout.textContent = times[Math.floor(Math.random() * times.length)];
+            
+            // Update daily wins
+            const currentWins = parseFloat(dailyWins.textContent.replace('$', '').replace('K', ''));
+            const winChange = (Math.random() * 0.5).toFixed(1);
+            const newWins = (currentWins + parseFloat(winChange)).toFixed(1);
+            dailyWins.textContent = `$${newWins}K`;
+            
+            // Update new members
+            const members = ['33', '28', '42', '19', '37', '25'];
+            newMembers.textContent = members[Math.floor(Math.random() * members.length)];
+            
+            // Update wallet balance (small random change)
+            const currentBalance = parseFloat(walletBalance.textContent.replace('$', '').replace(',', ''));
+            const balanceChange = (Math.random() * 100 - 50).toFixed(2);
+            const newBalance = Math.max(0, currentBalance + parseFloat(balanceChange));
+            walletBalance.textContent = `$${newBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        }
+        
+        // Start jackpot timer
+        function startJackpotTimer() {
+            let time = 12 * 3600 + 45 * 60 + 33; // 12:45:33 in seconds
+            
+            setInterval(() => {
+                time--;
+                if (time < 0) time = 24 * 3600; // Reset to 24 hours
+                
+                const hours = Math.floor(time / 3600);
+                const minutes = Math.floor((time % 3600) / 60);
+                const seconds = time % 60;
+                
+                jackpotTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        // Update jackpot amount
+        function updateJackpotAmount() {
+            const currentAmount = parseFloat(jackpotAmount.textContent.replace('$', '').replace(',', ''));
+            const increase = Math.floor(Math.random() * 500) + 100;
+            const newAmount = currentAmount + increase;
+            jackpotAmount.textContent = `$${newAmount.toLocaleString()}`;
+        }
+        
+        // Create floating chips
+        function createFloatingChips() {
+            const container = document.querySelector('body');
+            const chipValues = ['$10', '$25', '$50', '$100', '$500', '$1K', 'BTC', 'ETH'];
+            const chipColors = [
+                'bg-gradient-to-r from-crypto to-accent',
+                'bg-gradient-to-r from-purple-500 to-pink-500',
+                'bg-gradient-to-r from-blue-500 to-cyan-500',
+                'bg-gradient-to-r from-red-500 to-orange-500',
+                'bg-gradient-to-r from-green-500 to-emerald-500',
+                'bg-gradient-to-r from-yellow-500 to-orange-500'
+            ];
+            
+            for (let i = 0; i < 15; i++) {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+                chip.style.left = Math.random() * 100 + 'vw';
+                chip.style.top = Math.random() * 100 + 'vh';
+                chip.style.animationDelay = Math.random() * 5 + 's';
+                chip.className += ' ' + chipColors[Math.floor(Math.random() * chipColors.length)];
+                chip.textContent = chipValues[Math.floor(Math.random() * chipValues.length)];
+                chip.style.color = chip.className.includes('accent') ? 'black' : 'white';
+                chip.style.zIndex = '-1';
+                
+                container.appendChild(chip);
+            }
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-gradient-to-r from-crypto to-accent text-black p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-bell mr-2"></i>
+                    <span class="font-bold">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Add marquee effect to live stats
+        const marqueeContent = document.querySelector('.marquee-content');
+        const marqueeClone = marqueeContent.cloneNode(true);
+        document.querySelector('.marquee-container').appendChild(marqueeClone);
+        
+        // Add hover effect to game cards
+        const gameCards = document.querySelectorAll('.game-card');
+        gameCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.game-icon');
+                icon.style.transform = 'scale(1.1) rotate(5deg)';
+                icon.style.transition = 'transform 0.3s ease';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.game-icon');
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>
