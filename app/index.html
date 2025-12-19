@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhaleWatch Pro | Real-time Crypto Whale & Shark Activity Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000',
+                        accent: '#00ff88',
+                        'whale-blue': '#0066ff',
+                        'shark-gray': '#2d3748',
+                        'pump-orange': '#ff9900',
+                        'dump-red': '#ff3333',
+                        'twitter-blue': '#1da1f2',
+                        'heat-1': '#00ff88',
+                        'heat-2': '#ffcc00',
+                        'heat-3': '#ff6600',
+                        'heat-4': '#ff3300',
+                        'heat-5': '#ff0000',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'sonar': 'sonar 3s ease-out infinite',
+                        'wave': 'wave 8s linear infinite',
+                        'ticker': 'ticker 20s linear infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'flash': 'flash 1s ease-in-out',
+                        'glitch': 'glitch 0.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        sonar: {
+                            '0%': { transform: 'scale(0.95)', opacity: 1 },
+                            '100%': { transform: 'scale(2)', opacity: 0 },
+                        },
+                        wave: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        },
+                        ticker: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        },
+                        flash: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.3 },
+                        },
+                        glitch: {
+                            '0%, 100%': { transform: 'translate(0)' },
+                            '20%': { transform: 'translate(-2px, 2px)' },
+                            '40%': { transform: 'translate(-2px, -2px)' },
+                            '60%': { transform: 'translate(2px, 2px)' },
+                            '80%': { transform: 'translate(2px, -2px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+        }
+        
+        .whale-gradient {
+            background: linear-gradient(90deg, #0066ff 0%, #00ff88 50%, #1da1f2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(90deg, #00ff88 0%, #0066ff 100%);
+        }
+        
+        .twitter-gradient {
+            background: linear-gradient(90deg, #1da1f2 0%, #00ff88 100%);
+        }
+        
+        .card-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card-glow:hover {
+            box-shadow: 0 0 30px rgba(0, 102, 255, 0.3), 0 0 40px rgba(0, 255, 136, 0.1);
+        }
+        
+        .neon-border {
+            border: 2px solid transparent;
+            background: linear-gradient(#111827, #111827) padding-box,
+                        linear-gradient(90deg, #0066ff, #00ff88, #1da1f2) border-box;
+        }
+        
+        .sonar-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #00ff88;
+            animation: sonar 3s ease-out infinite;
+        }
+        
+        .wave-pattern {
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 20px,
+                rgba(0, 102, 255, 0.1) 20px,
+                rgba(0, 102, 255, 0.1) 40px
+            );
+        }
+        
+        .heatmap-cell {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .heat-1 { background-color: rgba(0, 255, 136, 0.1); }
+        .heat-2 { background-color: rgba(0, 255, 136, 0.3); }
+        .heat-3 { background-color: rgba(255, 204, 0, 0.5); }
+        .heat-4 { background-color: rgba(255, 102, 0, 0.7); }
+        .heat-5 { background-color: rgba(255, 51, 0, 0.9); }
+        
+        .ticker-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 10%, rgba(0,0,0,0) 90%, rgba(0,0,0,1) 100%);
+        }
+        
+        .ticker-content {
+            display: inline-block;
+            animation: ticker 30s linear infinite;
+        }
+        
+        .whale-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #0066ff;
+            animation: float 4s ease-in-out infinite;
+            box-shadow: 0 0 15px #0066ff;
+        }
+        
+        .shark-marker {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #2d3748;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 0 10px #2d3748;
+        }
+        
+        .locked-feature {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .locked-feature::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .locked-feature.locked-bybit::after {
+            content: '🔐 BYBIT SIGNUP REQUIRED';
+        }
+        
+        .locked-feature.locked-pro::after {
+            content: '⭐ UPGRADE TO PRO';
+        }
+        
+        .radar-sweep {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(transparent 270deg, #00ff88 360deg);
+            animation: spin-slow 4s linear infinite;
+        }
+        
+        .depth-line {
+            stroke: rgba(0, 102, 255, 0.3);
+            stroke-width: 1;
+        }
+        
+        .signal-line {
+            fill: none;
+            stroke-width: 2;
+        }
+        
+        .buy-signal {
+            stroke: #00ff88;
+        }
+        
+        .sell-signal {
+            stroke: #ff3333;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.3);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #111827 0%, #1a1a1a 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0, 102, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(0, 102, 255, 0.05) 50%, transparent 70%);
+            animation: wave 8s linear infinite;
+        }
+        
+        .alert-flash {
+            animation: flash 1s ease-in-out;
+        }
+        
+        .twitter-bubble {
+            position: relative;
+            background: rgba(29, 161, 242, 0.1);
+            border: 1px solid rgba(29, 161, 242, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .twitter-bubble::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 20px;
+            width: 12px;
+            height: 12px;
+            transform: rotate(45deg);
+            background: rgba(29, 161, 242, 0.1);
+            border-left: 1px solid rgba(29, 161, 242, 0.3);
+            border-top: 1px solid rgba(29, 161, 242, 0.3);
+        }
+        
+        .liquidation-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #00ff88 0%, #ffcc00 50%, #ff3300 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .depth-chart {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(0, 102, 255, 0.1) 0%, transparent 100%);
+        }
+        
+        .bybit-badge {
+            background: linear-gradient(90deg, #00ff88 0%, #0066ff 100%);
+            color: black;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <!-- Live Ticker -->
+    <div class="bg-black border-b border-gray-800 py-2">
+        <div class="ticker-container">
+            <div class="ticker-content">
+                <span class="px-8">
+                    <span class="text-accent font-bold">🐋 LIVE WHALE ALERTS:</span> 
+                    <span class="mx-4">WHALE 0x8a3f just moved <span class="text-[#0066ff] font-bold">4,287 BTC</span> ($180M) to cold storage</span> •
+                    <span class="mx-4">SHARK 0x5b2e dumped <span class="text-[#ff3333] font-bold">42,500 ETH</span> ($68M) on Binance</span> •
+                    <span class="mx-4">Crypto Twitter buying pressure: <span class="text-[#00ff88] font-bold">87% BULLISH</span> on SOL</span> •
+                    <span class="mx-4">Liquidation heatmap showing <span class="text-[#ff6600] font-bold">$240M</span> in potential liquidations at $42.5K BTC</span> •
+                    <span class="mx-4">Bybit whales accumulating <span class="text-[#00ff88] font-bold">$85M</span> in altcoins</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full accent-gradient flex items-center justify-center">
+                        <i class="fas fa-radar text-black"></i>
+                    </div>
+                    <div class="absolute -top-1 -right-1">
+                        <div class="sonar-ring rounded-full w-5 h-5"></div>
+                    </div>
+                </div>
+                <span class="text-xl font-bold code-font">WHALE<span class="whale-gradient">WATCH</span>.PRO</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#dashboard" class="hover:text-accent transition-colors font-semibold">Dashboard</a>
+                <a href="#whales" class="hover:text-accent transition-colors font-semibold">Whale Tracker</a>
+                <a href="#twitter" class="hover:text-accent transition-colors font-semibold">Crypto Twitter</a>
+                <a href="#heatmap" class="hover:text-accent transition-colors font-semibold">Liquidation Map</a>
+                <a href="#features" class="hover:text-accent transition-colors font-semibold">Features</a>
+                <a href="#bybit" class="hover:text-accent transition-colors font-semibold">Bybit Connect</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 bg-gray-900 px-4 py-2 rounded-lg">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-sm">Tracking: <span class="text-accent font-bold" id="trackingCount">4,287</span> whales</span>
+                </div>
+                <button id="bybitSignupBtn" class="bybit-btn px-4 py-2 accent-gradient text-black font-bold rounded-lg hover:opacity-90 transition-colors">
+                    <i class="fab fa-btc mr-2"></i>Connect Bybit
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="py-12 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column -->
+                <div class="lg:col-span-2">
+                    <div class="mb-8">
+                        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                            REAL-TIME <span class="whale-gradient">WHALE & SHARK</span> ACTIVITY
+                        </h1>
+                        <p class="text-gray-400 text-lg">
+                            Track massive crypto movements, liquidation risks, and what Crypto Twitter is buying/selling.
+                            <span class="text-accent font-bold">20+ exclusive features</span> unlocked with Bybit.
+                        </p>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-gray-900 rounded-xl p-4 card-glow">
+                            <div class="text-2xl font-bold text-[#0066ff]">42</div>
+                            <div class="text-gray-400 text-sm">Whales Active Now</div>
+                        </div>
+                        <div class="bg-gray-900 rounded-xl p-4 card-glow">
+                            <div class="text-2xl font-bold text-[#2d3748]">187</div>
+                            <div class="text-gray-400 text-sm">Sharks Tracked</div>
+                        </div>
+                        <div class="bg-gray-900 rounded-xl p-4 card-glow">
+                            <div class="text-2xl font-bold text-accent">$2.4B</div>
+                            <div class="text-gray-400 text-sm">Moved Last 24H</div>
+                        </div>
+                        <div class="bg-gray-900 rounded-xl p-4 card-glow">
+                            <div class="text-2xl font-bold text-[#ff3333]">87%</div>
+                            <div class="text-gray-400 text-sm">Twitter Bullish</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Whale Radar -->
+                    <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border mb-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold flex items-center">
+                                <i class="fas fa-radar text-[#0066ff] mr-2"></i> Live Whale Radar
+                            </h2>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></div>
+                                <span class="text-accent font-bold">LIVE</span>
+                            </div>
+                        </div>
+                        
+                        <div class="relative h-64 bg-black rounded-lg overflow-hidden">
+                            <div class="absolute inset-0 wave-pattern"></div>
+                            
+                            <!-- Radar Circles -->
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-gray-700 rounded-full"></div>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-gray-700 rounded-full"></div>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 border border-gray-700 rounded-full"></div>
+                            
+                            <!-- Radar Sweep -->
+                            <div class="radar-sweep rounded-full w-48 h-48 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                            
+                            <!-- Whale Markers -->
+                            <div class="whale-marker" style="top: 30%; left: 40%;" title="0x8a3f: 4,287 BTC moved"></div>
+                            <div class="whale-marker" style="top: 60%; left: 70%;" title="0x5b2e: 42,500 ETH dump"></div>
+                            <div class="shark-marker" style="top: 20%; left: 80%;" title="Shark: 15M SOL accumulated"></div>
+                            <div class="shark-marker" style="top: 70%; left: 20%;" title="Shark: 85M ADA bought"></div>
+                            <div class="whale-marker" style="top: 40%; left: 60%;" title="0x9c3d: 250M USDT to exchange"></div>
+                        </div>
+                        
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 rounded-full bg-[#0066ff] mr-2"></div>
+                                    <span class="text-sm">Whale (> $10M)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 rounded-full bg-[#2d3748] mr-2"></div>
+                                    <span class="text-sm">Shark (> $1M)</span>
+                                </div>
+                            </div>
+                            <button id="radarZoom" class="text-sm text-gray-400 hover:text-accent">
+                                <i class="fas fa-expand mr-1"></i>Full Screen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div>
+                    <!-- Bybit Connect Card -->
+                    <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-6 card-glow border-2 border-[#00ff88] mb-8">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 rounded-full accent-gradient flex items-center justify-center mx-auto mb-4">
+                                <i class="fab fa-btc text-black text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Unlock All Features</h3>
+                            <p class="text-gray-400 text-sm mb-4">
+                                Connect your Bybit account to access <span class="text-accent font-bold">20+ whale tracking features</span>
+                            </p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-lock text-gray-600 mr-3"></i>
+                                <span class="text-gray-400">Current Status:</span>
+                                <span id="authStatus" class="ml-auto text-red-500 font-bold">NOT CONNECTED</span>
+                            </div>
+                            <div class="progress-bar bg-gray-800 rounded-full h-2">
+                                <div id="authProgress" class="h-2 bg-accent rounded-full" style="width: 10%"></div>
+                            </div>
+                        </div>
+                        
+                        <button id="connectBybitBtn" class="bybit-btn w-full py-3 accent-gradient text-black font-bold rounded-lg hover:opacity-90 transition-colors mb-4">
+                            <i class="fab fa-btc mr-2"></i>Connect Bybit Account
+                        </button>
+                        
+                        <div class="text-center text-xs text-gray-500">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            Secure API connection. Read-only access.
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Alerts -->
+                    <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-bell text-[#ff9900] mr-2"></i> Recent Whale Alerts
+                        </h3>
+                        
+                        <div class="space-y-4 max-h-80 overflow-y-auto">
+                            <div class="alert-flash bg-gray-800 bg-opacity-50 rounded-lg p-3 border-l-4 border-[#0066ff]">
+                                <div class="text-sm font-bold">🐋 WHALE MOVEMENT</div>
+                                <div class="text-xs text-gray-400">0x8a3f moved 4,287 BTC ($180M) to cold storage</div>
+                                <div class="text-xs text-gray-500 mt-1">12 minutes ago</div>
+                            </div>
+                            
+                            <div class="alert-flash bg-gray-800 bg-opacity-50 rounded-lg p-3 border-l-4 border-[#ff3333]">
+                                <div class="text-sm font-bold">🦈 SHARK DUMP</div>
+                                <div class="text-xs text-gray-400">0x5b2e dumped 42,500 ETH ($68M) on Binance</div>
+                                <div class="text-xs text-gray-500 mt-1">33 minutes ago</div>
+                            </div>
+                            
+                            <div class="alert-flash bg-gray-800 bg-opacity-50 rounded-lg p-3 border-l-4 border-accent">
+                                <div class="text-sm font-bold">🐦 TWITTER TREND</div>
+                                <div class="text-xs text-gray-400">Crypto Twitter 87% BULLISH on SOL</div>
+                                <div class="text-xs text-gray-500 mt-1">47 minutes ago</div>
+                            </div>
+                            
+                            <div class="alert-flash bg-gray-800 bg-opacity-50 rounded-lg p-3 border-l-4 border-[#ff9900]">
+                                <div class="text-sm font-bold">🔥 LIQUIDATION RISK</div>
+                                <div class="text-xs text-gray-400">$240M in liquidations possible at $42.5K BTC</div>
+                                <div class="text-xs text-gray-500 mt-1">1 hour ago</div>
+                            </div>
+                            
+                            <div class="alert-flash bg-gray-800 bg-opacity-50 rounded-lg p-3 border-l-4 border-[#0066ff]">
+                                <div class="text-sm font-bold">📈 BYBIT ACCUMULATION</div>
+                                <div class="text-xs text-gray-400">Bybit whales buying $85M in altcoins</div>
+                                <div class="text-xs text-gray-500 mt-1">2 hours ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Whale Tracker -->
+    <section id="whales" class="py-16 px-4 bg-gray-900 bg-opacity-30">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="whale-gradient">WHALE & SHARK</span> TRACKER
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Real-time tracking of massive crypto movements across exchanges and wallets
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <!-- Whale Transactions -->
+                <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold flex items-center">
+                            <i class="fas fa-fish text-[#0066ff] mr-2"></i> Recent Whale Transactions
+                        </h3>
+                        <span class="bybit-badge">BYBIT EXCLUSIVE</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="text-left py-3">Whale</th>
+                                    <th class="text-left py-3">Asset</th>
+                                    <th class="text-left py-3">Amount</th>
+                                    <th class="text-left py-3">Action</th>
+                                    <th class="text-left py-3">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-800 hover:bg-gray-800">
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-[#0066ff] flex items-center justify-center mr-3">
+                                                <span class="text-black font-bold">W</span>
+                                            </div>
+                                            <div class="code-font text-sm">0x8a3f...c2d4</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center mr-2">
+                                                <span class="text-black font-bold text-xs">B</span>
+                                            </div>
+                                            <span>BTC</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="font-bold">4,287</span>
+                                        <div class="text-xs text-gray-400">$180M</div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">TO COLD STORAGE</span>
+                                    </td>
+                                    <td class="py-3 text-gray-400 text-sm">12 min ago</td>
+                                </tr>
+                                
+                                <tr class="border-b border-gray-800 hover:bg-gray-800">
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-[#2d3748] flex items-center justify-center mr-3">
+                                                <span class="text-white font-bold">S</span>
+                                            </div>
+                                            <div class="code-font text-sm">0x5b2e...f9a1</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center mr-2">
+                                                <span class="text-white font-bold text-xs">E</span>
+                                            </div>
+                                            <span>ETH</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="font-bold">42,500</span>
+                                        <div class="text-xs text-gray-400">$68M</div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-red-900 text-red-300 rounded text-xs">DUMPED ON BINANCE</span>
+                                    </td>
+                                    <td class="py-3 text-gray-400 text-sm">33 min ago</td>
+                                </tr>
+                                
+                                <tr class="border-b border-gray-800 hover:bg-gray-800">
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 rounded-full bg-[#0066ff] flex items-center justify-center mr-3">
+                                                <span class="text-black font-bold">W</span>
+                                            </div>
+                                            <div class="code-font text-sm">0x9c3d...a7b2</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center mr-2">
+                                                <span class="text-white font-bold text-xs">U</span>
+                                            </div>
+                                            <span>USDT</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="font-bold">250M</span>
+                                        <div class="text-xs text-gray-400">$250M</div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded text-xs">TO EXCHANGE</span>
+                                    </td>
+                                    <td class="py-3 text-gray-400 text-sm">1 hr ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Exchange Flow -->
+                <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold flex items-center">
+                            <i class="fas fa-exchange-alt text-accent mr-2"></i> Exchange Whale Flow
+                        </h3>
+                        <span class="bybit-badge">BYBIT EXCLUSIVE</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="flex items-center">
+                                    <i class="fab fa-btc text-yellow-500 mr-2"></i>
+                                    <span>Bybit</span>
+                                </span>
+                                <span class="text-accent font-bold">+$85M</span>
+                            </div>
+                            <div class="progress-bar bg-gray-800 rounded-full h-2">
+                                <div class="liquidation-bar" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="flex items-center">
+                                    <i class="fas fa-chart-line text-green-500 mr-2"></i>
+                                    <span>Binance</span>
+                                </span>
+                                <span class="text-[#ff3333] font-bold">-$68M</span>
+                            </div>
+                            <div class="progress-bar bg-gray-800 rounded-full h-2">
+                                <div class="liquidation-bar" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="flex items-center">
+                                    <i class="fas fa-coins text-orange-500 mr-2"></i>
+                                    <span>Coinbase</span>
+                                </span>
+                                <span class="text-accent font-bold">+$42M</span>
+                            </div>
+                            <div class="progress-bar bg-gray-800 rounded-full h-2">
+                                <div class="liquidation-bar" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="flex items-center">
+                                    <i class="fas fa-water text-blue-500 mr-2"></i>
+                                    <span>Kraken</span>
+                                </span>
+                                <span class="text-[#ff3333] font-bold">-$25M</span>
+                            </div>
+                            <div class="progress-bar bg-gray-800 rounded-full h-2">
+                                <div class="liquidation-bar" style="width: 30%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="flex items-center">
+                                    <i class="fas fa-anchor text-purple-500 mr-2"></i>
+                                    <span>FTX</span>
+                                </span>
+                                <span class="text-accent font-bold">+$18M</span>
+                            </div>
+                            <div class="progress-bar bg-gray-800 rounded-full h-2">
+                                <div class="liquidation-bar" style="width: 25%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-gray-800 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle text-accent mr-2"></i>
+                            <span class="text-sm">Positive flow = whales accumulating. Negative flow = whales distributing.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Depth Chart -->
+            <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-wave-square text-[#0066ff] mr-2"></i> BTC Order Book Depth
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <span class="bybit-badge">BYBIT EXCLUSIVE</span>
+                        <div class="text-sm">
+                            <span class="text-gray-400">Whale Walls: </span>
+                            <span class="text-accent font-bold">$420M Buy • $380M Sell</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="depth-chart rounded-lg p-4">
+                    <canvas id="depthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Crypto Twitter -->
+    <section id="twitter" class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="twitter-gradient">CRYPTO TWITTER</span> SENTIMENT
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    What influencers and traders are buying/selling in real-time
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                <!-- Twitter Sentiment -->
+                <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold flex items-center">
+                            <i class="fab fa-twitter text-[#1da1f2] mr-2"></i> Sentiment Analysis
+                        </h3>
+                        <span class="bybit-badge">BYBIT EXCLUSIVE</span>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <div class="relative w-48 h-48 mx-auto">
+                            <canvas id="sentimentChart"></canvas>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                                <div class="text-3xl font-bold text-accent">87%</div>
+                                <div class="text-gray-400">BULLISH</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span>Bitcoin (BTC)</span>
+                            <span class="flex items-center">
+                                <span class="text-accent font-bold">92%</span>
+                                <i class="fas fa-arrow-up text-accent ml-1"></i>
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Ethereum (ETH)</span>
+                            <span class="flex items-center">
+                                <span class="text-accent font-bold">85%</span>
+                                <i class="fas fa-arrow-up text-accent ml-1"></i>
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Solana (SOL)</span>
+                            <span class="flex items-center">
+                                <span class="text-accent font-bold">87%</span>
+                                <i class="fas fa-arrow-up text-accent ml-1"></i>
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Cardano (ADA)</span>
+                            <span class="flex items-center">
+                                <span class="text-[#ff3333] font-bold">42%</span>
+                                <i class="fas fa-arrow-down text-[#ff3333] ml-1"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Top Influencers -->
+                <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold flex items-center">
+                            <i class="fas fa-crown text-[#ffcc00] mr-2"></i> Top Influencers
+                        </h3>
+                        <span class="bybit-badge">BYBIT EXCLUSIVE</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="twitter-bubble">
+                            <div class="flex items-center mb-2">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-[#1da1f2] to-accent flex items-center justify-center mr-3">
+                                    <span class="font-bold">E</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold">@ElonMusk</div>
+                                    <div class="text-xs text-gray-400">12.4M followers</div>
+                                </div>
+                                <div class="ml-auto">
+                                    <span class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">BUYING</span>
+                                </div>
+                            </div>
+                            <p class="text-sm">"Just added more BTC to the treasury. The future is decentralized."</p>
+                            <div class="text-xs text-gray-500 mt-2">Impact: <span class="text-accent">+8.2%</span> on BTC</div>
+                        </div>
+                        
+                        <div class="twitter-bubble">
+                            <div class="flex items-center mb-2">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-[#ff9900] to-[#ff3333] flex items-center justify-center mr-3">
+                                    <span class="font-bold">C</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold">@cz_binance</div>
+                                    <div class="text-xs text-gray-400">9.8M followers</div>
+                                </div>
+                                <div class="ml-auto">
+                                    <span class="px-2 py-1 bg-red-900 text-red-300 rounded text-xs">SELLING</span>
+                                </div>
+                            </div>
+                            <p class="text-sm">"Taking profits on some alt positions. Still long-term bullish."</p>
+                            <div class="text-xs text-gray-500 mt-2">Impact: <span class="text-[#ff3333]">-3.5%</span> on ALT market</div>
+                        </div>
+                        
+                        <div class="twitter-bubble">
+                            <div class="flex items-center mb-2">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mr-3">
+                                    <span class="font-bold">V</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold">@VitalikButerin</div>
+                                    <div class="text-xs text-gray-400">6.2M followers</div>
+                                </div>
+                                <div class="ml-auto">
+                                    <span class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">BUYING</span>
+                                </div>
+                            </div>
+                            <p class="text-sm">"ETH ecosystem growing faster than ever. Layer 2 adoption incredible."</p>
+                            <div class="text-xs text-gray-500 mt-2">Impact: <span class="text-accent">+5.7%</span> on ETH</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trending Coins -->
+                <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold flex items-center">
+                            <i class="fas fa-chart-line text-accent mr-2"></i> Trending Now
+                        </h3>
+                        <span class="bybit-badge">BYBIT EXCLUSIVE</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold">S</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold">SOL</div>
+                                    <div class="text-xs text-gray-400">Solana</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-accent font-bold">+24.3%</div>
+                                <div class="text-xs text-gray-400">87% bullish tweets</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold">A</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold">AVAX</div>
+                                    <div class="text-xs text-gray-400">Avalanche</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-accent font-bold">+18.7%</div>
+                                <div class="text-xs text-gray-400">76% bullish tweets</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold">D</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold">DOT</div>
+                                    <div class="text-xs text-gray-400">Polkadot</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[#ff3333] font-bold">-5.2%</div>
+                                <div class="text-xs text-gray-400">42% bearish tweets</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold">F</span>
+                                </div>
+                                <div>
+                                    <div class="font-bold">FTM</div>
+                                    <div class="text-xs text-gray-400">Fantom</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-accent font-bold">+32.1%</div>
+                                <div class="text-xs text-gray-400">91% bullish tweets</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Liquidation Heatmap -->
+    <section id="heatmap" class="py-16 px-4 bg-gray-900 bg-opacity-30">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-[#ff6600]">LIQUIDATION</span> HEATMAP
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Visualize potential liquidation levels across major cryptocurrencies
+                </p>
+            </div>
+            
+            <div class="bg-gray-900 rounded-2xl p-6 card-glow neon-border mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-fire text-[#ff3300] mr-2"></i> BTC Liquidation Levels
+                    </h3>
+                    <div class="flex items-center">
+                        <span class="bybit-badge">BYBIT EXCLUSIVE</span>
+                        <div class="ml-4 text-sm">
+                            <span class="text-gray-400">Total at Risk: </span>
+                            <span class="text-[#ff3300] font-bold">$420M</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-10 gap-2 mb-4">
+                    <!-- Heatmap rows -->
+                    <div class="text-xs text-gray-400 text-right pr-2">$45K</div>
+                    <div class="col-span-8">
+                        <div class="grid grid-cols-12 gap-1 h-8">
+                            <div class="heatmap-cell heat-1" title="$45,200 - $45,100: $8.2M"></div>
+                            <div class="heatmap-cell heat-1" title="$45,100 - $45,000: $12.5M"></div>
+                            <div class="heatmap-cell heat-2" title="$44,900 - $44,800: $28.4M"></div>
+                            <div class="heatmap-cell heat-2" title="$44,800 - $44,700: $35.7M"></div>
+                            <div class="heatmap-cell heat-3" title="$44,700 - $44,600: $52.8M"></div>
+                            <div class="heatmap-cell heat-3" title="$44,600 - $44,500: $68.2M"></div>
+                            <div class="heatmap-cell heat-4" title="$44,500 - $44,400: $85.4M"></div>
+                            <div class="heatmap-cell heat-4" title="$44,400 - $44,300: $92.1M"></div>
+                            <div class="heatmap-cell heat-5" title="$44,300 - $44,200: $120.5M"></div>
+                            <div class="heatmap-cell heat-5" title="$44,200 - $44,100: $145.8M"></div>
+                            <div class="heatmap-cell heat-4" title="$44,100 - $44,000: $98.7M"></div>
+                            <div class="heatmap-cell heat-3" title="$44,000 - $43,900: $75.2M"></div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400">$43.9K</div>
+                    
+                    <div class="text-xs text-gray-400 text-right pr-2">$43.9K</div>
+                    <div class="col-span-8">
+                        <div class="grid grid-cols-12 gap-1 h-8">
+                            <div class="heatmap-cell heat-3" title="$43,900 - $43,800: $65.4M"></div>
+                            <div class="heatmap-cell heat-2" title="$43,800 - $43,700: $45.8M"></div>
+                            <div class="heatmap-cell heat-2" title="$43,700 - $43,600: $38.2M"></div>
+                            <div class="heatmap-cell heat-1" title="$43,600 - $43,500: $25.7M"></div>
+                            <div class="heatmap-cell heat-1" title="$43,500 - $43,400: $18.9M"></div>
+                            <div class="heatmap-cell heat-1" title="$43,400 - $43,300: $12.4M"></div>
+                            <div class="heatmap-cell heat-2" title="$43,300 - $43,200: $28.5M"></div>
+                            <div class="heatmap-cell heat-3" title="$43,200 - $43,100: $42.8M"></div>
+                            <div class="heatmap-cell heat-4" title="$43,100 - $43,000: $68.9M"></div>
+                            <div class="heatmap-cell heat-5" title="$43,000 - $42,900: $95.4M"></div>
+                            <div class="heatmap-cell heat-5" title="$42,900 - $42,800: $128.7M"></div>
+                            <div class="heatmap-cell heat-5" title="$42,800 - $42,700: $152.3M"></div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400">$42.7K</div>
+                    
+                    <!-- Current price indicator -->
+                    <div class="col-span-10 text-center mt-4">
+                        <div class="inline-flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-accent animate-pulse mr-2"></div>
+                            <span class="text-accent font-bold">Current Price: $44,287</span>
+                            <div class="ml-4 text-sm text-gray-400">
+                                Closest liquidation cluster: <span class="text-[#ff6600] font-bold">$240M at $42,500</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded heat-1 mr-2"></div>
+                            <span class="text-xs">Low ($0-50M)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded heat-2 mr-2"></div>
+                            <span class="text-xs">Medium ($50-100M)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded heat-3 mr-2"></div>
+                            <span class="text-xs">High ($100-200M)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded heat-4 mr-2"></div>
+                            <span class="text-xs">Very High ($200-300M)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded heat-5 mr-2"></div>
+                            <span class="text-xs">Extreme ($300M+)</span>
+                        </div>
+                    </div>
+                    
+                    <button id="heatmapDetails" class="text-sm text-gray-400 hover:text-accent">
+                        <i class="fas fa-info-circle mr-1"></i>View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    <span class="whale-gradient">20+ EXCLUSIVE FEATURES</span>
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto mb-8">
+                    Unlock powerful whale tracking tools by connecting your Bybit account
+                </p>
+                
+                <div class="inline-flex items-center px-4 py-2 bg-gray-900 rounded-full mb-6">
+                    <div class="w-2 h-2 rounded-full bg-accent animate-pulse mr-2"></div>
+                    <span class="text-accent font-bold">🔒 BYBIT SIGNUP REQUIRED FOR ALL FEATURES BELOW</span>
+                </div>
+            </div>
+            
+            <div class="feature-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg accent-gradient flex items-center justify-center mr-3">
+                            <i class="fas fa-radar text-black"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Real-time Whale Radar</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Track whale movements across all major exchanges in real-time.</p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-[#0066ff] to-[#00ff88] flex items-center justify-center mr-3">
+                            <i class="fas fa-fish text-black"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Shark Tracker</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Monitor medium-sized investors ($1M-$10M) activity.</p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg twitter-gradient flex items-center justify-center mr-3">
+                            <i class="fab fa-twitter text-black"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Crypto Twitter Sentiment</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Real-time analysis of what influencers are buying/selling.</p>
+                </div>
+                
+                <!-- Feature 4 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-[#ff3300] to-[#ff9900] flex items-center justify-center mr-3">
+                            <i class="fas fa-fire text-black"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Liquidation Heatmap</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Visualize potential liquidation levels across cryptocurrencies.</p>
+                </div>
+                
+                <!-- Feature 5 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-wave-square text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Order Book Depth Analysis</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">See whale walls and order book imbalances.</p>
+                </div>
+                
+                <!-- Feature 6 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mr-3">
+                            <i class="fas fa-exchange-alt text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Exchange Flow Monitor</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Track money moving between exchanges.</p>
+                </div>
+                
+                <!-- Feature 7 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-600 to-emerald-500 flex items-center justify-center mr-3">
+                            <i class="fas fa-bell text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Smart Whale Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Custom alerts for specific whale activities.</p>
+                </div>
+                
+                <!-- Feature 8 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-orange-600 to-red-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-ship text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Dark Pool Tracking</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Monitor OTC deals and dark pool transactions.</p>
+                </div>
+                
+                <!-- Feature 9 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-yellow-600 to-orange-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-robot text-black"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">AI Whale Prediction</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Predict whale movements using machine learning.</p>
+                </div>
+                
+                <!-- Feature 10 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-pink-600 to-rose-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-history text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Historical Whale Patterns</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Analyze past whale activities for patterns.</p>
+                </div>
+                
+                <!-- Feature 11 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-network text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Whale Network Graph</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Visualize connections between whale wallets.</p>
+                </div>
+                
+                <!-- Feature 12 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-teal-600 to-cyan-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-water text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Market Impact Score</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Calculate potential market impact of whale moves.</p>
+                </div>
+                
+                <!-- Feature 13 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-amber-600 to-yellow-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-satellite text-black"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Cross-Chain Tracking</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Track whale movements across multiple blockchains.</p>
+                </div>
+                
+                <!-- Feature 14 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-lime-600 to-green-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-shield-alt text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Whale Wallet Security Score</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Analyze security practices of whale wallets.</p>
+                </div>
+                
+                <!-- Feature 15 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-rose-600 to-pink-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-tachometer-alt text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Real-time Whale Velocity</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Measure speed and volume of whale transactions.</p>
+                </div>
+                
+                <!-- Feature 16 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-chess-board text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Whale vs Shark Battles</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Track conflicts between large and medium investors.</p>
+                </div>
+                
+                <!-- Feature 17 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-sky-600 to-blue-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-database text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Whale Database</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Access database of 10,000+ known whale wallets.</p>
+                </div>
+                
+                <!-- Feature 18 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-emerald-600 to-green-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-bar text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Whale Sentiment Index</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Overall sentiment score from whale activities.</p>
+                </div>
+                
+                <!-- Feature 19 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-bullhorn text-black"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Early Warning System</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Get alerts before major market moves.</p>
+                </div>
+                
+                <!-- Feature 20 -->
+                <div class="feature-card locked-feature locked-bybit">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-user-secret text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Anonymous Whale Tracking</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Track whales who try to hide their activities.</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button id="unlockAllBtn" class="bybit-btn px-8 py-4 accent-gradient text-black font-bold rounded-lg text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                    <i class="fab fa-btc mr-2"></i>CONNECT BYBIT TO UNLOCK ALL FEATURES
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bybit Connect Section -->
+    <section id="bybit" class="py-20 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <div class="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-12 text-center relative overflow-hidden border-2 border-[#00ff88]">
+                <div class="relative z-10">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                        UNLOCK <span class="whale-gradient">WHALE TRACKING POWER</span>
+                    </h2>
+                    <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                        Connect your Bybit account to access 20+ exclusive whale tracking features, 
+                        real-time alerts, and advanced analytics.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center gap-6">
+                        <button id="finalConnectBtn" class="bybit-btn px-8 py-4 accent-gradient text-black font-bold rounded-lg text-lg hover:opacity-90 transition-all transform hover:scale-105">
+                            <i class="fab fa-btc mr-2"></i>CONNECT BYBIT ACCOUNT
+                        </button>
+                        <button id="demoBtn" class="px-8 py-4 border-2 border-[#00ff88] text-[#00ff88] font-bold rounded-lg text-lg hover:bg-[#00ff88] hover:text-black transition-colors">
+                            <i class="fas fa-eye mr-2"></i>VIEW DEMO
+                        </button>
+                    </div>
+                    
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+                        <div class="text-center p-4">
+                            <div class="w-12 h-12 rounded-full bg-[#0066ff] flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-bolt text-white"></i>
+                            </div>
+                            <h4 class="font-bold mb-1">Real-time Tracking</h4>
+                            <p class="text-gray-400 text-sm">Monitor whale moves as they happen</p>
+                        </div>
+                        
+                        <div class="text-center p-4">
+                            <div class="w-12 h-12 rounded-full bg-[#00ff88] flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-chart-line text-black"></i>
+                            </div>
+                            <h4 class="font-bold mb-1">Advanced Analytics</h4>
+                            <p class="text-gray-400 text-sm">Predict market movements</p>
+                        </div>
+                        
+                        <div class="text-center p-4">
+                            <div class="w-12 h-12 rounded-full bg-[#ff9900] flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-bell text-black"></i>
+                            </div>
+                            <h4 class="font-bold mb-1">Smart Alerts</h4>
+                            <p class="text-gray-400 text-sm">Get notified before major moves</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Animated background elements -->
+                <div class="absolute top-0 left-0 w-full h-full opacity-10">
+                    <div class="whale-marker" style="top: 20%; left: 10%;"></div>
+                    <div class="whale-marker" style="top: 60%; left: 80%; animation-delay: 1s;"></div>
+                    <div class="shark-marker" style="top: 40%; left: 30%; animation-delay: 2s;"></div>
+                    <div class="shark-marker" style="top: 80%; left: 60%; animation-delay: 3s;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 px-4 border-t border-gray-800">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="relative">
+                            <div class="w-10 h-10 rounded-full accent-gradient flex items-center justify-center">
+                                <i class="fas fa-radar text-black"></i>
+                            </div>
+                            <div class="absolute -top-1 -right-1">
+                                <div class="sonar-ring rounded-full w-4 h-4"></div>
+                            </div>
+                        </div>
+                        <span class="text-xl font-bold code-font">WHALE<span class="whale-gradient">WATCH</span>.PRO</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">Advanced whale and shark tracking platform. Official Bybit Partner.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-lg">Features</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-accent transition-colors">Whale Tracker</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Crypto Twitter</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Liquidation Heatmap</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Exchange Flow</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-lg">Resources</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-accent transition-colors">Whale Database</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">API Access</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-accent transition-colors">Research Papers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4 text-lg">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#00ff88] hover:text-black transition-colors">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#1da1f2] hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#0066ff] hover:text-white transition-colors">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#ff3333] hover:text-white transition-colors">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2023 WhaleWatch Pro. All whale tracking data is for informational purposes only. Not financial advice.</p>
+                <p class="mt-2">Official Bybit Partner • API v2.1 • Tracking 10,000+ whale wallets</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bybit Connect Modal -->
+    <div id="bybitModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Connect Bybit Account</h2>
+                <button id="closeBybitModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full accent-gradient flex items-center justify-center mr-3">
+                        <i class="fab fa-btc text-black text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Unlock Whale Tracking Power</h3>
+                        <p class="text-gray-400 text-sm">Connect your Bybit account to access all features</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-lg p-4 mb-6">
+                    <h4 class="font-bold mb-3 text-accent">What you'll get access to:</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i> Real-time whale tracking</li>
+                        <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i> Crypto Twitter sentiment</li>
+                        <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i> Liquidation heatmaps</li>
+                        <li class="flex items-center"><i class="fas fa-check text-accent mr-2"></i> 20+ advanced features</li>
+                    </ul>
+                </div>
+                
+                <form id="bybitConnectForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-400 mb-2" for="bybitApiKey">Bybit API Key</label>
+                        <input type="text" id="bybitApiKey" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent code-font" placeholder="Enter your API Key">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-400 mb-2" for="bybitApiSecret">API Secret</label>
+                        <input type="password" id="bybitApiSecret" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent code-font" placeholder="Enter your API Secret">
+                    </div>
+                    
+                    <div class="flex items-center mb-6">
+                        <input type="checkbox" id="readOnly" class="mr-2" checked>
+                        <label for="readOnly" class="text-gray-400 text-sm">Read-only access (recommended)</label>
+                    </div>
+                    
+                    <button type="submit" class="w-full py-3 accent-gradient text-black font-bold rounded-lg hover:opacity-90 transition-colors mb-4">
+                        <i class="fab fa-btc mr-2"></i>Connect Account
+                    </button>
+                    
+                    <div class="text-center">
+                        <p class="text-gray-400 text-sm">Don't have a Bybit account? <button type="button" id="bybitSignupLink" class="text-accent hover:underline">Sign up here</button></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const bybitBtns = document.querySelectorAll('.bybit-btn');
+        const bybitModal = document.getElementById('bybitModal');
+        const closeBybitModal = document.getElementById('closeBybitModal');
+        const bybitConnectForm = document.getElementById('bybitConnectForm');
+        const bybitSignupLink = document.getElementById('bybitSignupLink');
+        const unlockAllBtn = document.getElementById('unlockAllBtn');
+        const finalConnectBtn = document.getElementById('finalConnectBtn');
+        const demoBtn = document.getElementById('demoBtn');
+        const radarZoom = document.getElementById('radarZoom');
+        const heatmapDetails = document.getElementById('heatmapDetails');
+        
+        // Status elements
+        const authStatus = document.getElementById('authStatus');
+        const authProgress = document.getElementById('authProgress');
+        const trackingCount = document.getElementById('trackingCount');
+        
+        // Charts
+        let depthChart = null;
+        let sentimentChart = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize charts
+            initDepthChart();
+            initSentimentChart();
+            
+            // Start live updates
+            startLiveUpdates();
+            
+            // Add whale markers to radar
+            addWhaleMarkers();
+        });
+        
+        // Bybit modal controls
+        bybitBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                bybitModal.style.display = 'flex';
+            });
+        });
+        
+        closeBybitModal.addEventListener('click', () => {
+            bybitModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === bybitModal) {
+                bybitModal.style.display = 'none';
+            }
+        });
+        
+        // Bybit signup link
+        bybitSignupLink.addEventListener('click', () => {
+            window.open('https://www.bybit.com', '_blank');
+        });
+        
+        // Bybit connect form
+        bybitConnectForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const apiKey = document.getElementById('bybitApiKey').value;
+            const apiSecret = document.getElementById('bybitApiSecret').value;
+            const readOnly = document.getElementById('readOnly').checked;
+            
+            // Show loading state
+            const submitBtn = bybitConnectForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connecting...';
+            submitBtn.disabled = true;
+            
+            // Simulate API connection
+            setTimeout(() => {
+                // Success
+                bybitModal.style.display = 'none';
+                
+                // Update UI
+                authStatus.textContent = 'CONNECTED';
+                authStatus.className = 'ml-auto text-accent font-bold';
+                authProgress.style.width = '100%';
+                
+                // Unlock features
+                unlockFeatures();
+                
+                // Show success message
+                showAlert('Bybit account connected successfully! All features unlocked.', 'success');
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Clear form
+                bybitConnectForm.reset();
+            }, 2000);
+        });
+        
+        // Demo button
+        demoBtn.addEventListener('click', () => {
+            showAlert('Demo mode activated. Previewing whale tracking features for 5 minutes.', 'info');
+            
+            // Temporarily unlock features for demo
+            const lockedFeatures = document.querySelectorAll('.locked-feature');
+            lockedFeatures.forEach(feature => {
+                feature.classList.remove('locked-feature');
+                feature.style.opacity = '1';
+                
+                // Add demo badge
+                const demoBadge = document.createElement('div');
+                demoBadge.className = 'absolute top-2 right-2 text-xs bg-purple-600 text-white px-2 py-1 rounded';
+                demoBadge.textContent = 'DEMO';
+                feature.appendChild(demoBadge);
+            });
+            
+            // Reset after 5 minutes
+            setTimeout(() => {
+                lockedFeatures.forEach(feature => {
+                    feature.classList.add('locked-feature');
+                    const demoBadge = feature.querySelector('.absolute.top-2.right-2');
+                    if (demoBadge) demoBadge.remove();
+                });
+                showAlert('Demo period ended. Connect Bybit to continue.', 'warning');
+            }, 300000); // 5 minutes
+        });
+        
+        // Radar zoom
+        radarZoom.addEventListener('click', () => {
+            const radar = document.querySelector('.relative.h-64');
+            if (radar.classList.contains('fullscreen')) {
+                radar.classList.remove('fullscreen');
+                radar.style.position = '';
+                radar.style.width = '';
+                radar.style.height = '';
+                radar.style.zIndex = '';
+                radarZoom.innerHTML = '<i class="fas fa-expand mr-1"></i>Full Screen';
+            } else {
+                radar.classList.add('fullscreen');
+                radar.style.position = 'fixed';
+                radar.style.top = '0';
+                radar.style.left = '0';
+                radar.style.width = '100vw';
+                radar.style.height = '100vh';
+                radar.style.zIndex = '100';
+                radarZoom.innerHTML = '<i class="fas fa-compress mr-1"></i>Exit Full Screen';
+            }
+        });
+        
+        // Heatmap details
+        heatmapDetails.addEventListener('click', () => {
+            showAlert('Liquidation Heatmap shows potential liquidation levels. Red areas indicate high concentration of liquidations. Current risk: $420M at $42,500 BTC.', 'info');
+        });
+        
+        // Initialize depth chart
+        function initDepthChart() {
+            const ctx = document.getElementById('depthChart').getContext('2d');
+            
+            // Generate sample depth data
+            const prices = [];
+            const buyVolumes = [];
+            const sellVolumes = [];
+            
+            for (let i = 0; i < 50; i++) {
+                const price = 42000 + i * 100;
+                prices.push(price);
+                buyVolumes.push(Math.random() * 100 + 50);
+                sellVolumes.push(Math.random() * 100 + 50);
+            }
+            
+            depthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: prices,
+                    datasets: [
+                        {
+                            label: 'Buy Orders',
+                            data: buyVolumes,
+                            borderColor: '#00ff88',
+                            backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Sell Orders',
+                            data: sellVolumes,
+                            borderColor: '#ff3333',
+                            backgroundColor: 'rgba(255, 51, 51, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            display: false
+                        }
+                    },
+                    elements: {
+                        point: {
+                            radius: 0
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize sentiment chart
+        function initSentimentChart() {
+            const ctx = document.getElementById('sentimentChart').getContext('2d');
+            
+            sentimentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bullish', 'Bearish'],
+                    datasets: [{
+                        data: [87, 13],
+                        backgroundColor: [
+                            '#00ff88',
+                            '#ff3333'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Start live updates
+        function startLiveUpdates() {
+            // Update tracking count
+            setInterval(() => {
+                const currentCount = parseInt(trackingCount.textContent.replace(/,/g, ''));
+                const change = Math.floor(Math.random() * 10) - 5;
+                const newCount = Math.max(4000, currentCount + change);
+                trackingCount.textContent = newCount.toLocaleString();
+            }, 30000);
+            
+            // Update whale markers
+            setInterval(() => {
+                updateWhaleMarkers();
+            }, 10000);
+        }
+        
+        // Add whale markers to radar
+        function addWhaleMarkers() {
+            const radar = document.querySelector('.relative.h-64');
+            
+            // Add more markers
+            for (let i = 0; i < 15; i++) {
+                const isWhale = Math.random() > 0.5;
+                const marker = document.createElement('div');
+                marker.className = isWhale ? 'whale-marker' : 'shark-marker';
+                marker.style.top = Math.random() * 80 + 10 + '%';
+                marker.style.left = Math.random() * 80 + 10 + '%';
+                marker.style.animationDelay = Math.random() * 5 + 's';
+                marker.title = `${isWhale ? 'Whale' : 'Shark'}: ${Math.floor(Math.random() * 1000)} BTC moved`;
+                
+                radar.appendChild(marker);
+            }
+        }
+        
+        // Update whale markers
+        function updateWhaleMarkers() {
+            const markers = document.querySelectorAll('.whale-marker, .shark-marker');
+            markers.forEach(marker => {
+                // Move marker slightly
+                const currentTop = parseFloat(marker.style.top);
+                const currentLeft = parseFloat(marker.style.left);
+                
+                const newTop = Math.max(5, Math.min(95, currentTop + (Math.random() * 10 - 5)));
+                const newLeft = Math.max(5, Math.min(95, currentLeft + (Math.random() * 10 - 5)));
+                
+                marker.style.top = newTop + '%';
+                marker.style.left = newLeft + '%';
+                
+                // Update tooltip
+                const isWhale = marker.classList.contains('whale-marker');
+                const amount = Math.floor(Math.random() * 5000) + 100;
+                const value = Math.floor(Math.random() * 200) + 50;
+                marker.title = `${isWhale ? 'Whale' : 'Shark'}: ${amount} BTC ($${value}M) moved`;
+            });
+        }
+        
+        // Unlock features
+        function unlockFeatures() {
+            const lockedFeatures = document.querySelectorAll('.locked-feature');
+            lockedFeatures.forEach(feature => {
+                // Remove lock overlay
+                feature.classList.remove('locked-feature');
+                
+                // Add unlock animation
+                feature.style.transform = 'scale(1.05)';
+                feature.style.boxShadow = '0 0 30px rgba(0, 255, 136, 0.5)';
+                
+                setTimeout(() => {
+                    feature.style.transform = '';
+                    feature.style.boxShadow = '';
+                }, 500);
+            });
+            
+            // Enable all interactive elements
+            const interactiveElements = document.querySelectorAll('button, input, select');
+            interactiveElements.forEach(el => {
+                el.disabled = false;
+            });
+            
+            // Update charts with real data
+            updateChartsWithRealData();
+        }
+        
+        // Update charts with real data
+        function updateChartsWithRealData() {
+            if (depthChart) {
+                // Update depth chart with more data
+                depthChart.data.datasets[0].data = depthChart.data.datasets[0].data.map(() => Math.random() * 200 + 100);
+                depthChart.data.datasets[1].data = depthChart.data.datasets[1].data.map(() => Math.random() * 200 + 100);
+                depthChart.update();
+            }
+            
+            if (sentimentChart) {
+                // Update sentiment chart
+                const newBullish = 70 + Math.floor(Math.random() * 30);
+                sentimentChart.data.datasets[0].data = [newBullish, 100 - newBullish];
+                sentimentChart.update();
+            }
+        }
+        
+        // Show alert
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300 ${
+                type === 'success' ? 'bg-gradient-to-r from-green-600 to-emerald-600' :
+                type === 'warning' ? 'bg-gradient-to-r from-orange-600 to-amber-600' :
+                type === 'info' ? 'bg-gradient-to-r from-blue-600 to-cyan-600' :
+                'bg-gradient-to-r from-gray-800 to-gray-900'
+            }`;
+            alert.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${
+                        type === 'success' ? 'check-circle' :
+                        type === 'warning' ? 'exclamation-triangle' :
+                        type === 'info' ? 'info-circle' : 'bell'
+                    } mr-3"></i>
+                    <span class="font-bold">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            // Animate in
+            setTimeout(() => {
+                alert.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                alert.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(alert);
+                }, 300);
+            }, 5000);
+        }
+        
+        // Heatmap cell interaction
+        document.querySelectorAll('.heatmap-cell').forEach(cell => {
+            cell.addEventListener('mouseenter', function() {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'absolute bg-gray-900 text-white p-2 rounded text-xs z-50';
+                tooltip.textContent = this.getAttribute('title');
+                tooltip.style.top = this.getBoundingClientRect().top + 'px';
+                tooltip.style.left = this.getBoundingClientRect().left + 'px';
+                document.body.appendChild(tooltip);
+                
+                this._tooltip = tooltip;
+            });
+            
+            cell.addEventListener('mouseleave', function() {
+                if (this._tooltip) {
+                    document.body.removeChild(this._tooltip);
+                    this._tooltip = null;
+                }
+            });
+        });
+        
+        // Add sonar effect to whale markers on click
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('whale-marker') || e.target.classList.contains('shark-marker')) {
+                const sonar = document.createElement('div');
+                sonar.className = 'sonar-ring';
+                sonar.style.position = 'absolute';
+                sonar.style.top = e.target.style.top;
+                sonar.style.left = e.target.style.left;
+                sonar.style.transform = 'translate(-50%, -50%)';
+                sonar.style.width = '100px';
+                sonar.style.height = '100px';
+                sonar.style.zIndex = '10';
+                
+                document.querySelector('.relative.h-64').appendChild(sonar);
+                
+                setTimeout(() => {
+                    document.querySelector('.relative.h-64').removeChild(sonar);
+                }, 3000);
+                
+                // Show whale details
+                const title = e.target.getAttribute('title');
+                showAlert(`Whale Activity: ${title}`, 'info');
+            }
+        });
+    </script>
+</body>
+</html>
