@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Fortune Quest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(247, 166, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(247, 166, 0, 0.8); }
+        }
+        @keyframes coin-spin {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(360deg); }
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        .coin-spin {
+            animation: coin-spin 2s linear infinite;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            opacity: 0.7;
+            animation: confetti-fall 5s linear infinite;
+        }
+        .game-container {
+            background: #000000;
+            min-height: 100vh;
+        }
+        .crypto-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(90deg, #10b981 0%, #f7a600 100%);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        .coin {
+            background: radial-gradient(circle at 30% 30%, #FFD700, #f7a600);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8B7500;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(247, 166, 0, 0.5);
+        }
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        .wallet-card {
+            background: linear-gradient(135deg, #f7a600 0%, #d18c00 100%);
+        }
+        .modal-step {
+            transition: all 0.3s ease;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .benefit-icon {
+            color: #10b981;
+            margin-right: 10px;
+        }
+        .btn-primary {
+            background-color: #f7a600;
+            color: #000000;
+        }
+        .btn-primary:hover {
+            background-color: #d18c00;
+        }
+        .btn-secondary {
+            background-color: #333333;
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background-color: #444444;
+        }
+        .btn-success {
+            background-color: #10b981;
+            color: #ffffff;
+        }
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+        .btn-info {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+        .btn-info:hover {
+            background-color: #2563eb;
+        }
+        .game-area {
+            background: rgba(247, 166, 0, 0.1);
+            border: 1px solid rgba(247, 166, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="game-container text-white font-sans">
+    <!-- Game Header -->
+    <header class="p-4 flex justify-between items-center">
+        <div class="text-xl font-bold flex items-center">
+            <i class="fab fa-bitcoin text-yellow-400 mr-2"></i>
+            Crypto Quest
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center bg-gray-900 bg-opacity-50 px-3 py-1 rounded-full">
+                <i class="fas fa-coins text-yellow-400 mr-1"></i>
+                <span id="balance">0.00</span>
+            </div>
+            <button id="wallet-btn" class="btn-primary px-3 py-1 rounded-full text-sm">
+                <i class="fas fa-wallet mr-1"></i>Wallet
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="p-4 max-w-md mx-auto">
+        <!-- Game Progress -->
+        <div class="mb-6">
+            <div class="flex justify-between text-sm mb-1">
+                <span>Level 1</span>
+                <span id="progress-text">0/10</span>
+                <span>Level 2</span>
+            </div>
+            <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div id="progress-bar" class="progress-bar h-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Game Title -->
+        <h1 class="text-2xl font-bold text-center mb-2">Crypto Fortune Quest</h1>
+        <p class="text-center text-gray-300 mb-6">Tap the crypto coins to earn rewards!</p>
+
+        <!-- Game Area -->
+        <div class="relative h-64 game-area rounded-xl mb-6 overflow-hidden">
+            <!-- Animated Background Elements -->
+            <div class="absolute top-4 left-4 w-8 h-8 rounded-full bg-yellow-400 opacity-20 float-animation"></div>
+            <div class="absolute bottom-8 right-6 w-6 h-6 rounded-full bg-yellow-400 opacity-20 float-animation" style="animation-delay: 1s;"></div>
+            <div class="absolute top-12 right-10 w-10 h-10 rounded-full bg-yellow-400 opacity-20 float-animation" style="animation-delay: 2s;"></div>
+            
+            <!-- Clickable Coins -->
+            <div id="coin-container" class="absolute inset-0">
+                <!-- Coins will be dynamically added here -->
+            </div>
+            
+            <!-- Game Instructions -->
+            <div id="instructions" class="absolute inset-0 flex items-center justify-center flex-col">
+                <div class="coin w-16 h-16 mb-4 pulse-glow flex items-center justify-center">
+                    <i class="fas fa-coins text-xl"></i>
+                </div>
+                <p class="text-center px-4">Tap the crypto coins to collect them and earn rewards!</p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="crypto-card rounded-xl p-4 text-center">
+                <div class="text-2xl font-bold text-yellow-400" id="coins-collected">0</div>
+                <div class="text-sm text-gray-300">Coins Collected</div>
+            </div>
+            <div class="crypto-card rounded-xl p-4 text-center">
+                <div class="text-2xl font-bold text-green-400" id="current-multiplier">1x</div>
+                <div class="text-sm text-gray-300">Multiplier</div>
+            </div>
+            <div class="crypto-card rounded-xl p-4 text-center">
+                <div class="text-2xl font-bold text-yellow-400" id="total-winnings">$0</div>
+                <div class="text-sm text-gray-300">Total Winnings</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4">
+            <button id="boost-btn" class="flex-1 btn-primary py-3 rounded-xl font-bold flex items-center justify-center">
+                <i class="fas fa-bolt mr-2"></i> Boost (2x)
+            </button>
+            <button id="collect-btn" class="flex-1 btn-secondary py-3 rounded-xl font-bold flex items-center justify-center">
+                <i class="fas fa-gem mr-2"></i> Collect
+            </button>
+        </div>
+    </main>
+
+    <!-- E-Wallet Modal - Step 1: eWallet Check -->
+    <div id="wallet-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden">
+        <div class="bg-gray-800 rounded-2xl p-6 max-w-sm w-full mx-4 wallet-card">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Crypto Wallet</h2>
+                <button id="close-modal" class="text-white hover:text-gray-300">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Step 1: eWallet Check -->
+            <div id="step-1" class="modal-step">
+                <div class="mb-6 text-center">
+                    <div class="text-4xl font-bold mb-2" id="wallet-balance">$0.00</div>
+                    <p class="text-gray-200">Available Balance</p>
+                </div>
+                
+                <div class="mb-6 text-center">
+                    <h3 class="text-lg font-bold mb-4">Do you have an active eWallet?</h3>
+                    <p class="text-gray-300 mb-6">You'll need an eWallet to withdraw your earnings</p>
+                    
+                    <button id="has-wallet-btn" class="w-full btn-success py-3 rounded-xl font-bold mb-3">
+                        Yes, I have an eWallet
+                    </button>
+                    
+                    <button id="no-wallet-btn" class="w-full btn-info py-3 rounded-xl font-bold">
+                        No, I need to create one
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Cash Out Form (for users with eWallet) -->
+            <div id="step-2" class="modal-step hidden">
+                <div class="mb-6">
+                    <div class="flex justify-between mb-2">
+                        <span>Winnings:</span>
+                        <span id="wallet-winnings">$0.00</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>Bonus:</span>
+                        <span id="wallet-bonus">$0.00</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-gray-700">
+                        <span>Total:</span>
+                        <span id="wallet-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">Withdrawal Amount (Max: $500)</label>
+                    <input type="number" id="withdraw-amount" class="w-full bg-gray-700 text-white rounded-lg p-3" placeholder="Enter amount" min="1" max="500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">E-Wallet Address</label>
+                    <input type="text" id="wallet-address" class="w-full bg-gray-700 text-white rounded-lg p-3" placeholder="Enter your wallet address">
+                </div>
+                
+                <button id="cashout-btn" class="w-full btn-success py-3 rounded-xl font-bold mb-3">
+                    Cash Out Now
+                </button>
+                
+                <p class="text-xs text-center text-gray-300">
+                    By cashing out, you agree to our terms and confirm you're activating your e-wallet for withdrawal.
+                </p>
+            </div>
+            
+            <!-- Step 3: Bybit Signup Promotion -->
+            <div id="step-3" class="modal-step hidden">
+                <div class="mb-6 text-center">
+                    <div class="text-yellow-400 text-4xl mb-4">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Partnered with Bybit</h3>
+                    <p class="text-gray-200 mb-6">Get full access to ALL our premium signals and trends for FREE!</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-bold mb-3 text-green-400">By signing up with Bybit you get:</h4>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span>Activate your eWallet for withdrawals</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span>FREE access to ALL trading signals</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span>Premium market trends (usually $9.99/month)</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span>Professional trading tools</span>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <p class="text-sm text-gray-300 mb-4">
+                        Other users pay $9.99/month for these signals, but you get them FREE with your Bybit account!
+                    </p>
+                </div>
+                
+                <a href="https://partner.bybit.com/b/35978" target="_blank" rel="noopener noreferrer">
+                    <button class="w-full btn-primary py-3 rounded-xl font-bold mb-3">
+                        <i class="fas fa-external-link-alt mr-2"></i>Sign Up with Bybit
+                    </button>
+                </a>
+                
+                <button id="back-to-wallet-check" class="w-full btn-secondary py-3 rounded-xl font-bold">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden">
+        <div class="bg-gray-800 rounded-2xl p-6 max-w-sm w-full mx-4 text-center">
+            <div class="text-green-400 text-5xl mb-4">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Cash Out Successful!</h2>
+            <p class="mb-6">Your funds are being transferred to your e-wallet. You should see them within 24 hours.</p>
+            <button id="success-ok" class="w-full btn-info py-3 rounded-xl font-bold">
+                Continue Playing
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            balance: 0,
+            coinsCollected: 0,
+            currentMultiplier: 1,
+            totalWinnings: 0,
+            progress: 0,
+            boostActive: false,
+            boostEndTime: 0
+        };
+
+        // DOM elements
+        const balanceEl = document.getElementById('balance');
+        const coinsCollectedEl = document.getElementById('coins-collected');
+        const currentMultiplierEl = document.getElementById('current-multiplier');
+        const totalWinningsEl = document.getElementById('total-winnings');
+        const progressBarEl = document.getElementById('progress-bar');
+        const progressTextEl = document.getElementById('progress-text');
+        const coinContainerEl = document.getElementById('coin-container');
+        const instructionsEl = document.getElementById('instructions');
+        const boostBtn = document.getElementById('boost-btn');
+        const collectBtn = document.getElementById('collect-btn');
+        const walletBtn = document.getElementById('wallet-btn');
+        const walletModal = document.getElementById('wallet-modal');
+        const closeModal = document.getElementById('close-modal');
+        const walletBalanceEl = document.getElementById('wallet-balance');
+        const walletWinningsEl = document.getElementById('wallet-winnings');
+        const walletBonusEl = document.getElementById('wallet-bonus');
+        const walletTotalEl = document.getElementById('wallet-total');
+        const withdrawAmountEl = document.getElementById('withdraw-amount');
+        const walletAddressEl = document.getElementById('wallet-address');
+        const cashoutBtn = document.getElementById('cashout-btn');
+        const successModal = document.getElementById('success-modal');
+        const successOk = document.getElementById('success-ok');
+        
+        // New modal step elements
+        const step1El = document.getElementById('step-1');
+        const step2El = document.getElementById('step-2');
+        const step3El = document.getElementById('step-3');
+        const hasWalletBtn = document.getElementById('has-wallet-btn');
+        const noWalletBtn = document.getElementById('no-wallet-btn');
+        const backToWalletCheckBtn = document.getElementById('back-to-wallet-check');
+
+        // Initialize game
+        function initGame() {
+            loadGameState();
+            updateUI();
+            startCoinGeneration();
+            
+            // Event listeners
+            boostBtn.addEventListener('click', activateBoost);
+            collectBtn.addEventListener('click', collectWinnings);
+            walletBtn.addEventListener('click', openWalletModal);
+            closeModal.addEventListener('click', closeWalletModal);
+            cashoutBtn.addEventListener('click', processCashout);
+            successOk.addEventListener('click', closeSuccessModal);
+            
+            // New modal step listeners
+            hasWalletBtn.addEventListener('click', showCashoutForm);
+            noWalletBtn.addEventListener('click', showBybitPromotion);
+            backToWalletCheckBtn.addEventListener('click', showWalletCheck);
+            
+            // Close modals when clicking outside
+            walletModal.addEventListener('click', (e) => {
+                if (e.target === walletModal) closeWalletModal();
+            });
+            successModal.addEventListener('click', (e) => {
+                if (e.target === successModal) closeSuccessModal();
+            });
+        }
+
+        // Load game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('cryptoGameState');
+            if (savedState) {
+                Object.assign(gameState, JSON.parse(savedState));
+            }
+        }
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('cryptoGameState', JSON.stringify(gameState));
+        }
+
+        // Update UI with current game state
+        function updateUI() {
+            balanceEl.textContent = gameState.balance.toFixed(2);
+            coinsCollectedEl.textContent = gameState.coinsCollected;
+            currentMultiplierEl.textContent = gameState.currentMultiplier + 'x';
+            totalWinningsEl.textContent = '$' + gameState.totalWinnings.toFixed(2);
+            
+            // Update progress
+            const progressPercent = (gameState.progress / 10) * 100;
+            progressBarEl.style.width = `${progressPercent}%`;
+            progressTextEl.textContent = `${gameState.progress}/10`;
+            
+            // Update boost button
+            if (gameState.boostActive) {
+                const timeLeft = Math.max(0, gameState.boostEndTime - Date.now());
+                if (timeLeft > 0) {
+                    boostBtn.innerHTML = `<i class="fas fa-bolt mr-2"></i> Boost (${Math.ceil(timeLeft/1000)}s)`;
+                    boostBtn.classList.add('bg-yellow-700');
+                    boostBtn.disabled = true;
+                } else {
+                    gameState.boostActive = false;
+                    gameState.currentMultiplier = 1;
+                    boostBtn.innerHTML = `<i class="fas fa-bolt mr-2"></i> Boost (2x)`;
+                    boostBtn.classList.remove('bg-yellow-700');
+                    boostBtn.disabled = false;
+                    saveGameState();
+                }
+            } else {
+                boostBtn.innerHTML = `<i class="fas fa-bolt mr-2"></i> Boost (2x)`;
+                boostBtn.classList.remove('bg-yellow-700');
+                boostBtn.disabled = false;
+            }
+        }
+
+        // Generate coins in the game area
+        function startCoinGeneration() {
+            setInterval(() => {
+                if (Math.random() < 0.7) { // 70% chance to generate a coin
+                    createCoin();
+                }
+            }, 1000);
+        }
+
+        // Create a clickable coin
+        function createCoin() {
+            const coin = document.createElement('div');
+            coin.className = 'coin absolute w-12 h-12 cursor-pointer coin-spin';
+            
+            // Random position
+            const x = Math.random() * 80 + 10; // 10-90% of container width
+            const y = Math.random() * 70 + 15; // 15-85% of container height
+            
+            coin.style.left = `${x}%`;
+            coin.style.top = `${y}%`;
+            
+            // Random crypto icon
+            const icons = ['fab fa-bitcoin', 'fab fa-ethereum', 'fas fa-coins', 'fab fa-monero'];
+            const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+            
+            coin.innerHTML = `<i class="${randomIcon}"></i>`;
+            
+            // Click event
+            coin.addEventListener('click', () => {
+                collectCoin(coin);
+            });
+            
+            coinContainerEl.appendChild(coin);
+            
+            // Remove coin after 5 seconds if not collected
+            setTimeout(() => {
+                if (coin.parentNode) {
+                    coin.remove();
+                }
+            }, 5000);
+            
+            // Hide instructions when first coin appears
+            if (instructionsEl.style.display !== 'none') {
+                instructionsEl.style.display = 'none';
+            }
+        }
+
+        // Collect a coin
+        function collectCoin(coin) {
+            // Add to collected count
+            gameState.coinsCollected++;
+            
+            // Calculate value with multiplier
+            const baseValue = 0.5 + Math.random() * 1.5; // $0.50 - $2.00
+            const value = baseValue * gameState.currentMultiplier;
+            
+            gameState.balance += value;
+            gameState.totalWinnings += value;
+            
+            // Update progress
+            gameState.progress = (gameState.progress + 1) % 10;
+            if (gameState.progress === 0) {
+                // Level up - apply bonus
+                gameState.balance += 10;
+                showLevelUpAnimation();
+            }
+            
+            // Animate coin collection
+            coin.style.transition = 'all 0.5s ease';
+            coin.style.transform = 'scale(0)';
+            coin.style.opacity = '0';
+            
+            setTimeout(() => {
+                coin.remove();
+            }, 500);
+            
+            // Show floating text with value
+            showFloatingText(`+$${value.toFixed(2)}`, coin);
+            
+            saveGameState();
+            updateUI();
+        }
+
+        // Show floating text animation
+        function showFloatingText(text, element) {
+            const floatingText = document.createElement('div');
+            floatingText.textContent = text;
+            floatingText.className = 'absolute text-yellow-400 font-bold text-lg';
+            floatingText.style.left = element.style.left;
+            floatingText.style.top = element.style.top;
+            
+            coinContainerEl.appendChild(floatingText);
+            
+            // Animate upward
+            setTimeout(() => {
+                floatingText.style.transition = 'all 1s ease';
+                floatingText.style.transform = 'translateY(-30px)';
+                floatingText.style.opacity = '0';
+                
+                setTimeout(() => {
+                    floatingText.remove();
+                }, 1000);
+            }, 100);
+        }
+
+        // Show level up animation
+        function showLevelUpAnimation() {
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDuration = (3 + Math.random() * 3) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                
+                coinContainerEl.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 6000);
+            }
+            
+            // Show level up message
+            showFloatingText('Level Up! +$10 Bonus', {style: {left: '50%', top: '50%'}});
+        }
+
+        // Activate boost multiplier
+        function activateBoost() {
+            if (gameState.boostActive) return;
+            
+            gameState.boostActive = true;
+            gameState.currentMultiplier = 2;
+            gameState.boostEndTime = Date.now() + 30000; // 30 seconds
+            
+            boostBtn.classList.add('bg-yellow-700');
+            boostBtn.disabled = true;
+            
+            saveGameState();
+            updateUI();
+        }
+
+        // Collect winnings (manual collection)
+        function collectWinnings() {
+            if (gameState.balance > 0) {
+                gameState.totalWinnings += gameState.balance;
+                showFloatingText(`Collected $${gameState.balance.toFixed(2)}!`, {style: {left: '50%', top: '50%'}});
+                gameState.balance = 0;
+                saveGameState();
+                updateUI();
+            }
+        }
+
+        // Open wallet modal
+        function openWalletModal() {
+            // Reset to step 1
+            showWalletCheck();
+            
+            // Update wallet display
+            walletBalanceEl.textContent = `$${gameState.balance.toFixed(2)}`;
+            
+            walletModal.classList.remove('hidden');
+        }
+
+        // Show step 1: Wallet check
+        function showWalletCheck() {
+            step1El.classList.remove('hidden');
+            step2El.classList.add('hidden');
+            step3El.classList.add('hidden');
+        }
+
+        // Show step 2: Cash out form (for users with eWallet)
+        function showCashoutForm() {
+            step1El.classList.add('hidden');
+            step2El.classList.remove('hidden');
+            step3El.classList.add('hidden');
+            
+            // Update wallet details
+            walletWinningsEl.textContent = `$${gameState.totalWinnings.toFixed(2)}`;
+            
+            // Calculate bonus (10% of winnings)
+            const bonus = gameState.totalWinnings * 0.1;
+            walletBonusEl.textContent = `$${bonus.toFixed(2)}`;
+            
+            // Calculate total
+            const total = gameState.balance + gameState.totalWinnings + bonus;
+            walletTotalEl.textContent = `$${total.toFixed(2)}`;
+            
+            // Set max withdraw amount
+            withdrawAmountEl.max = Math.min(500, total).toFixed(2);
+        }
+
+        // Show step 3: Bybit promotion (for users without eWallet)
+        function showBybitPromotion() {
+            step1El.classList.add('hidden');
+            step2El.classList.add('hidden');
+            step3El.classList.remove('hidden');
+        }
+
+        // Close wallet modal
+        function closeWalletModal() {
+            walletModal.classList.add('hidden');
+        }
+
+        // Process cashout
+        function processCashout() {
+            const amount = parseFloat(withdrawAmountEl.value);
+            const walletAddress = walletAddressEl.value.trim();
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid withdrawal amount.');
+                return;
+            }
+            
+            if (amount > 500) {
+                alert('Maximum withdrawal amount is $500.');
+                return;
+            }
+            
+            const total = gameState.balance + gameState.totalWinnings + (gameState.totalWinnings * 0.1);
+            if (amount > total) {
+                alert('Insufficient funds for this withdrawal.');
+                return;
+            }
+            
+            if (!walletAddress) {
+                alert('Please enter your e-wallet address.');
+                return;
+            }
+            
+            // In a real app, this would connect to a payment processor
+            // For this demo, we'll just show success
+            
+            // Reset game state (simulating withdrawal)
+            gameState.balance = 0;
+            gameState.totalWinnings = 0;
+            gameState.coinsCollected = 0;
+            gameState.progress = 0;
+            
+            saveGameState();
+            updateUI();
+            
+            closeWalletModal();
+            successModal.classList.remove('hidden');
+            
+            // Show confirmation message
+            setTimeout(() => {
+                alert(`You've successfully withdrawn $${amount.toFixed(2)} to ${walletAddress}. Funds will arrive within 24 hours.`);
+            }, 500);
+        }
+
+        // Close success modal
+        function closeSuccessModal() {
+            successModal.classList.add('hidden');
+        }
+
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', initGame);
+
+        // Update boost timer every second
+        setInterval(updateUI, 1000);
+    </script>
+</body>
+</html>

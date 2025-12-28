@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>War of Worlds Token Tap | Clan Rewards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000',
+                        accent: '#f7a600',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'shake': 'shake 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: white;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(90deg, #f7a600 0%, #ffcc00 100%);
+        }
+        
+        .card-glow {
+            box-shadow: 0 0 15px rgba(247, 166, 0, 0.3);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f7a600 0%, #ffcc00 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(247, 166, 0, 0.5);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            background: rgba(247, 166, 0, 0.1);
+            border: 1px solid rgba(247, 166, 0, 0.3);
+        }
+        
+        .coin-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #f7a600;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .typing-animation {
+            overflow: hidden;
+            border-right: 2px solid #f7a600;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #f7a600 }
+        }
+        
+        .slide-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease-out;
+        }
+        
+        .slide-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .token-machine {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        
+        .token-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7a600 0%, #ffcc00 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: black;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .token-display:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+        
+        .invite-link {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+        
+        .clan-member {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .war-theme {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231a1a1a"/><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="none" stroke="%23f7a600" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="none" stroke="%23f7a600" stroke-width="1"/></svg>');
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full accent-gradient flex items-center justify-center">
+                    <i class="fas fa-rocket text-black"></i>
+                </div>
+                <span class="text-xl font-bold">War of Worlds<span class="text-accent">Token</span></span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="hover:text-accent transition-colors">Home</a>
+                <a href="#tap" class="hover:text-accent transition-colors">Token Tap</a>
+                <a href="#clan" class="hover:text-accent transition-colors">My Clan</a>
+                <a href="#rewards" class="hover:text-accent transition-colors">Rewards</a>
+                <a href="#leaderboard" class="hover:text-accent transition-colors">Leaderboard</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button id="connectWallet" class="px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors">
+                    Connect Wallet
+                </button>
+                <button class="md:hidden text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-20 px-4 war-theme">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 typing-animation">
+                War of Worlds <span class="text-accent">Token Tap</span>
+            </h1>
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-10 slide-in">
+                Join the intergalactic battle! Build your clan, collect tokens, and earn massive airdrops.
+            </p>
+            
+            <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6 mb-16">
+                <button class="px-8 py-3 bg-accent text-black font-bold rounded-lg text-lg hover:bg-yellow-500 transition-colors">
+                    Start Tapping
+                </button>
+                <button class="px-8 py-3 border border-accent text-accent font-bold rounded-lg text-lg hover:bg-accent hover:text-black transition-colors">
+                    Create Clan
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="bg-gray-900 p-6 rounded-xl card-glow slide-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-users text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Build Your Clan</h3>
+                    <p class="text-gray-400">Invite friends and warriors to join your intergalactic clan.</p>
+                </div>
+                
+                <div class="bg-gray-900 p-6 rounded-xl card-glow slide-in" style="animation-delay: 0.2s">
+                    <div class="feature-icon">
+                        <i class="fas fa-fingerprint text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Tap to Earn</h3>
+                    <p class="text-gray-400">Collect WOW tokens by tapping and completing missions.</p>
+                </div>
+                
+                <div class="bg-gray-900 p-6 rounded-xl card-glow slide-in" style="animation-delay: 0.4s">
+                    <div class="feature-icon">
+                        <i class="fas fa-trophy text-accent text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Massive Airdrops</h3>
+                    <p class="text-gray-400">Complete clans of 10 earn 650,000 tokens worth $850+.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Token Tap Section -->
+    <section id="tap" class="py-20 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Token Tap Machine</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Tap the token to collect WOW tokens. The more you tap, the more you earn!</p>
+            
+            <div class="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <div class="token-machine">
+                        <div class="token-display" id="tokenTap">
+                            <div class="text-center">
+                                <div class="text-4xl font-bold" id="tapCount">0</div>
+                                <div class="text-sm">TAPS</div>
+                            </div>
+                        </div>
+                        <div class="absolute -top-4 -right-4 w-24 h-24">
+                            <div class="relative w-full h-full">
+                                <div class="absolute inset-0 pulse-ring rounded-full"></div>
+                                <div class="absolute inset-0 bg-accent rounded-full flex items-center justify-center">
+                                    <span class="text-black font-bold">WOW</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="md:w-1/2 bg-gray-800 rounded-xl p-6 card-glow">
+                    <h3 class="text-2xl font-bold mb-4">Your Token Stats</h3>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-300">Tokens Collected</span>
+                                <span class="font-bold text-accent" id="tokensCollected">0 WOW</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="tokensProgress" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-300">Clan Members</span>
+                                <span class="font-bold text-accent" id="clanMembers">0/10</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="clanProgress" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-300">Withdrawal Status</span>
+                                <span id="withdrawalStatus" class="font-bold text-red-500">Locked</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="withdrawalProgress" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-1">Invite 10 clan members to unlock withdrawals</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-900 rounded-lg p-4 mb-6">
+                        <h4 class="font-bold mb-2 text-accent">Daily Missions</h4>
+                        <ul class="space-y-2 text-gray-300">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-accent mr-3"></i>
+                                <span>Tap 100 times - <span class="text-accent">+500 WOW</span></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-accent mr-3"></i>
+                                <span>Invite 1 friend - <span class="text-accent">+1000 WOW</span></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="far fa-circle text-gray-500 mr-3"></i>
+                                <span>Complete clan - <span class="text-accent">+650,000 WOW</span></span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <button id="createClanBtn" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors mb-3">
+                        Create Your Clan
+                    </button>
+                    <button id="generateLinkBtn" class="w-full py-3 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                        Generate Invite Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clan Section -->
+    <section id="clan" class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">My Clan</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Build your intergalactic warrior clan and dominate the token wars.</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                    <h3 class="text-2xl font-bold mb-4">Clan Information</h3>
+                    
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold" id="clanName">Unnamed Clan</h4>
+                            <span class="text-xs bg-accent text-black px-2 py-1 rounded" id="clanStatus">Incomplete</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-900 rounded-lg p-3 text-center">
+                                <div class="text-2xl font-bold text-accent" id="clanMemberCount">0</div>
+                                <div class="text-sm text-gray-400">Members</div>
+                            </div>
+                            <div class="bg-gray-900 rounded-lg p-3 text-center">
+                                <div class="text-2xl font-bold text-accent" id="clanTokens">0</div>
+                                <div class="text-sm text-gray-400">Total Tokens</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-300">Clan Completion</span>
+                                <span class="font-bold text-accent" id="clanCompletion">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="clanCompletionBar" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-400 mb-2" for="clanNameInput">Clan Name</label>
+                            <input type="text" id="clanNameInput" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter your clan name">
+                        </div>
+                        
+                        <button id="saveClanBtn" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors">
+                            Save Clan
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Clan Members</h3>
+                        <span class="text-accent font-bold" id="memberCount">0/10</span>
+                    </div>
+                    
+                    <div id="clanMembersList" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-users text-4xl mb-3"></i>
+                            <p>No clan members yet. Invite friends to join your clan!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h4 class="font-bold mb-3 text-accent">Your Invite Link</h4>
+                        <div class="invite-link" id="inviteLinkDisplay">
+                            https://warofworlds.com/invite?ref=...
+                        </div>
+                        <button id="copyLinkBtn" class="w-full py-2 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                            Copy Invite Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rewards Section -->
+    <section id="rewards" class="py-20 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Clan Rewards</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Complete your clan to unlock massive airdrops and rewards.</p>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-gray-800 rounded-xl p-8 card-glow mb-8">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-1/2 mb-6 md:mb-0">
+                            <h3 class="text-2xl font-bold mb-4">Complete Clan Airdrop</h3>
+                            <p class="text-gray-300 mb-6">Groups of 10 clan members each receive an airdrop of <span class="text-accent font-bold">650,000 WOW tokens</span> worth approximately <span class="text-accent font-bold">$850</span> on marketplaces.</p>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
+                                        <i class="fas fa-check text-black"></i>
+                                    </div>
+                                    <span>Each member receives equal share</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
+                                        <i class="fas fa-check text-black"></i>
+                                    </div>
+                                    <span>Tokens are withdrawable immediately</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center mr-3">
+                                        <i class="fas fa-check text-black"></i>
+                                    </div>
+                                    <span>Bonus NFTs for clan creator</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="md:w-1/2 text-center">
+                            <div class="relative inline-block">
+                                <div class="w-48 h-48 rounded-full border-8 border-accent flex items-center justify-center mx-auto">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-bold text-accent">650K</div>
+                                        <div class="text-gray-300">WOW Tokens</div>
+                                    </div>
+                                </div>
+                                <div class="absolute -top-4 -right-4 w-16 h-16">
+                                    <div class="relative w-full h-full">
+                                        <div class="absolute inset-0 pulse-ring rounded-full"></div>
+                                        <div class="absolute inset-0 bg-accent rounded-full flex items-center justify-center">
+                                            <span class="text-black font-bold text-xs">$850</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                        <h3 class="text-xl font-bold mb-4">Withdrawal Requirements</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-user-check text-accent mr-3"></i>
+                                <span>Minimum 10 clan members</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-fingerprint text-accent mr-3"></i>
+                                <span>Verified Bybit account</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-coins text-accent mr-3"></i>
+                                <span>Minimum 1000 WOW tokens</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                        <h3 class="text-xl font-bold mb-4">Bonus Rewards</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-medal text-accent mr-3"></i>
+                                <span>NFT collectibles for top clans</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-gem text-accent mr-3"></i>
+                                <span>Rare tokens for early adopters</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-star text-accent mr-3"></i>
+                                <span>Exclusive access to new features</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section id="leaderboard" class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Clan Leaderboard</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">See how your clan ranks against other intergalactic warriors.</p>
+            
+            <div class="bg-gray-800 rounded-xl p-6 max-w-4xl mx-auto card-glow">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-3">Rank</th>
+                                <th class="text-left py-3">Clan Name</th>
+                                <th class="text-right py-3">Members</th>
+                                <th class="text-right py-3">Tokens</th>
+                                <th class="text-right py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Leaderboard data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <button id="refreshLeaderboard" class="px-6 py-3 bg-accent text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors">
+                        Refresh Leaderboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 px-4 border-t border-gray-800">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 rounded-full accent-gradient flex items-center justify-center">
+                            <i class="fas fa-rocket text-black"></i>
+                        </div>
+                        <span class="text-xl font-bold">War of Worlds<span class="text-accent">Token</span></span>
+                    </div>
+                    <p class="text-gray-400 max-w-md">Join the intergalactic token battle. Build your clan, collect tokens, and earn massive airdrops.</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-telegram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-discord text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 War of Worlds Token. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Create Clan Modal -->
+    <div id="createClanModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Create Your Clan</h2>
+                <button id="closeCreateClanModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-gray-300 mb-4">Create your intergalactic warrior clan and start inviting members to earn massive rewards!</p>
+                
+                <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                    <h4 class="font-bold mb-2 text-accent">Clan Benefits:</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-300">
+                        <li>Earn 650,000 WOW tokens when you reach 10 members</li>
+                        <li>Special NFT rewards for clan creators</li>
+                        <li>Higher token earning rates for clan members</li>
+                        <li>Access to exclusive clan battles and events</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-400 mb-2" for="newClanName">Clan Name</label>
+                    <input type="text" id="newClanName" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter your clan name">
+                </div>
+                
+                <button id="confirmCreateClan" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors">
+                    Create Clan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdrawal Modal -->
+    <div id="withdrawalModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Withdraw Tokens</h2>
+                <button id="closeWithdrawalModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div id="withdrawalEligible" class="hidden">
+                    <p class="text-gray-300 mb-4">Congratulations! Your clan is complete and you're eligible to withdraw your tokens.</p>
+                    
+                    <div class="bg-green-900 bg-opacity-30 border border-green-700 rounded-lg p-4 mb-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-3 text-xl"></i>
+                            <div>
+                                <h4 class="font-bold text-green-400">Withdrawal Ready</h4>
+                                <p class="text-green-300 text-sm">You can withdraw your WOW tokens to your Bybit wallet.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-400 mb-2" for="withdrawalAmount">Amount to Withdraw</label>
+                            <input type="text" id="withdrawalAmount" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter amount">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-400 mb-2" for="bybitWallet">Bybit Wallet Address</label>
+                            <input type="text" id="bybitWallet" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter your Bybit wallet address">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="withdrawalNotEligible" class="hidden">
+                    <div class="bg-red-900 bg-opacity-30 border border-red-700 rounded-lg p-4 mb-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-3 text-xl"></i>
+                            <div>
+                                <h4 class="font-bold text-red-400">Withdrawal Not Available</h4>
+                                <p class="text-red-300 text-sm">You need to complete your clan with 10 members to withdraw tokens.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-300">Clan Members</span>
+                            <span class="font-bold" id="modalMemberCount">0/10</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="modalClanProgress" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mt-4">Invite more friends to complete your clan and unlock withdrawals!</p>
+                </div>
+            </div>
+            
+            <div id="withdrawalActions" class="flex flex-col space-y-3">
+                <button id="confirmWithdrawal" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors hidden">
+                    Withdraw Tokens
+                </button>
+                <button id="generateInviteFromModal" class="w-full py-3 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                    Generate Invite Link
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const tokenTap = document.getElementById('tokenTap');
+        const tapCount = document.getElementById('tapCount');
+        const tokensCollected = document.getElementById('tokensCollected');
+        const tokensProgress = document.getElementById('tokensProgress');
+        const clanMembers = document.getElementById('clanMembers');
+        const clanProgress = document.getElementById('clanProgress');
+        const withdrawalStatus = document.getElementById('withdrawalStatus');
+        const withdrawalProgress = document.getElementById('withdrawalProgress');
+        const createClanBtn = document.getElementById('createClanBtn');
+        const generateLinkBtn = document.getElementById('generateLinkBtn');
+        const clanName = document.getElementById('clanName');
+        const clanMemberCount = document.getElementById('clanMemberCount');
+        const clanTokens = document.getElementById('clanTokens');
+        const clanCompletion = document.getElementById('clanCompletion');
+        const clanCompletionBar = document.getElementById('clanCompletionBar');
+        const clanNameInput = document.getElementById('clanNameInput');
+        const saveClanBtn = document.getElementById('saveClanBtn');
+        const memberCount = document.getElementById('memberCount');
+        const clanMembersList = document.getElementById('clanMembersList');
+        const inviteLinkDisplay = document.getElementById('inviteLinkDisplay');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const createClanModal = document.getElementById('createClanModal');
+        const closeCreateClanModal = document.getElementById('closeCreateClanModal');
+        const newClanName = document.getElementById('newClanName');
+        const confirmCreateClan = document.getElementById('confirmCreateClan');
+        const withdrawalModal = document.getElementById('withdrawalModal');
+        const closeWithdrawalModal = document.getElementById('closeWithdrawalModal');
+        const withdrawalEligible = document.getElementById('withdrawalEligible');
+        const withdrawalNotEligible = document.getElementById('withdrawalNotEligible');
+        const modalMemberCount = document.getElementById('modalMemberCount');
+        const modalClanProgress = document.getElementById('modalClanProgress');
+        const confirmWithdrawal = document.getElementById('confirmWithdrawal');
+        const generateInviteFromModal = document.getElementById('generateInviteFromModal');
+        const connectWallet = document.getElementById('connectWallet');
+        const refreshLeaderboard = document.getElementById('refreshLeaderboard');
+        const leaderboardBody = document.getElementById('leaderboardBody');
+
+        // Initialize data from localStorage or set defaults
+        let userData = JSON.parse(localStorage.getItem('warOfWorldsUser')) || {
+            taps: 0,
+            tokens: 0,
+            clan: {
+                name: 'Unnamed Clan',
+                members: [],
+                created: false
+            },
+            inviteLink: '',
+            visits: 0
+        };
+
+        // Update visit count
+        userData.visits++;
+        localStorage.setItem('warOfWorldsUser', JSON.stringify(userData));
+
+        // Initialize the UI with user data
+        function initializeUI() {
+            tapCount.textContent = userData.taps;
+            tokensCollected.textContent = `${userData.tokens} WOW`;
+            tokensProgress.style.width = `${Math.min(userData.tokens / 1000 * 100, 100)}%`;
+            
+            // Clan data
+            clanName.textContent = userData.clan.name;
+            clanNameInput.value = userData.clan.name;
+            clanMemberCount.textContent = userData.clan.members.length;
+            clanTokens.textContent = userData.tokens;
+            clanMembers.textContent = `${userData.clan.members.length}/10`;
+            clanProgress.style.width = `${userData.clan.members.length * 10}%`;
+            memberCount.textContent = `${userData.clan.members.length}/10`;
+            clanCompletion.textContent = `${userData.clan.members.length * 10}%`;
+            clanCompletionBar.style.width = `${userData.clan.members.length * 10}%`;
+            
+            // Withdrawal status
+            if (userData.clan.members.length >= 10) {
+                withdrawalStatus.textContent = 'Unlocked';
+                withdrawalStatus.classList.remove('text-red-500');
+                withdrawalStatus.classList.add('text-green-500');
+                withdrawalProgress.style.width = '100%';
+            } else {
+                withdrawalStatus.textContent = 'Locked';
+                withdrawalStatus.classList.remove('text-green-500');
+                withdrawalStatus.classList.add('text-red-500');
+                withdrawalProgress.style.width = `${userData.clan.members.length * 10}%`;
+            }
+            
+            // Update clan members list
+            updateClanMembersList();
+            
+            // Generate invite link if not exists
+            if (!userData.inviteLink) {
+                generateInviteLink();
+            } else {
+                inviteLinkDisplay.textContent = userData.inviteLink;
+            }
+            
+            // Update leaderboard
+            updateLeaderboard();
+        }
+
+        // Update clan members list in UI
+        function updateClanMembersList() {
+            clanMembersList.innerHTML = '';
+            
+            if (userData.clan.members.length === 0) {
+                clanMembersList.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-users text-4xl mb-3"></i>
+                        <p>No clan members yet. Invite friends to join your clan!</p>
+                    </div>
+                `;
+            } else {
+                userData.clan.members.forEach((member, index) => {
+                    const memberElement = document.createElement('div');
+                    memberElement.className = 'clan-member';
+                    memberElement.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-accent"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold">${member.name}</div>
+                                <div class="text-xs text-gray-400">Joined ${member.joinDate}</div>
+                            </div>
+                        </div>
+                        <div class="text-accent font-bold">${member.tokens} WOW</div>
+                    `;
+                    clanMembersList.appendChild(memberElement);
+                });
+            }
+        }
+
+        // Generate a unique invite link
+        function generateInviteLink() {
+            const randomId = Math.random().toString(36).substring(2, 10);
+            userData.inviteLink = `https://warofworlds.com/invite?ref=${randomId}`;
+            inviteLinkDisplay.textContent = userData.inviteLink;
+            localStorage.setItem('warOfWorldsUser', JSON.stringify(userData));
+        }
+
+        // Add a random clan member (simulating someone joining via invite)
+        function addClanMember() {
+            if (userData.clan.members.length >= 10) return;
+            
+            const names = ['GalacticWarrior', 'SpaceHunter', 'CosmicSoldier', 'StarFighter', 'OrbitGuardian', 
+                          'NebulaKnight', 'VoidExplorer', 'QuantumPilot', 'AstroRanger', 'CometChaser'];
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            
+            const newMember = {
+                name: randomName,
+                joinDate: new Date().toLocaleDateString(),
+                tokens: Math.floor(Math.random() * 1000) + 100
+            };
+            
+            userData.clan.members.push(newMember);
+            localStorage.setItem('warOfWorldsUser', JSON.stringify(userData));
+            initializeUI();
+            
+            // Show notification
+            showNotification(`${newMember.name} joined your clan!`);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-gray-800 border-l-4 border-accent text-white p-4 rounded shadow-lg z-50 max-w-sm';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-bell text-accent mr-3"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Update leaderboard with sample data
+        function updateLeaderboard() {
+            const sampleClans = [
+                { name: 'Galactic Dominators', members: 10, tokens: 1250000, status: 'Complete' },
+                { name: 'Space Warriors', members: 9, tokens: 980000, status: 'Incomplete' },
+                { name: 'Cosmic Empire', members: 10, tokens: 1120000, status: 'Complete' },
+                { name: 'Void Hunters', members: 7, tokens: 650000, status: 'Incomplete' },
+                { name: 'Quantum Alliance', members: 8, tokens: 720000, status: 'Incomplete' },
+                { name: userData.clan.name, members: userData.clan.members.length, tokens: userData.tokens, status: userData.clan.members.length >= 10 ? 'Complete' : 'Incomplete' }
+            ];
+            
+            // Sort by tokens (descending)
+            sampleClans.sort((a, b) => b.tokens - a.tokens);
+            
+            leaderboardBody.innerHTML = '';
+            
+            sampleClans.forEach((clan, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700 hover:bg-gray-750';
+                
+                // Highlight user's clan
+                if (clan.name === userData.clan.name) {
+                    row.className += ' bg-gray-750';
+                }
+                
+                row.innerHTML = `
+                    <td class="py-3">
+                        <div class="flex items-center">
+                            <span class="font-bold mr-2">${index + 1}</span>
+                            ${index < 3 ? '<i class="fas fa-trophy text-accent"></i>' : ''}
+                        </div>
+                    </td>
+                    <td class="py-3">${clan.name}</td>
+                    <td class="text-right py-3">${clan.members}/10</td>
+                    <td class="text-right py-3">${clan.tokens.toLocaleString()} WOW</td>
+                    <td class="text-right py-3">
+                        <span class="${clan.status === 'Complete' ? 'text-green-500' : 'text-yellow-500'}">${clan.status}</span>
+                    </td>
+                `;
+                
+                leaderboardBody.appendChild(row);
+            });
+        }
+
+        // Event Listeners
+        tokenTap.addEventListener('click', () => {
+            userData.taps++;
+            userData.tokens += 10;
+            
+            tapCount.textContent = userData.taps;
+            tokensCollected.textContent = `${userData.tokens} WOW`;
+            tokensProgress.style.width = `${Math.min(userData.tokens / 1000 * 100, 100)}%`;
+            clanTokens.textContent = userData.tokens;
+            
+            localStorage.setItem('warOfWorldsUser', JSON.stringify(userData));
+            
+            // Occasionally add a clan member (for demo purposes)
+            if (userData.taps % 50 === 0 && userData.clan.members.length < 10) {
+                addClanMember();
+            }
+        });
+
+        createClanBtn.addEventListener('click', () => {
+            createClanModal.style.display = 'flex';
+        });
+
+        closeCreateClanModal.addEventListener('click', () => {
+            createClanModal.style.display = 'none';
+        });
+
+        confirmCreateClan.addEventListener('click', () => {
+            if (newClanName.value.trim() === '') {
+                alert('Please enter a clan name');
+                return;
+            }
+            
+            userData.clan.name = newClanName.value;
+            userData.clan.created = true;
+            localStorage.setItem('warOfWorldsUser', JSON.stringify(userData));
+            
+            initializeUI();
+            createClanModal.style.display = 'none';
+            
+            showNotification(`Clan "${newClanName.value}" created successfully!`);
+        });
+
+        generateLinkBtn.addEventListener('click', () => {
+            generateInviteLink();
+            showNotification('Invite link generated!');
+        });
+
+        copyLinkBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(userData.inviteLink)
+                .then(() => {
+                    showNotification('Invite link copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        });
+
+        saveClanBtn.addEventListener('click', () => {
+            if (clanNameInput.value.trim() === '') {
+                alert('Please enter a clan name');
+                return;
+            }
+            
+            userData.clan.name = clanNameInput.value;
+            localStorage.setItem('warOfWorldsUser', JSON.stringify(userData));
+            
+            initializeUI();
+            showNotification('Clan name updated!');
+        });
+
+        connectWallet.addEventListener('click', () => {
+            withdrawalModal.style.display = 'flex';
+            
+            // Check eligibility
+            if (userData.clan.members.length >= 10) {
+                withdrawalEligible.classList.remove('hidden');
+                withdrawalNotEligible.classList.add('hidden');
+                confirmWithdrawal.classList.remove('hidden');
+            } else {
+                withdrawalEligible.classList.add('hidden');
+                withdrawalNotEligible.classList.remove('hidden');
+                confirmWithdrawal.classList.add('hidden');
+                
+                modalMemberCount.textContent = `${userData.clan.members.length}/10`;
+                modalClanProgress.style.width = `${userData.clan.members.length * 10}%`;
+            }
+        });
+
+        closeWithdrawalModal.addEventListener('click', () => {
+            withdrawalModal.style.display = 'none';
+        });
+
+        confirmWithdrawal.addEventListener('click', () => {
+            const amount = document.getElementById('withdrawalAmount').value;
+            const wallet = document.getElementById('bybitWallet').value;
+            
+            if (!amount || !wallet) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (parseInt(amount) > userData.tokens) {
+                alert('Insufficient tokens for withdrawal');
+                return;
+            }
+            
+            // In a real app, this would connect to a blockchain or backend
+            showNotification(`Withdrawal of ${amount} WOW tokens initiated!`);
+            withdrawalModal.style.display = 'none';
+        });
+
+        generateInviteFromModal.addEventListener('click', () => {
+            generateInviteLink();
+            withdrawalModal.style.display = 'none';
+            showNotification('Invite link generated!');
+        });
+
+        refreshLeaderboard.addEventListener('click', () => {
+            updateLeaderboard();
+            showNotification('Leaderboard updated!');
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === createClanModal) {
+                createClanModal.style.display = 'none';
+            }
+            if (e.target === withdrawalModal) {
+                withdrawalModal.style.display = 'none';
+            }
+        });
+
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.slide-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Initialize the app
+        initializeUI();
+        
+        // Show visit count notification for demo
+        if (userData.visits >= 6) {
+            showNotification('Special offer: Complete your clan now to get bonus NFTs!');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Blackjack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .card {
+            width: 80px;
+            height: 120px;
+            border-radius: 8px;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card.red {
+            color: #dc2626;
+        }
+        
+        .card.black {
+            color: #1e293b;
+        }
+        
+        .card-back {
+            background: linear-gradient(45deg, #3b82f6, #1e40af);
+            color: white;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .card-suit {
+            position: absolute;
+            font-size: 12px;
+        }
+        
+        .card-suit.top {
+            top: 5px;
+            left: 5px;
+        }
+        
+        .card-suit.bottom {
+            bottom: 5px;
+            right: 5px;
+            transform: rotate(180deg);
+        }
+        
+        .chip {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .chip:hover {
+            transform: scale(1.1);
+        }
+        
+        .chip-10 {
+            background: radial-gradient(circle at 30% 30%, #ef4444, #b91c1c);
+        }
+        
+        .chip-25 {
+            background: radial-gradient(circle at 30% 30%, #3b82f6, #1d4ed8);
+        }
+        
+        .chip-50 {
+            background: radial-gradient(circle at 30% 30%, #10b981, #047857);
+        }
+        
+        .chip-100 {
+            background: radial-gradient(circle at 30% 30%, #f59e0b, #d97706);
+        }
+        
+        .deal-animation {
+            animation: dealCard 0.5s ease-out forwards;
+        }
+        
+        @keyframes dealCard {
+            0% {
+                transform: translateX(-100px) rotate(-10deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0) rotate(0);
+                opacity: 1;
+            }
+        }
+        
+        .win-animation {
+            animation: winPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes winPulse {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            animation: modalAppear 0.3s ease-out forwards;
+        }
+        
+        @keyframes modalAppear {
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #475569, #374151);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .game-area {
+            transition: all 0.3s ease;
+        }
+        
+        .blur {
+            filter: blur(5px);
+        }
+        
+        .wallet-option {
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .wallet-option:hover {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .wallet-option.selected {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .balance-display {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .crypto-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <!-- Game Header -->
+    <header class="w-full max-w-md mb-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                <i class="fas fa-coins mr-2"></i>Crypto Blackjack
+            </h1>
+            <div class="balance-display">
+                <div class="flex items-center gap-2">
+                    <div class="crypto-icon">
+                        <i class="fab fa-bitcoin text-white"></i>
+                    </div>
+                    <span class="font-semibold">Balance:</span>
+                </div>
+                <span id="balance" class="font-bold text-lg">0.05 BTC</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game Area -->
+    <main class="game-area w-full max-w-md flex flex-col items-center">
+        <!-- Dealer Section -->
+        <section class="w-full mb-8">
+            <h2 class="text-lg font-semibold mb-4 text-center">Dealer</h2>
+            <div class="flex justify-center gap-2 mb-2">
+                <div class="card black deal-animation">
+                    <div class="card-value">A</div>
+                    <div class="card-suit top">♠</div>
+                    <div class="card-suit bottom">♠</div>
+                </div>
+                <div class="card-back deal-animation" style="animation-delay: 0.2s;"></div>
+            </div>
+            <p class="text-center text-gray-300">Score: <span id="dealer-score">?</span></p>
+        </section>
+
+        <!-- Player Section -->
+        <section class="w-full mb-8">
+            <h2 class="text-lg font-semibold mb-4 text-center">Your Hand</h2>
+            <div class="flex justify-center gap-2 mb-2">
+                <div class="card red deal-animation" style="animation-delay: 0.4s;">
+                    <div class="card-value">10</div>
+                    <div class="card-suit top">♥</div>
+                    <div class="card-suit bottom">♥</div>
+                </div>
+                <div class="card black deal-animation" style="animation-delay: 0.6s;">
+                    <div class="card-value">7</div>
+                    <div class="card-suit top">♣</div>
+                    <div class="card-suit bottom">♣</div>
+                </div>
+            </div>
+            <p class="text-center text-gray-300">Score: <span id="player-score">17</span></p>
+        </section>
+
+        <!-- Betting Chips -->
+        <section class="w-full mb-8">
+            <h2 class="text-lg font-semibold mb-4 text-center">Place Your Bet</h2>
+            <div class="flex justify-center gap-4">
+                <div class="chip chip-10 pulse" data-value="10">
+                    <span>10</span>
+                </div>
+                <div class="chip chip-25 pulse" data-value="25" style="animation-delay: 0.2s;">
+                    <span>25</span>
+                </div>
+                <div class="chip chip-50 pulse" data-value="50" style="animation-delay: 0.4s;">
+                    <span>50</span>
+                </div>
+                <div class="chip chip-100 pulse" data-value="100" style="animation-delay: 0.6s;">
+                    <span>100</span>
+                </div>
+            </div>
+            <div class="mt-4 text-center">
+                <p class="text-gray-300">Current Bet: <span id="current-bet" class="font-bold text-white">0</span> satoshis</p>
+            </div>
+        </section>
+
+        <!-- Game Controls -->
+        <section class="w-full flex justify-center gap-4 mb-8">
+            <button id="deal-btn" class="btn btn-primary">
+                <i class="fas fa-play mr-2"></i>Deal
+            </button>
+            <button id="hit-btn" class="btn btn-secondary" disabled>
+                <i class="fas fa-plus mr-2"></i>Hit
+            </button>
+            <button id="stand-btn" class="btn btn-secondary" disabled>
+                <i class="fas fa-hand-paper mr-2"></i>Stand
+            </button>
+        </section>
+
+        <!-- Withdraw Button -->
+        <section class="w-full text-center">
+            <button id="withdraw-btn" class="btn btn-success floating">
+                <i class="fas fa-wallet mr-2"></i>Withdraw Winnings
+            </button>
+        </section>
+    </main>
+
+    <!-- Withdrawal Modal -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Withdraw Your Winnings</h2>
+                <button id="close-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-gray-300 mb-4">You have <span class="font-bold text-white">0.08 BTC</span> available for withdrawal.</p>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-300 mb-2">Withdrawal Amount (BTC)</label>
+                    <input type="number" step="0.001" min="0.001" max="0.08" value="0.08" 
+                           class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-300 mb-2">Select Wallet</label>
+                    
+                    <div class="wallet-option" data-wallet="create">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-plus text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Create New Wallet</h3>
+                                <p class="text-sm text-gray-400">We'll help you set up a secure crypto wallet</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wallet-option" data-wallet="external">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-wallet text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Use External Wallet</h3>
+                                <p class="text-sm text-gray-400">Connect your existing wallet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="confirm-withdraw" class="btn btn-primary w-full">
+                <i class="fas fa-check mr-2"></i>Confirm Withdrawal
+            </button>
+        </div>
+    </div>
+
+    <!-- Wallet Creation Modal -->
+    <div id="wallet-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Create Your Crypto Wallet</h2>
+                <button id="close-wallet-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-gray-300 mb-4">To withdraw your winnings, you need a crypto wallet. We recommend using our affiliate partner for a secure and easy setup.</p>
+                
+                <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center mr-3">
+                            <i class="fab fa-bitcoin text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">CryptoWallet Pro</h3>
+                            <p class="text-sm text-gray-400">Secure & Easy-to-Use</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-300 mb-4">Get a $10 bonus when you sign up through our link and make your first deposit!</p>
+                    <button id="affiliate-link" class="btn btn-primary w-full">
+                        <i class="fas fa-external-link-alt mr-2"></i>Visit CryptoWallet Pro
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <p class="text-gray-400 text-sm">Already have a wallet? <button id="use-existing" class="text-blue-400 hover:text-blue-300">Connect it here</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Result Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content text-center">
+            <div class="mb-6">
+                <div class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-trophy text-white text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">You Win!</h2>
+                <p class="text-gray-300">Congratulations! You've won <span class="font-bold text-white">0.03 BTC</span>!</p>
+            </div>
+            
+            <button id="close-result-modal" class="btn btn-primary w-full">
+                <i class="fas fa-check mr-2"></i>Continue Playing
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let balance = 0.05;
+        let currentBet = 0;
+        let gameActive = false;
+        
+        // DOM Elements
+        const dealBtn = document.getElementById('deal-btn');
+        const hitBtn = document.getElementById('hit-btn');
+        const standBtn = document.getElementById('stand-btn');
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        const withdrawModal = document.getElementById('withdraw-modal');
+        const walletModal = document.getElementById('wallet-modal');
+        const resultModal = document.getElementById('result-modal');
+        const closeModal = document.getElementById('close-modal');
+        const closeWalletModal = document.getElementById('close-wallet-modal');
+        const closeResultModal = document.getElementById('close-result-modal');
+        const confirmWithdraw = document.getElementById('confirm-withdraw');
+        const affiliateLink = document.getElementById('affiliate-link');
+        const useExisting = document.getElementById('use-existing');
+        const balanceDisplay = document.getElementById('balance');
+        const currentBetDisplay = document.getElementById('current-bet');
+        const chips = document.querySelectorAll('.chip');
+        const walletOptions = document.querySelectorAll('.wallet-option');
+        
+        // Initialize game
+        function initGame() {
+            updateBalanceDisplay();
+            
+            // Add event listeners to chips
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    if (!gameActive) {
+                        const value = parseInt(chip.getAttribute('data-value'));
+                        currentBet += value;
+                        currentBetDisplay.textContent = currentBet;
+                        
+                        // Animate chip selection
+                        chip.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            chip.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                });
+            });
+            
+            // Add event listeners to wallet options
+            walletOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    walletOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+            
+            // Deal button
+            dealBtn.addEventListener('click', () => {
+                if (currentBet > 0 && !gameActive) {
+                    startGame();
+                }
+            });
+            
+            // Withdraw button
+            withdrawBtn.addEventListener('click', () => {
+                if (balance > 0) {
+                    openWithdrawModal();
+                }
+            });
+            
+            // Modal controls
+            closeModal.addEventListener('click', closeWithdrawModal);
+            closeWalletModal.addEventListener('click', closeWalletModalFunc);
+            closeResultModal.addEventListener('click', closeResultModalFunc);
+            confirmWithdraw.addEventListener('click', processWithdrawal);
+            affiliateLink.addEventListener('click', redirectToAffiliate);
+            useExisting.addEventListener('click', connectExternalWallet);
+            
+            // Show win animation after a delay (for demo purposes)
+            setTimeout(() => {
+                document.querySelector('.balance-display').classList.add('win-animation');
+            }, 3000);
+        }
+        
+        // Start a new game
+        function startGame() {
+            gameActive = true;
+            dealBtn.disabled = true;
+            hitBtn.disabled = false;
+            standBtn.disabled = false;
+            
+            // Animate cards dealing
+            const cards = document.querySelectorAll('.card, .card-back');
+            cards.forEach((card, index) => {
+                card.classList.remove('deal-animation');
+                void card.offsetWidth; // Trigger reflow
+                card.classList.add('deal-animation');
+                card.style.animationDelay = `${index * 0.2}s`;
+            });
+            
+            // Simulate game outcome after a delay
+            setTimeout(() => {
+                endGame('win');
+            }, 3000);
+        }
+        
+        // End the game
+        function endGame(result) {
+            gameActive = false;
+            dealBtn.disabled = false;
+            hitBtn.disabled = true;
+            standBtn.disabled = true;
+            
+            if (result === 'win') {
+                const winnings = currentBet * 1.5;
+                balance += winnings / 100000; // Convert satoshis to BTC
+                updateBalanceDisplay();
+                
+                // Show result modal
+                setTimeout(() => {
+                    openResultModal();
+                }, 1000);
+            }
+            
+            currentBet = 0;
+            currentBetDisplay.textContent = currentBet;
+        }
+        
+        // Update balance display
+        function updateBalanceDisplay() {
+            balanceDisplay.textContent = `${balance.toFixed(3)} BTC`;
+        }
+        
+        // Open withdrawal modal
+        function openWithdrawModal() {
+            withdrawModal.style.display = 'flex';
+            document.querySelector('.game-area').classList.add('blur');
+        }
+        
+        // Close withdrawal modal
+        function closeWithdrawModal() {
+            withdrawModal.style.display = 'none';
+            document.querySelector('.game-area').classList.remove('blur');
+        }
+        
+        // Close wallet modal
+        function closeWalletModalFunc() {
+            walletModal.style.display = 'none';
+        }
+        
+        // Close result modal
+        function closeResultModalFunc() {
+            resultModal.style.display = 'none';
+        }
+        
+        // Open result modal
+        function openResultModal() {
+            resultModal.style.display = 'flex';
+        }
+        
+        // Process withdrawal
+        function processWithdrawal() {
+            const selectedWallet = document.querySelector('.wallet-option.selected');
+            
+            if (!selectedWallet) {
+                alert('Please select a wallet option');
+                return;
+            }
+            
+            const walletType = selectedWallet.getAttribute('data-wallet');
+            
+            if (walletType === 'create') {
+                closeWithdrawModal();
+                walletModal.style.display = 'flex';
+            } else {
+                // In a real app, this would connect to an external wallet
+                alert('External wallet connection would be implemented here');
+                closeWithdrawModal();
+            }
+        }
+        
+        // Redirect to affiliate
+        function redirectToAffiliate() {
+            // In a real app, this would redirect to the affiliate link
+            alert('Redirecting to affiliate wallet provider...');
+            closeWalletModalFunc();
+        }
+        
+        // Connect external wallet
+        function connectExternalWallet() {
+            // In a real app, this would connect to an external wallet
+            alert('External wallet connection would be implemented here');
+            closeWalletModalFunc();
+        }
+        
+        // Initialize the game when the page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

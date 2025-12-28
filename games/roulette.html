@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Roulette</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .roulette-wheel {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            box-shadow: 0 0 0 8px #dc2626, 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        
+        .wheel-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            transition: transform 4s cubic-bezier(0.2, 0.8, 0.3, 1);
+        }
+        
+        .wheel-section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        
+        .red {
+            background: linear-gradient(45deg, #dc2626, #b91c1c);
+        }
+        
+        .black {
+            background: linear-gradient(45deg, #1e293b, #0f172a);
+        }
+        
+        .green {
+            background: linear-gradient(45deg, #059669, #047857);
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 40px;
+            background: #f8fafc;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .roulette-table {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 2px;
+            margin: 20px auto;
+            max-width: 400px;
+            background: #059669;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .table-cell {
+            background: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .table-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+        
+        .table-cell.red {
+            background: #dc2626;
+        }
+        
+        .table-cell.black {
+            background: #1e293b;
+        }
+        
+        .table-cell.green {
+            background: #059669;
+        }
+        
+        .table-cell.bet-placed {
+            box-shadow: 0 0 0 2px #f59e0b;
+        }
+        
+        .chip {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .chip:hover {
+            transform: scale(1.1);
+        }
+        
+        .chip-10 {
+            background: radial-gradient(circle at 30% 30%, #ef4444, #b91c1c);
+        }
+        
+        .chip-25 {
+            background: radial-gradient(circle at 30% 30%, #3b82f6, #1d4ed8);
+        }
+        
+        .chip-50 {
+            background: radial-gradient(circle at 30% 30%, #10b981, #047857);
+        }
+        
+        .chip-100 {
+            background: radial-gradient(circle at 30% 30%, #f59e0b, #d97706);
+        }
+        
+        .betting-chip {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+            animation: chipPlace 0.3s ease-out;
+        }
+        
+        @keyframes chipPlace {
+            0% {
+                transform: scale(0);
+            }
+            70% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            animation: modalAppear 0.3s ease-out forwards;
+        }
+        
+        @keyframes modalAppear {
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .game-area {
+            transition: all 0.3s ease;
+        }
+        
+        .blur {
+            filter: blur(5px);
+        }
+        
+        .wallet-option {
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .wallet-option:hover {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .wallet-option.selected {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .balance-display {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .crypto-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            font-weight: bold;
+        }
+        
+        .win-animation {
+            animation: winPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes winPulse {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+            }
+        }
+        
+        .last-results {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .result-ball {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .result-ball.red {
+            background: #dc2626;
+        }
+        
+        .result-ball.black {
+            background: #1e293b;
+        }
+        
+        .result-ball.green {
+            background: #059669;
+        }
+        
+        .bet-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .bet-option {
+            padding: 8px 16px;
+            background: #334155;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .bet-option:hover {
+            background: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        .bet-option.active {
+            background: #3b82f6;
+            box-shadow: 0 0 0 2px #f59e0b;
+        }
+        
+        .spinning {
+            animation: spin 3s cubic-bezier(0.2, 0.8, 0.3, 1);
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(1800deg);
+            }
+        }
+        
+        .game-message {
+            min-height: 24px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <!-- Game Header -->
+    <header class="w-full max-w-md mb-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                <i class="fas fa-dice mr-2"></i>Crypto Roulette
+            </h1>
+            <div class="balance-display">
+                <div class="flex items-center gap-2">
+                    <div class="crypto-icon">
+                        <i class="fab fa-ethereum text-white"></i>
+                    </div>
+                    <span class="font-semibold">Balance:</span>
+                </div>
+                <span id="balance" class="font-bold text-lg">0.5 ETH</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game Area -->
+    <main class="game-area w-full max-w-md flex flex-col items-center">
+        <!-- Last Results -->
+        <div class="w-full mb-4">
+            <h3 class="text-center text-gray-300 mb-2">Last Results</h3>
+            <div id="last-results" class="last-results">
+                <!-- Results will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Roulette Wheel -->
+        <div class="relative mb-8">
+            <div class="roulette-wheel">
+                <div class="wheel-pointer"></div>
+                <div id="wheel" class="wheel-inner">
+                    <!-- Wheel sections will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Message -->
+        <div id="game-message" class="game-message text-lg"></div>
+
+        <!-- Betting Options -->
+        <div class="w-full mb-6">
+            <h3 class="text-center text-gray-300 mb-2">Quick Bets</h3>
+            <div class="bet-options">
+                <div class="bet-option" data-bet="red">Red</div>
+                <div class="bet-option" data-bet="black">Black</div>
+                <div class="bet-option" data-bet="even">Even</div>
+                <div class="bet-option" data-bet="odd">Odd</div>
+                <div class="bet-option" data-bet="1-18">1-18</div>
+                <div class="bet-option" data-bet="19-36">19-36</div>
+            </div>
+        </div>
+
+        <!-- Roulette Table -->
+        <div class="w-full mb-6">
+            <div id="roulette-table" class="roulette-table">
+                <!-- Table cells will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Betting Chips -->
+        <section class="w-full mb-6">
+            <h2 class="text-lg font-semibold mb-4 text-center">Place Your Bet</h2>
+            <div class="flex justify-center gap-4">
+                <div class="chip chip-10 pulse" data-value="10">
+                    <span>10</span>
+                </div>
+                <div class="chip chip-25 pulse" data-value="25" style="animation-delay: 0.2s;">
+                    <span>25</span>
+                </div>
+                <div class="chip chip-50 pulse" data-value="50" style="animation-delay: 0.4s;">
+                    <span>50</span>
+                </div>
+                <div class="chip chip-100 pulse" data-value="100" style="animation-delay: 0.6s;">
+                    <span>100</span>
+                </div>
+            </div>
+            <div class="mt-4 text-center">
+                <p class="text-gray-300">Current Bet: <span id="current-bet" class="font-bold text-white">0</span> Gwei</p>
+                <div class="mt-2 flex justify-center gap-2">
+                    <button id="clear-bet" class="btn btn-danger text-sm">
+                        <i class="fas fa-times mr-1"></i>Clear
+                    </button>
+                    <button id="repeat-bet" class="btn btn-secondary text-sm">
+                        <i class="fas fa-redo mr-1"></i>Repeat
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Controls -->
+        <section class="w-full flex justify-center gap-4 mb-8">
+            <button id="spin-btn" class="btn btn-primary">
+                <i class="fas fa-play mr-2"></i>Spin
+            </button>
+        </section>
+
+        <!-- Withdraw Button -->
+        <section class="w-full text-center">
+            <button id="withdraw-btn" class="btn btn-success floating">
+                <i class="fas fa-wallet mr-2"></i>Withdraw Winnings
+            </button>
+        </section>
+    </main>
+
+    <!-- Withdrawal Modal -->
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Withdraw Your Winnings</h2>
+                <button id="close-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-gray-300 mb-4">You have <span id="withdraw-amount" class="font-bold text-white">0.5 ETH</span> available for withdrawal.</p>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-300 mb-2">Withdrawal Amount (ETH)</label>
+                    <input type="number" step="0.01" min="0.01" id="withdraw-input" 
+                           class="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-300 mb-2">Select Wallet</label>
+                    
+                    <div class="wallet-option" data-wallet="create">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-plus text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Create New Wallet</h3>
+                                <p class="text-sm text-gray-400">We'll help you set up a secure crypto wallet</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wallet-option" data-wallet="external">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-wallet text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">Use External Wallet</h3>
+                                <p class="text-sm text-gray-400">Connect your existing wallet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="confirm-withdraw" class="btn btn-primary w-full">
+                <i class="fas fa-check mr-2"></i>Confirm Withdrawal
+            </button>
+        </div>
+    </div>
+
+    <!-- Wallet Creation Modal -->
+    <div id="wallet-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Create Your Crypto Wallet</h2>
+                <button id="close-wallet-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-gray-300 mb-4">To withdraw your winnings, you need a crypto wallet. We recommend using our affiliate partner for a secure and easy setup.</p>
+                
+                <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center mr-3">
+                            <i class="fab fa-ethereum text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">MetaWallet</h3>
+                            <p class="text-sm text-gray-400">Secure & Easy-to-Use</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-300 mb-4">Get a 0.01 ETH bonus when you sign up through our link and make your first deposit!</p>
+                    <button id="affiliate-link" class="btn btn-primary w-full">
+                        <i class="fas fa-external-link-alt mr-2"></i>Visit MetaWallet
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <p class="text-gray-400 text-sm">Already have a wallet? <button id="use-existing" class="text-blue-400 hover:text-blue-300">Connect it here</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Result Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content text-center">
+            <div class="mb-6">
+                <div id="result-icon" class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-trophy text-white text-2xl"></i>
+                </div>
+                <h2 id="result-title" class="text-2xl font-bold mb-2">You Win!</h2>
+                <p id="result-message" class="text-gray-300">Congratulations! You've won <span class="font-bold text-white">0.1 ETH</span>!</p>
+            </div>
+            
+            <button id="close-result-modal" class="btn btn-primary w-full">
+                <i class="fas fa-check mr-2"></i>Continue Playing
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let balance = 0.5;
+        let currentBet = 0;
+        let currentChipValue = 10;
+        let gameActive = false;
+        let bets = {};
+        let lastBets = {};
+        let lastResults = [];
+        
+        // Roulette numbers with colors (0 is green, others alternate red/black)
+        const rouletteNumbers = [
+            { number: 0, color: 'green' },
+            { number: 32, color: 'red' }, { number: 15, color: 'black' }, { number: 19, color: 'red' }, { number: 4, color: 'black' },
+            { number: 21, color: 'red' }, { number: 2, color: 'black' }, { number: 25, color: 'red' }, { number: 17, color: 'black' },
+            { number: 34, color: 'red' }, { number: 6, color: 'black' }, { number: 27, color: 'red' }, { number: 13, color: 'black' },
+            { number: 36, color: 'red' }, { number: 11, color: 'black' }, { number: 30, color: 'red' }, { number: 8, color: 'black' },
+            { number: 23, color: 'red' }, { number: 10, color: 'black' }, { number: 5, color: 'red' }, { number: 24, color: 'black' },
+            { number: 16, color: 'red' }, { number: 33, color: 'black' }, { number: 1, color: 'red' }, { number: 20, color: 'black' },
+            { number: 14, color: 'red' }, { number: 31, color: 'black' }, { number: 9, color: 'red' }, { number: 22, color: 'black' },
+            { number: 18, color: 'red' }, { number: 29, color: 'black' }, { number: 7, color: 'red' }, { number: 28, color: 'black' },
+            { number: 12, color: 'red' }, { number: 35, color: 'black' }, { number: 3, color: 'red' }, { number: 26, color: 'black' }
+        ];
+        
+        // DOM Elements
+        const spinBtn = document.getElementById('spin-btn');
+        const withdrawBtn = document.getElementById('withdraw-btn');
+        const clearBetBtn = document.getElementById('clear-bet');
+        const repeatBetBtn = document.getElementById('repeat-bet');
+        const withdrawModal = document.getElementById('withdraw-modal');
+        const walletModal = document.getElementById('wallet-modal');
+        const resultModal = document.getElementById('result-modal');
+        const closeModal = document.getElementById('close-modal');
+        const closeWalletModal = document.getElementById('close-wallet-modal');
+        const closeResultModal = document.getElementById('close-result-modal');
+        const confirmWithdraw = document.getElementById('confirm-withdraw');
+        const affiliateLink = document.getElementById('affiliate-link');
+        const useExisting = document.getElementById('use-existing');
+        const balanceDisplay = document.getElementById('balance');
+        const currentBetDisplay = document.getElementById('current-bet');
+        const gameMessage = document.getElementById('game-message');
+        const chips = document.querySelectorAll('.chip');
+        const walletOptions = document.querySelectorAll('.wallet-option');
+        const withdrawAmountDisplay = document.getElementById('withdraw-amount');
+        const withdrawInput = document.getElementById('withdraw-input');
+        const resultIcon = document.getElementById('result-icon');
+        const resultTitle = document.getElementById('result-title');
+        const resultMessage = document.getElementById('result-message');
+        const wheel = document.getElementById('wheel');
+        const rouletteTable = document.getElementById('roulette-table');
+        const lastResultsContainer = document.getElementById('last-results');
+        const betOptions = document.querySelectorAll('.bet-option');
+        
+        // Initialize game
+        function initGame() {
+            updateBalanceDisplay();
+            createWheel();
+            createTable();
+            updateLastResults();
+            
+            // Add event listeners to chips
+            chips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    if (!gameActive) {
+                        currentChipValue = parseInt(chip.getAttribute('data-value'));
+                        
+                        // Highlight selected chip
+                        chips.forEach(c => c.classList.remove('ring-2', 'ring-yellow-400'));
+                        chip.classList.add('ring-2', 'ring-yellow-400');
+                        
+                        // Animate chip selection
+                        chip.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            chip.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                });
+            });
+            
+            // Clear bet button
+            clearBetBtn.addEventListener('click', () => {
+                if (!gameActive) {
+                    clearBets();
+                }
+            });
+            
+            // Repeat bet button
+            repeatBetBtn.addEventListener('click', () => {
+                if (!gameActive && Object.keys(lastBets).length > 0) {
+                    repeatLastBet();
+                }
+            });
+            
+            // Add event listeners to wallet options
+            walletOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    walletOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+            
+            // Spin button
+            spinBtn.addEventListener('click', () => {
+                if (currentBet > 0 && !gameActive) {
+                    spinWheel();
+                } else if (currentBet === 0) {
+                    showMessage("Please place a bet first", "text-red-400");
+                }
+            });
+            
+            // Bet options
+            betOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    if (!gameActive) {
+                        const betType = option.getAttribute('data-bet');
+                        placeGroupBet(betType);
+                        
+                        // Highlight active option
+                        betOptions.forEach(opt => opt.classList.remove('active'));
+                        option.classList.add('active');
+                        setTimeout(() => {
+                            option.classList.remove('active');
+                        }, 1000);
+                    }
+                });
+            });
+            
+            // Withdraw button
+            withdrawBtn.addEventListener('click', () => {
+                if (balance > 0) {
+                    openWithdrawModal();
+                }
+            });
+            
+            // Modal controls
+            closeModal.addEventListener('click', closeWithdrawModal);
+            closeWalletModal.addEventListener('click', closeWalletModalFunc);
+            closeResultModal.addEventListener('click', closeResultModalFunc);
+            confirmWithdraw.addEventListener('click', processWithdrawal);
+            affiliateLink.addEventListener('click', redirectToAffiliate);
+            useExisting.addEventListener('click', connectExternalWallet);
+            
+            // Set max withdrawal amount
+            withdrawInput.max = balance.toFixed(2);
+            withdrawInput.value = balance.toFixed(2);
+            
+            // Show win animation after a delay (for demo purposes)
+            setTimeout(() => {
+                document.querySelector('.balance-display').classList.add('win-animation');
+            }, 3000);
+            
+            // Select first chip by default
+            chips[0].click();
+        }
+        
+        // Create roulette wheel
+        function createWheel() {
+            wheel.innerHTML = '';
+            const angle = 360 / rouletteNumbers.length;
+            
+            rouletteNumbers.forEach((num, index) => {
+                const section = document.createElement('div');
+                section.className = `wheel-section ${num.color}`;
+                section.style.transform = `rotate(${index * angle}deg)`;
+                section.innerHTML = `<span style="transform: rotate(${-index * angle}deg)">${num.number}</span>`;
+                wheel.appendChild(section);
+            });
+        }
+        
+        // Create roulette table
+        function createTable() {
+            rouletteTable.innerHTML = '';
+            
+            // Create first row with 0
+            const zeroCell = document.createElement('div');
+            zeroCell.className = 'table-cell green';
+            zeroCell.textContent = '0';
+            zeroCell.style.gridColumn = '1 / 3';
+            zeroCell.addEventListener('click', () => placeBet('0'));
+            rouletteTable.appendChild(zeroCell);
+            
+            // Create number cells in reverse order (as they appear on the wheel)
+            for (let i = 1; i <= 36; i++) {
+                const num = rouletteNumbers.find(n => n.number === i);
+                const cell = document.createElement('div');
+                cell.className = `table-cell ${num.color}`;
+                cell.textContent = i;
+                cell.addEventListener('click', () => placeBet(i.toString()));
+                
+                // Calculate position (3 rows of 12 numbers each)
+                const row = Math.floor((i - 1) / 12) + 2;
+                const col = ((i - 1) % 12) + 3;
+                
+                cell.style.gridRow = row;
+                cell.style.gridColumn = col;
+                rouletteTable.appendChild(cell);
+            }
+            
+            // Add outside bets
+            const outsideBets = [
+                { text: '2:1', positions: '1 / 1 / 5', bet: 'first-column' },
+                { text: '2:1', positions: '1 / 2 / 5', bet: 'second-column' },
+                { text: '2:1', positions: '1 / 3 / 5', bet: 'third-column' },
+                { text: '1-12', positions: '5 / 1 / 6', bet: '1-12' },
+                { text: '13-24', positions: '5 / 2 / 6', bet: '13-24' },
+                { text: '25-36', positions: '5 / 3 / 6', bet: '25-36' },
+                { text: '1-18', positions: '5 / 4 / 6', bet: '1-18' },
+                { text: 'EVEN', positions: '5 / 5 / 6', bet: 'even' },
+                { text: 'RED', positions: '5 / 6 / 7', bet: 'red', class: 'red' },
+                { text: 'BLACK', positions: '5 / 7 / 8', bet: 'black', class: 'black' },
+                { text: 'ODD', positions: '5 / 8 / 9', bet: 'odd' },
+                { text: '19-36', positions: '5 / 9 / 10', bet: '19-36' }
+            ];
+            
+            outsideBets.forEach(bet => {
+                const cell = document.createElement('div');
+                cell.className = `table-cell ${bet.class || ''}`;
+                cell.textContent = bet.text;
+                cell.style.gridArea = bet.positions;
+                cell.addEventListener('click', () => placeBet(bet.bet));
+                rouletteTable.appendChild(cell);
+            });
+        }
+        
+        // Place a bet on a specific number or group
+        function placeBet(betType) {
+            if (gameActive) return;
+            
+            if (balance * 1000000000 < currentBet + currentChipValue) {
+                showMessage("Insufficient balance for this bet", "text-red-400");
+                return;
+            }
+            
+            // Add to current bet total
+            currentBet += currentChipValue;
+            currentBetDisplay.textContent = currentBet;
+            
+            // Record the bet
+            if (!bets[betType]) {
+                bets[betType] = 0;
+            }
+            bets[betType] += currentChipValue;
+            
+            // Visual feedback
+            const betCells = document.querySelectorAll(`[data-bet="${betType}"]`);
+            if (betCells.length > 0) {
+                betCells.forEach(cell => {
+                    cell.classList.add('bet-placed');
+                    
+                    // Add chip visualization
+                    const chip = document.createElement('div');
+                    chip.className = `betting-chip chip-${currentChipValue}`;
+                    chip.textContent = currentChipValue;
+                    chip.style.top = `${Math.random() * 30 + 35}%`;
+                    chip.style.left = `${Math.random() * 30 + 35}%`;
+                    cell.appendChild(chip);
+                });
+            }
+            
+            // Save for repeat bet feature
+            lastBets = {...bets};
+            
+            showMessage(`Bet placed on ${betType}`, "text-blue-400");
+        }
+        
+        // Place a group bet
+        function placeGroupBet(betType) {
+            let numbers = [];
+            
+            switch(betType) {
+                case 'red':
+                    numbers = rouletteNumbers.filter(n => n.color === 'red' && n.number !== 0).map(n => n.number.toString());
+                    break;
+                case 'black':
+                    numbers = rouletteNumbers.filter(n => n.color === 'black').map(n => n.number.toString());
+                    break;
+                case 'even':
+                    numbers = Array.from({length: 18}, (_, i) => (i + 1) * 2).map(n => n.toString());
+                    break;
+                case 'odd':
+                    numbers = Array.from({length: 18}, (_, i) => (i * 2) + 1).map(n => n.toString());
+                    break;
+                case '1-18':
+                    numbers = Array.from({length: 18}, (_, i) => (i + 1).toString());
+                    break;
+                case '19-36':
+                    numbers = Array.from({length: 18}, (_, i) => (i + 19).toString());
+                    break;
+            }
+            
+            numbers.forEach(num => placeBet(num));
+        }
+        
+        // Clear all bets
+        function clearBets() {
+            bets = {};
+            currentBet = 0;
+            currentBetDisplay.textContent = currentBet;
+            
+            // Remove visual bet indicators
+            document.querySelectorAll('.table-cell').forEach(cell => {
+                cell.classList.remove('bet-placed');
+                const chips = cell.querySelectorAll('.betting-chip');
+                chips.forEach(chip => chip.remove());
+            });
+            
+            showMessage("All bets cleared", "text-yellow-400");
+        }
+        
+        // Repeat last bet
+        function repeatLastBet() {
+            clearBets();
+            currentChipValue = 10; // Reset to default chip
+            
+            for (const [betType, amount] of Object.entries(lastBets)) {
+                const numChips = amount / currentChipValue;
+                for (let i = 0; i < numChips; i++) {
+                    placeBet(betType);
+                }
+            }
+            
+            showMessage("Last bet repeated", "text-blue-400");
+        }
+        
+        // Spin the wheel
+        function spinWheel() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            spinBtn.disabled = true;
+            
+            // Deduct bet from balance
+            balance -= currentBet / 1000000000; // Convert Gwei to ETH
+            updateBalanceDisplay();
+            
+            // Spin animation
+            wheel.classList.add('spinning');
+            
+            // Determine winning number after spin
+            setTimeout(() => {
+                const winningNumber = Math.floor(Math.random() * 37);
+                const winningData = rouletteNumbers.find(n => n.number === winningNumber);
+                
+                // Stop the wheel at the winning number
+                const winningIndex = rouletteNumbers.findIndex(n => n.number === winningNumber);
+                const angle = (winningIndex * (360 / rouletteNumbers.length) + 720) % 360;
+                wheel.style.transform = `rotate(-${angle}deg)`;
+                
+                // Process results after animation
+                setTimeout(() => {
+                    processGameResult(winningNumber, winningData.color);
+                }, 500);
+            }, 3000);
+        }
+        
+        // Process game result
+        function processGameResult(winningNumber, winningColor) {
+            // Calculate winnings
+            let winnings = 0;
+            
+            for (const [betType, amount] of Object.entries(bets)) {
+                if (isWinningBet(betType, winningNumber, winningColor)) {
+                    const multiplier = getPayoutMultiplier(betType);
+                    winnings += amount * multiplier;
+                }
+            }
+            
+            // Update balance
+            balance += winnings / 1000000000; // Convert Gwei to ETH
+            updateBalanceDisplay();
+            
+            // Add to last results
+            lastResults.unshift({ number: winningNumber, color: winningColor });
+            if (lastResults.length > 8) lastResults.pop();
+            updateLastResults();
+            
+            // Show result
+            if (winnings > 0) {
+                showMessage(`Winner! ${winningNumber} ${winningColor} - You won ${winnings} Gwei!`, "text-green-400");
+                
+                // Show win animation
+                document.querySelector('.balance-display').classList.add('win-animation');
+                setTimeout(() => {
+                    document.querySelector('.balance-display').classList.remove('win-animation');
+                }, 3000);
+                
+                // Show result modal for big wins
+                if (winnings > currentBet * 5) {
+                    setTimeout(() => {
+                        openResultModal(winnings);
+                    }, 1000);
+                }
+            } else {
+                showMessage(`No win. The ball landed on ${winningNumber} ${winningColor}`, "text-red-400");
+            }
+            
+            // Reset for next round
+            gameActive = false;
+            spinBtn.disabled = false;
+            clearBets();
+        }
+        
+        // Check if a bet is a winner
+        function isWinningBet(betType, winningNumber, winningColor) {
+            const winNum = winningNumber;
+            
+            // Direct number bet
+            if (betType === winNum.toString()) return true;
+            
+            // Color bets
+            if (betType === 'red' && winningColor === 'red') return true;
+            if (betType === 'black' && winningColor === 'black') return true;
+            
+            // Even/Odd
+            if (betType === 'even' && winNum !== 0 && winNum % 2 === 0) return true;
+            if (betType === 'odd' && winNum % 2 === 1) return true;
+            
+            // Dozens
+            if (betType === '1-12' && winNum >= 1 && winNum <= 12) return true;
+            if (betType === '13-24' && winNum >= 13 && winNum <= 24) return true;
+            if (betType === '25-36' && winNum >= 25 && winNum <= 36) return true;
+            
+            // Halves
+            if (betType === '1-18' && winNum >= 1 && winNum <= 18) return true;
+            if (betType === '19-36' && winNum >= 19 && winNum <= 36) return true;
+            
+            // Columns
+            if (betType === 'first-column' && winNum % 3 === 1) return true;
+            if (betType === 'second-column' && winNum % 3 === 2) return true;
+            if (betType === 'third-column' && winNum % 3 === 0 && winNum !== 0) return true;
+            
+            return false;
+        }
+        
+        // Get payout multiplier for bet type
+        function getPayoutMultiplier(betType) {
+            // Direct number bet
+            if (/^\d+$/.test(betType)) return 35;
+            
+            // Color, even/odd, halves
+            if (['red', 'black', 'even', 'odd', '1-18', '19-36'].includes(betType)) return 1;
+            
+            // Dozens, columns
+            if (['1-12', '13-24', '25-36', 'first-column', 'second-column', 'third-column'].includes(betType)) return 2;
+            
+            return 0;
+        }
+        
+        // Update last results display
+        function updateLastResults() {
+            lastResultsContainer.innerHTML = '';
+            
+            lastResults.forEach(result => {
+                const ball = document.createElement('div');
+                ball.className = `result-ball ${result.color}`;
+                ball.textContent = result.number;
+                lastResultsContainer.appendChild(ball);
+            });
+            
+            // Add placeholder balls if needed
+            for (let i = lastResults.length; i < 8; i++) {
+                const ball = document.createElement('div');
+                ball.className = 'result-ball';
+                ball.style.background = '#334155';
+                ball.textContent = '-';
+                lastResultsContainer.appendChild(ball);
+            }
+        }
+        
+        // Show game message
+        function showMessage(text, colorClass = "text-blue-400") {
+            gameMessage.textContent = text;
+            gameMessage.className = `game-message text-lg ${colorClass}`;
+        }
+        
+        // Update balance display
+        function updateBalanceDisplay() {
+            balanceDisplay.textContent = `${balance.toFixed(3)} ETH`;
+            withdrawAmountDisplay.textContent = `${balance.toFixed(3)} ETH`;
+            withdrawInput.max = balance.toFixed(3);
+            withdrawInput.value = balance.toFixed(3);
+        }
+        
+        // Open withdrawal modal
+        function openWithdrawModal() {
+            withdrawModal.style.display = 'flex';
+            document.querySelector('.game-area').classList.add('blur');
+        }
+        
+        // Close withdrawal modal
+        function closeWithdrawModal() {
+            withdrawModal.style.display = 'none';
+            document.querySelector('.game-area').classList.remove('blur');
+        }
+        
+        // Close wallet modal
+        function closeWalletModalFunc() {
+            walletModal.style.display = 'none';
+        }
+        
+        // Close result modal
+        function closeResultModalFunc() {
+            resultModal.style.display = 'none';
+        }
+        
+        // Open result modal
+        function openResultModal(winnings) {
+            resultIcon.className = "w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-4";
+            resultIcon.innerHTML = '<i class="fas fa-trophy text-white text-2xl"></i>';
+            resultTitle.textContent = "Big Win!";
+            resultMessage.textContent = `Congratulations! You've won ${(winnings/1000000000).toFixed(3)} ETH!`;
+            
+            resultModal.style.display = 'flex';
+        }
+        
+        // Process withdrawal
+        function processWithdrawal() {
+            const selectedWallet = document.querySelector('.wallet-option.selected');
+            const withdrawAmount = parseFloat(withdrawInput.value);
+            
+            if (!selectedWallet) {
+                alert('Please select a wallet option');
+                return;
+            }
+            
+            if (withdrawAmount > balance || withdrawAmount <= 0) {
+                alert('Invalid withdrawal amount');
+                return;
+            }
+            
+            const walletType = selectedWallet.getAttribute('data-wallet');
+            
+            if (walletType === 'create') {
+                closeWithdrawModal();
+                walletModal.style.display = 'flex';
+            } else {
+                // In a real app, this would connect to an external wallet
+                balance -= withdrawAmount;
+                updateBalanceDisplay();
+                alert(`Withdrawal of ${withdrawAmount} ETH processed successfully!`);
+                closeWithdrawModal();
+            }
+        }
+        
+        // Redirect to affiliate
+        function redirectToAffiliate() {
+            // In a real app, this would redirect to the affiliate link
+            alert('Redirecting to affiliate wallet provider...');
+            closeWalletModalFunc();
+        }
+        
+        // Connect external wallet
+        function connectExternalWallet() {
+            // In a real app, this would connect to an external wallet
+            alert('External wallet connection would be implemented here');
+            closeWalletModalFunc();
+        }
+        
+        // Initialize the game when the page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
