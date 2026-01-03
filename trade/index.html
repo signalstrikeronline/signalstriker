@@ -1,1 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeRewards Hub | Earn Rewards Trading on Bybit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0a0e17',
+                        secondary: '#141a2d',
+                        accent: '#00ff88',
+                        accentBlue: '#00a3ff',
+                        bybit: '#0cc6de',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'shimmer': 'shimmer 2s infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-500px 0' },
+                            '100%': { backgroundPosition: '500px 0' },
+                        },
+                        gradient: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        }
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0e17;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(-45deg, #0a0e17, #141a2d, #0d1529, #0a0e17);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(90deg, #00ff88 0%, #00a3ff 100%);
+        }
+        
+        .bybit-gradient {
+            background: linear-gradient(90deg, #0cc6de 0%, #0066cc 100%);
+        }
+        
+        .card-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card-glow:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .blue-glow {
+            box-shadow: 0 0 20px rgba(0, 163, 255, 0.1);
+        }
+        
+        .blue-glow:hover {
+            box-shadow: 0 0 30px rgba(0, 163, 255, 0.2);
+        }
+        
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            z-index: -1;
+        }
+        
+        .reward-notification {
+            position: absolute;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            backdrop-filter: blur(10px);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #141a2d;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .accordion.active .accordion-content {
+            max-height: 1000px;
+        }
+        
+        .chart-container {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-line {
+            fill: none;
+            stroke: #00ff88;
+            stroke-width: 2;
+        }
+        
+        .chart-area {
+            fill: url(#areaGradient);
+        }
+        
+        .leaderboard-row {
+            transition: all 0.2s ease;
+        }
+        
+        .leaderboard-row:hover {
+            background-color: rgba(0, 255, 136, 0.05);
+        }
+        
+        .calculator-input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            width: 100%;
+        }
+        
+        .calculator-input:focus {
+            outline: none;
+            border-color: #00ff88;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0e17;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #00ff88;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00a3ff;
+        }
+        
+        /* Animation for competition cards */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.5s ease forwards;
+        }
+        
+        /* Particle effect for rewards */
+        .reward-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        /* Trading view simulation */
+        .trading-view {
+            background-color: #0f1729;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .candle-up {
+            background-color: #00ff88;
+        }
+        
+        .candle-down {
+            background-color: #ff4444;
+        }
+        
+        /* Bybit UI simulation */
+        .bybit-ui {
+            background: linear-gradient(145deg, #0f1a2f, #0a1120);
+            border-radius: 12px;
+            border: 1px solid rgba(12, 198, 222, 0.3);
+            box-shadow: 0 10px 30px rgba(12, 198, 222, 0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-primary/90 backdrop-blur-lg border-b border-secondary py-3">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl accent-gradient flex items-center justify-center">
+                        <i class="fas fa-gift text-black text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">TradeRewards<span class="text-accent">Hub</span></h1>
+                        <div class="flex items-center space-x-1">
+                            <span class="text-xs text-gray-400">Official Partner</span>
+                            <div class="w-6 h-6 rounded-full bybit-gradient flex items-center justify-center">
+                                <i class="fas fa-exchange-alt text-black text-xs"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-bybit">Bybit</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hidden lg:flex space-x-8">
+                    <a href="#home" class="hover:text-accent transition-colors font-medium">Home</a>
+                    <a href="#partnership" class="hover:text-accent transition-colors font-medium">Partnership</a>
+                    <a href="#competitions" class="hover:text-accent transition-colors font-medium">Competitions</a>
+                    <a href="#how-it-works" class="hover:text-accent transition-colors font-medium">How It Works</a>
+                    <a href="#calculator" class="hover:text-accent transition-colors font-medium">Calculator</a>
+                    <a href="#resources" class="hover:text-accent transition-colors font-medium">Resources</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="bybitSignupBtn" class="px-5 py-2.5 bybit-gradient text-white font-bold rounded-lg hover:opacity-90 transition-all">
+                        <i class="fab fa-btc mr-2"></i> Sign Up Now
+                    </button>
+                    <button class="lg:hidden text-white" id="mobileMenuBtn">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="lg:hidden bg-secondary mt-2 py-4 px-4 rounded-lg hidden">
+            <div class="flex flex-col space-y-4">
+                <a href="#home" class="hover:text-accent transition-colors font-medium">Home</a>
+                <a href="#partnership" class="hover:text-accent transition-colors font-medium">Partnership</a>
+                <a href="#competitions" class="hover:text-accent transition-colors font-medium">Competitions</a>
+                <a href="#how-it-works" class="hover:text-accent transition-colors font-medium">How It Works</a>
+                <a href="#calculator" class="hover:text-accent transition-colors font-medium">Calculator</a>
+                <a href="#resources" class="hover:text-accent transition-colors font-medium">Resources</a>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Hero Section -->
+    <section id="home" class="py-16 md:py-24 px-4 relative overflow-hidden">
+        <!-- Video Background -->
+        <div class="absolute inset-0 z-0">
+            <div class="video-background"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-primary/80 to-primary"></div>
+        </div>
+        
+        <!-- Animated Reward Notifications -->
+        <div class="reward-notification" style="top: 20%; left: 10%; animation-delay: 0s;">
+            <div class="flex items-center">
+                <i class="fas fa-coins text-accent mr-2"></i>
+                <div>
+                    <div class="font-bold text-sm">+500 USDT</div>
+                    <div class="text-xs text-gray-300">Volume Dash Winner</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="reward-notification" style="top: 60%; right: 15%; animation-delay: 2s;">
+            <div class="flex items-center">
+                <i class="fas fa-trophy text-accentBlue mr-2"></i>
+                <div>
+                    <div class="font-bold text-sm">VIP Perks</div>
+                    <div class="text-xs text-gray-300">Endurance Exchange</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="reward-notification" style="top: 40%; right: 5%; animation-delay: 4s;">
+            <div class="flex items-center">
+                <i class="fas fa-award text-accent mr-2"></i>
+                <div>
+                    <div class="font-bold text-sm">1 BTC</div>
+                    <div class="text-xs text-gray-300">Referral Rally</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container mx-auto relative z-10">
+            <div class="text-center max-w-4xl mx-auto">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                    Unlock <span class="text-accent">Exclusive Rewards</span> by Trading with <span class="text-bybit">Bybit</span>
+                </h1>
+                <p class="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                    Trade smarter, earn more: Join giveaways, competitions, and loyalty programs tailored for every trader level.
+                </p>
+                
+                <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6 mb-16">
+                    <button id="heroSignupBtn" class="px-8 py-4 bybit-gradient text-white font-bold rounded-xl text-lg hover:scale-105 transition-transform">
+                        <i class="fas fa-bolt mr-2"></i> Start Earning Now
+                    </button>
+                    <button id="watchDemoBtn" class="px-8 py-4 border-2 border-accent text-accent font-bold rounded-xl text-lg hover:bg-accent hover:text-black transition-all">
+                        <i class="fas fa-play-circle mr-2"></i> Watch Demo
+                    </button>
+                </div>
+                
+                <!-- Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+                    <div class="bg-secondary/50 p-6 rounded-xl blue-glow">
+                        <div class="text-3xl font-bold text-accent mb-2">$2.1M+</div>
+                        <div class="text-gray-400">Rewards Distributed</div>
+                    </div>
+                    <div class="bg-secondary/50 p-6 rounded-xl blue-glow">
+                        <div class="text-3xl font-bold text-accent mb-2">50K+</div>
+                        <div class="text-gray-400">Active Traders</div>
+                    </div>
+                    <div class="bg-secondary/50 p-6 rounded-xl blue-glow">
+                        <div class="text-3xl font-bold text-accent mb-2">10+</div>
+                        <div class="text-gray-400">Competitions</div>
+                    </div>
+                    <div class="bg-secondary/50 p-6 rounded-xl blue-glow">
+                        <div class="text-3xl font-bold text-accent mb-2">24/7</div>
+                        <div class="text-gray-400">Support</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="py-16 px-4 bg-secondary/30">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Why TradeRewards Hub?</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">We've created the ultimate platform for traders to maximize their earnings through strategic partnerships</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Benefit 1 -->
+                <div class="bg-primary p-6 rounded-xl card-glow">
+                    <div class="w-16 h-16 rounded-xl accent-gradient flex items-center justify-center mb-6">
+                        <i class="fas fa-lock-open text-2xl text-black"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Zero-Entry Barriers</h3>
+                    <p class="text-gray-400">Start with any amount. No minimum deposits or trading volume required to join most competitions.</p>
+                </div>
+                
+                <!-- Benefit 2 -->
+                <div class="bg-primary p-6 rounded-xl card-glow">
+                    <div class="w-16 h-16 rounded-xl accent-gradient flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-2xl text-black"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Real-Time Tracking</h3>
+                    <p class="text-gray-400">Monitor your rewards and competition standings directly in your Bybit UI dashboard.</p>
+                </div>
+                
+                <!-- Benefit 3 -->
+                <div class="bg-primary p-6 rounded-xl card-glow">
+                    <div class="w-16 h-16 rounded-xl accent-gradient flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-2xl text-black"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">All Skill Levels</h3>
+                    <p class="text-gray-400">From beginners to pros, we have competitions and rewards tailored for every trader.</p>
+                </div>
+                
+                <!-- Benefit 4 -->
+                <div class="bg-primary p-6 rounded-xl card-glow">
+                    <div class="w-16 h-16 rounded-xl accent-gradient flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-2xl text-black"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Secure Partnership</h3>
+                    <p class="text-gray-400">Official Bybit partnership ensures fair play, transparent results, and secure rewards distribution.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Giveaways -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Featured Competitions</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Join our most popular trading competitions with massive prize pools</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Competition 1 -->
+                <div class="bg-primary rounded-xl overflow-hidden card-glow">
+                    <div class="h-48 bg-gradient-to-r from-accent/20 to-accentBlue/20 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="w-20 h-20 rounded-full bg-accent flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-tachometer-alt text-3xl text-black"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold">Daily Volume Dash</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between mb-4">
+                            <span class="text-accent font-bold">PRIZE POOL</span>
+                            <span class="font-bold">5,000 USDT</span>
+                        </div>
+                        <p class="text-gray-400 mb-6">Trade 1,000+ USDT daily in spot markets for a chance to win random draws.</p>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span><i class="far fa-clock mr-1"></i> Daily</span>
+                            <span><i class="fas fa-users mr-1"></i> 50 Winners</span>
+                        </div>
+                        <button class="competition-btn w-full mt-6 py-3 bg-accent text-black font-bold rounded-lg hover:bg-accent/90 transition-colors" data-competition="volume-dash">
+                            Join Competition
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Competition 2 -->
+                <div class="bg-primary rounded-xl overflow-hidden card-glow">
+                    <div class="h-48 bg-gradient-to-r from-bybit/20 to-accentBlue/20 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="w-20 h-20 rounded-full bg-accentBlue flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-chart-candlestick text-3xl text-black"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold">Futures Frenzy</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between mb-4">
+                            <span class="text-accent font-bold">PRIZE POOL</span>
+                            <span class="font-bold">15,000 USDT</span>
+                        </div>
+                        <p class="text-gray-400 mb-6">Compete in futures trading for highest ROI. Separate tiers for beginners and experts.</p>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span><i class="far fa-clock mr-1"></i> Weekly</span>
+                            <span><i class="fas fa-users mr-1"></i> 10 Winners</span>
+                        </div>
+                        <button class="competition-btn w-full mt-6 py-3 bg-accent text-black font-bold rounded-lg hover:bg-accent/90 transition-colors" data-competition="futures-frenzy">
+                            Join Competition
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Competition 3 -->
+                <div class="bg-primary rounded-xl overflow-hidden card-glow">
+                    <div class="h-48 bg-gradient-to-r from-accent/20 to-bybit/20 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="w-20 h-20 rounded-full bg-bybit flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-friends text-3xl text-black"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold">Referral Rally</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between mb-4">
+                            <span class="text-accent font-bold">GRAND PRIZE</span>
+                            <span class="font-bold">1 BTC</span>
+                        </div>
+                        <p class="text-gray-400 mb-6">Refer friends to Bybit. Each successful trade enters you into monthly NFT & BTC draws.</p>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span><i class="far fa-clock mr-1"></i> Monthly</span>
+                            <span><i class="fas fa-gift mr-1"></i> NFTs + BTC</span>
+                        </div>
+                        <button class="competition-btn w-full mt-6 py-3 bg-accent text-black font-bold rounded-lg hover:bg-accent/90 transition-colors" data-competition="referral-rally">
+                            Join Competition
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#competitions" class="px-8 py-3 border-2 border-accent text-accent font-bold rounded-xl hover:bg-accent hover:text-black transition-all">
+                    View All 10 Competitions
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partnership Section -->
+    <section id="partnership" class="py-16 px-4 bg-secondary/30">
+        <div class="container mx-auto">
+            <div class="flex flex-col lg:flex-row items-center">
+                <div class="lg:w-1/2 mb-12 lg:mb-0 lg:pr-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Our Partnership with <span class="text-bybit">Bybit</span></h2>
+                    <p class="text-gray-300 mb-6">
+                        Our official partnership with Bybit allows traders to earn rewards seamlessly while trading spots, futures, options, and more on their robust platform. All activities are tracked in real-time, and rewards are distributed directly to your Bybit wallet.
+                    </p>
+                    <p class="text-gray-300 mb-8">
+                        With over $500,000 USDT distributed last quarter alone, our partnership ensures transparency, security, and exciting opportunities for traders of all levels.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-primary p-4 rounded-xl">
+                            <div class="text-2xl font-bold text-accent mb-1">100%</div>
+                            <div class="text-gray-400">Secure Transactions</div>
+                        </div>
+                        <div class="bg-primary p-4 rounded-xl">
+                            <div class="text-2xl font-bold text-accent mb-1">24/7</div>
+                            <div class="text-gray-400">Live Support</div>
+                        </div>
+                        <div class="bg-primary p-4 rounded-xl">
+                            <div class="text-2xl font-bold text-accent mb-1">0%</div>
+                            <div class="text-gray-400">Platform Fees</div>
+                        </div>
+                        <div class="bg-primary p-4 rounded-xl">
+                            <div class="text-2xl font-bold text-accent mb-1">10+</div>
+                            <div class="text-gray-400">Competitions</div>
+                        </div>
+                    </div>
+                    
+                    <button id="partnershipSignupBtn" class="px-6 py-3 bybit-gradient text-white font-bold rounded-lg hover:opacity-90 transition-all">
+                        <i class="fab fa-btc mr-2"></i> Sign Up on Bybit
+                    </button>
+                </div>
+                
+                <div class="lg:w-1/2">
+                    <!-- Bybit UI Simulation -->
+                    <div class="bybit-ui p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bybit-gradient flex items-center justify-center mr-3">
+                                    <i class="fas fa-exchange-alt text-black"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold">Bybit Rewards Dashboard</div>
+                                    <div class="text-xs text-gray-400">Official Partner Integration</div>
+                                </div>
+                            </div>
+                            <div class="text-accent font-bold">Live</div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-black/30 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center mr-3">
+                                        <i class="fas fa-running text-accent"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">Daily Volume Dash</div>
+                                        <div class="text-xs text-gray-400">Your Position: #42</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-accent">+125 USDT</div>
+                                    <div class="text-xs text-gray-400">Potential Reward</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center p-3 bg-black/30 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-accentBlue/20 flex items-center justify-center mr-3">
+                                        <i class="fas fa-chart-candlestick text-accentBlue"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">Futures Frenzy</div>
+                                        <div class="text-xs text-gray-400">ROI: +8.2%</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-accent">+850 USDT</div>
+                                    <div class="text-xs text-gray-400">Current Prize</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center p-3 bg-black/30 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-bybit/20 flex items-center justify-center mr-3">
+                                        <i class="fas fa-user-friends text-bybit"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">Referral Rally</div>
+                                        <div class="text-xs text-gray-400">5 Successful Referrals</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-accent">NFT + BTC</div>
+                                    <div class="text-xs text-gray-400">Entry Qualified</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t border-gray-800">
+                            <div class="text-center">
+                                <div class="text-sm text-gray-400 mb-2">Total Potential Rewards</div>
+                                <div class="text-3xl font-bold text-accent">$1,975+</div>
+                                <div class="text-xs text-gray-400 mt-2">Check your Bybit UI for live updates</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonials -->
+            <div class="mt-20">
+                <h3 class="text-2xl font-bold text-center mb-10">What Traders Are Saying</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-primary p-6 rounded-xl card-glow">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-accent"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold">Alex C.</div>
+                                <div class="text-sm text-gray-400">Futures Trader</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 italic mb-4">"Won 2,500 USDT in Futures Frenzy competition. The integration with Bybit made tracking so seamless!"</p>
+                        <div class="flex text-accent">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-primary p-6 rounded-xl card-glow">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-accent"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold">Sarah L.</div>
+                                <div class="text-sm text-gray-400">Beginner Trader</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 italic mb-4">"As a newbie, the Newbie Boost competition gave me the confidence to start trading. Won 500 USDT on my third trade!"</p>
+                        <div class="flex text-accent">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-primary p-6 rounded-xl card-glow">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-accent"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold">Marcus T.</div>
+                                <div class="text-sm text-gray-400">Options Expert</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 italic mb-4">"The Options Oracle giveaway is perfect for my trading style. Random draws keep it exciting, and I've won 3 times!"</p>
+                        <div class="flex text-accent">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competitions Hub -->
+    <section id="competitions" class="py-16 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">All Competitions & Giveaways</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Choose from 10 unique trading competitions. Filter by type, prize value, or end date.</p>
+            
+            <!-- Filters -->
+            <div class="flex flex-wrap justify-center gap-4 mb-10">
+                <button class="filter-btn active px-4 py-2 bg-accent text-black font-semibold rounded-lg" data-filter="all">All Competitions</button>
+                <button class="filter-btn px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black" data-filter="giveaway">Giveaways</button>
+                <button class="filter-btn px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black" data-filter="competition">Competitions</button>
+                <button class="filter-btn px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black" data-filter="daily">Daily</button>
+                <button class="filter-btn px-4 py-2 border border-accent text-accent rounded-lg hover:bg-accent hover:text-black" data-filter="weekly">Weekly</button>
+            </div>
+            
+            <!-- Competitions Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12" id="competitionsGrid">
+                <!-- Competition cards will be inserted here by JavaScript -->
+            </div>
+            
+            <!-- Live Leaderboard -->
+            <div class="bg-primary rounded-xl p-6 card-glow mb-12">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Live Leaderboard</h3>
+                    <div class="flex items-center">
+                        <span class="text-accent mr-2"><i class="fas fa-circle text-xs"></i> Live</span>
+                        <span class="text-gray-400">Updated every 5 minutes</span>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-800">
+                                <th class="text-left py-3">Rank</th>
+                                <th class="text-left py-3">Trader ID</th>
+                                <th class="text-left py-3">Competition</th>
+                                <th class="text-right py-3">Points</th>
+                                <th class="text-right py-3">Potential Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Leaderboard rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 text-center text-sm text-gray-400">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    All leaderboard data is pulled from Bybit's public API. Final results verified in your Bybit UI.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-16 px-4 bg-secondary/30">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">How It Works</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Start earning rewards in just 4 simple steps</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="relative mb-6">
+                        <div class="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto">
+                            <div class="w-20 h-20 rounded-full accent-gradient flex items-center justify-center">
+                                <span class="text-2xl font-bold text-black">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Sign Up</h3>
+                    <p class="text-gray-400">Create your Bybit account via our referral link to get instant bonus eligibility.</p>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="relative mb-6">
+                        <div class="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto">
+                            <div class="w-20 h-20 rounded-full accent-gradient flex items-center justify-center">
+                                <span class="text-2xl font-bold text-black">2</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Choose Competition</h3>
+                    <p class="text-gray-400">Select a giveaway or competition that matches your trading style and skill level.</p>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="relative mb-6">
+                        <div class="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto">
+                            <div class="w-20 h-20 rounded-full accent-gradient flex items-center justify-center">
+                                <span class="text-2xl font-bold text-black">3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Start Trading</h3>
+                    <p class="text-gray-400">Place trades on Bybit. Your activity is automatically tracked for competitions.</p>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="text-center">
+                    <div class="relative mb-6">
+                        <div class="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center mx-auto">
+                            <div class="w-20 h-20 rounded-full accent-gradient flex items-center justify-center">
+                                <span class="text-2xl font-bold text-black">4</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Claim Rewards</h3>
+                    <p class="text-gray-400">Check your Bybit UI for results. Rewards are distributed automatically to your wallet.</p>
+                </div>
+            </div>
+            
+            <!-- Integration Info -->
+            <div class="bg-primary rounded-xl p-8 card-glow max-w-4xl mx-auto">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                        <h3 class="text-2xl font-bold mb-4">Seamless Bybit Integration</h3>
+                        <p class="text-gray-300 mb-6">
+                            Our platform connects securely with Bybit's API to track competition progress in real-time. No need to share your credentials—we use Bybit's public APIs and your referral code for tracking.
+                        </p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>No third-party access to your account</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>All results verified in your Bybit UI</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>Secure referral tracking for bonuses</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="md:w-1/2">
+                        <div class="trading-view p-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="font-bold">BTC/USDT Chart</div>
+                                <div class="text-xs text-gray-400">Live via Bybit API</div>
+                            </div>
+                            <div class="h-40 flex items-end justify-center space-x-1 mb-4">
+                                <!-- Simulated candles -->
+                                <div class="w-4 candle-up" style="height: 60%"></div>
+                                <div class="w-4 candle-down" style="height: 40%"></div>
+                                <div class="w-4 candle-up" style="height: 80%"></div>
+                                <div class="w-4 candle-down" style="height: 30%"></div>
+                                <div class="w-4 candle-up" style="height: 70%"></div>
+                                <div class="w-4 candle-up" style="height: 90%"></div>
+                                <div class="w-4 candle-down" style="height: 50%"></div>
+                            </div>
+                            <div class="text-center text-sm text-gray-400">
+                                Bybit provides 24/7 trading with low fees and high leverage options
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rewards Calculator -->
+    <section id="calculator" class="py-16 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Rewards Calculator</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Estimate your potential earnings based on your trading activity</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-primary p-8 rounded-xl card-glow">
+                    <h3 class="text-2xl font-bold mb-6">Calculate Your Rewards</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-300 mb-2">Select Competition</label>
+                            <select id="calcCompetition" class="calculator-input">
+                                <option value="volume-dash">Daily Volume Dash</option>
+                                <option value="futures-frenzy">Futures Frenzy</option>
+                                <option value="referral-rally">Referral Rally</option>
+                                <option value="prediction">Prediction Powerhouse</option>
+                                <option value="options">Options Oracle</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Estimated Daily Volume (USDT)</label>
+                            <input type="range" id="calcVolume" min="100" max="100000" value="5000" class="w-full" step="100">
+                            <div class="flex justify-between text-sm text-gray-400 mt-1">
+                                <span>100 USDT</span>
+                                <span id="volumeValue">5,000 USDT</span>
+                                <span>100,000 USDT</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Trading Frequency</label>
+                            <select id="calcFrequency" class="calculator-input">
+                                <option value="daily">Daily</option>
+                                <option value="weekly" selected>Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-gray-300 mb-2">Current Skill Level</label>
+                            <div class="flex space-x-4">
+                                <button class="skill-level px-4 py-2 border border-gray-600 rounded-lg hover:border-accent" data-level="beginner">Beginner</button>
+                                <button class="skill-level px-4 py-2 border border-accent bg-accent/10 text-accent rounded-lg" data-level="intermediate" selected>Intermediate</button>
+                                <button class="skill-level px-4 py-2 border border-gray-600 rounded-lg hover:border-accent" data-level="expert">Expert</button>
+                            </div>
+                        </div>
+                        
+                        <button id="calculateBtn" class="w-full py-3 bybit-gradient text-white font-bold rounded-lg hover:opacity-90 transition-all">
+                            Calculate Potential Rewards
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-primary p-8 rounded-xl card-glow">
+                    <h3 class="text-2xl font-bold mb-6">Your Estimated Rewards</h3>
+                    
+                    <div class="text-center py-8">
+                        <div class="text-5xl font-bold text-accent mb-2" id="rewardEstimate">$0</div>
+                        <div class="text-gray-400 mb-8">Potential Monthly Earnings</div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-4 bg-secondary/50 rounded-lg">
+                                <span>Competition Prize Pool</span>
+                                <span class="font-bold text-accent" id="prizePool">$5,000</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-secondary/50 rounded-lg">
+                                <span>Your Estimated Share</span>
+                                <span class="font-bold text-accent" id="yourShare">8.5%</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-secondary/50 rounded-lg">
+                                <span>Referral Bonuses</span>
+                                <span class="font-bold text-accent" id="referralBonus">+$200</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-secondary/50 rounded-lg">
+                                <span>Bybit Welcome Bonus</span>
+                                <span class="font-bold text-accent">+$30</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 p-4 bg-accent/10 border border-accent/30 rounded-lg">
+                            <div class="font-bold text-accent mb-2"><i class="fas fa-lightbulb mr-2"></i>Pro Tip</div>
+                            <p class="text-sm text-gray-300">
+                                Increase your volume by 20% to potentially earn <span class="text-accent font-bold">40% more</span> in rewards due to tiered prize structures.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources/Blog -->
+    <section id="resources" class="py-16 px-4 bg-secondary/30">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Trading Resources</h2>
+            <p class="text-gray-400 text-center max-w-2xl mx-auto mb-12">Learn trading strategies, Bybit tutorials, and success stories from past winners</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Article 1 -->
+                <div class="bg-primary rounded-xl overflow-hidden card-glow">
+                    <div class="h-48 bg-gradient-to-r from-accent/20 to-accentBlue/20 flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-5xl text-accent"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs bg-accent text-black px-2 py-1 rounded">Beginner</span>
+                            <span class="text-xs text-gray-400">Feb 15, 2026</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Bybit Tutorial: Getting Started with Spot Trading</h3>
+                        <p class="text-gray-400 mb-4">A comprehensive guide to start spot trading on Bybit, perfect for newcomers.</p>
+                        <a href="#" class="text-accent hover:underline font-medium">Read More →</a>
+                    </div>
+                </div>
+                
+                <!-- Article 2 -->
+                <div class="bg-primary rounded-xl overflow-hidden card-glow">
+                    <div class="h-48 bg-gradient-to-r from-bybit/20 to-accent/20 flex items-center justify-center">
+                        <i class="fas fa-trophy text-5xl text-bybit"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs bg-accent text-black px-2 py-1 rounded">Success Story</span>
+                            <span class="text-xs text-gray-400">Jan 28, 2026</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">From $500 to $5,000: How I Won Futures Frenzy</h3>
+                        <p class="text-gray-400 mb-4">Interview with a competition winner who turned a small account into major rewards.</p>
+                        <a href="#" class="text-accent hover:underline font-medium">Read More →</a>
+                    </div>
+                </div>
+                
+                <!-- Article 3 -->
+                <div class="bg-primary rounded-xl overflow-hidden card-glow">
+                    <div class="h-48 bg-gradient-to-r from-accentBlue/20 to-bybit/20 flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-5xl text-accentBlue"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs bg-accent text-black px-2 py-1 rounded">Strategy</span>
+                            <span class="text-xs text-gray-400">Dec 10, 2025</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Maximizing Competition Points with Risk Management</h3>
+                        <p class="text-gray-400 mb-4">Learn how to optimize your trading for competition success while managing risk.</p>
+                        <a href="#" class="text-accent hover:underline font-medium">Read More →</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button id="viewAllResources" class="px-6 py-3 border-2 border-accent text-accent font-bold rounded-xl hover:bg-accent hover:text-black transition-all">
+                    View All Resources
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-16 px-4">
+        <div class="container mx-auto">
+            <div class="bg-gradient-to-r from-accent/10 to-accentBlue/10 rounded-2xl p-8 md:p-12 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Start Earning Rewards?</h2>
+                <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+                    Join thousands of traders who are already earning extra rewards on every trade. Sign up today and get your exclusive welcome bonus!
+                </p>
+                
+                <div class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-6">
+                    <button id="finalSignupBtn" class="px-8 py-4 bybit-gradient text-white font-bold rounded-xl text-lg hover:scale-105 transition-transform">
+                        <i class="fas fa-gift mr-2"></i> Sign Up & Get Bonus
+                    </button>
+                    <button id="faqBtn" class="px-8 py-4 border-2 border-accent text-accent font-bold rounded-xl text-lg hover:bg-accent hover:text-black transition-all">
+                        <i class="fas fa-question-circle mr-2"></i> FAQ
+                    </button>
+                </div>
+                
+                <div class="mt-8 text-sm text-gray-400">
+                    <i class="fas fa-shield-alt mr-2"></i> 100% secure. No withdrawal fees. Rewards paid directly to your Bybit wallet.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary py-12 px-4 border-t border-secondary">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl accent-gradient flex items-center justify-center">
+                            <i class="fas fa-gift text-black text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold">TradeRewards<span class="text-accent">Hub</span></h1>
+                            <div class="text-xs text-gray-400">Official Bybit Partner</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-400">
+                        Maximize your trading earnings with exclusive competitions and giveaways in partnership with Bybit.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Competitions</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">Daily Volume Dash</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">Futures Frenzy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">Referral Rally</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">Prediction Powerhouse</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">How It Works</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">Rewards Calculator</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">Trading Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition-colors">Success Stories</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Connect</h3>
+                    <div class="flex space-x-4 mb-6">
+                        <a href="#" class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-accent hover:text-black transition-colors">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-accent hover:text-black transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-accent hover:text-black transition-colors">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-accent hover:text-black transition-colors">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                    <div class="text-sm text-gray-400">
+                        <i class="fas fa-envelope mr-2"></i> support@traderewards.com
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                        &copy; 2026 TradeRewards Hub. All rights reserved. | Official Bybit Partner
+                    </div>
+                    <div class="flex space-x-6 text-sm text-gray-400">
+                        <a href="#" class="hover:text-accent transition-colors">Privacy Policy</a>
+                        <a href="#" class="hover:text-accent transition-colors">Terms of Service</a>
+                        <a href="#" class="hover:text-accent transition-colors">Disclaimer</a>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-xs text-gray-500 text-center">
+                    <p><i class="fas fa-exclamation-triangle mr-1"></i> All activities must comply with Bybit's terms. Rewards are not guaranteed and depend on participation. Always check results in your Bybit UI for accuracy. Trading involves risk of loss.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Bybit Signup Modal -->
+    <div id="bybitModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Sign Up on Bybit</h2>
+                <button id="closeBybitModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bybit-gradient flex items-center justify-center mr-4">
+                        <i class="fab fa-btc text-black text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Get Your Exclusive Welcome Bonus!</h3>
+                        <p class="text-gray-400">Sign up through TradeRewards Hub for extra rewards</p>
+                    </div>
+                </div>
+                
+                <p class="text-gray-300 mb-6">
+                    By signing up via our referral link, you'll receive:
+                </p>
+                
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <i class="fas fa-check-circle text-accent mr-3"></i>
+                        <span><span class="font-bold text-accent">$30 welcome bonus</span> after your first deposit</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check-circle text-accent mr-3"></i>
+                        <span>Automatic entry into all competitions</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check-circle text-accent mr-3"></i>
+                        <span>Priority support from our team</span>
+                    </li>
+                </ul>
+                
+                <div class="bg-secondary/50 rounded-lg p-4 mb-6">
+                    <div class="text-sm text-gray-400 mb-2">Your Referral Code</div>
+                    <div class="flex items-center">
+                        <div class="bg-black px-4 py-2 rounded-lg font-mono font-bold">TRADEREWARDS2026</div>
+                        <button class="ml-4 px-4 py-2 bg-accent text-black rounded-lg font-medium" onclick="copyReferralCode()">
+                            <i class="fas fa-copy mr-1"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col space-y-4">
+                <a href="https://partner.bybit.com/b/traderewards" target="_blank" class="w-full py-3 bybit-gradient text-white font-bold rounded-lg hover:opacity-90 transition-all text-center">
+                    Sign Up on Bybit Now
+                </a>
+                <button id="alreadyHaveAccount" class="w-full py-3 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                    I Already Have a Bybit Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Competition Entry Modal -->
+    <div id="competitionModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold" id="modalCompetitionTitle">Join Competition</h2>
+                <button id="closeCompetitionModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <p class="text-gray-300 mb-6" id="modalCompetitionDescription">Enter your Bybit details to join this competition</p>
+                
+                <form id="competitionForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-400 mb-2" for="bybitUsername">Bybit Username/UID</label>
+                        <input type="text" id="bybitUsername" class="calculator-input" placeholder="Enter your Bybit username or UID" required>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-gray-400 mb-2" for="referralLink">Your Bybit Referral Link (Optional)</label>
+                        <input type="text" id="referralLink" class="calculator-input" placeholder="https://partner.bybit.com/b/yourlink">
+                        <p class="text-xs text-gray-500 mt-1">Add your referral link to earn bonus points when others sign up</p>
+                    </div>
+                    
+                    <div class="bg-secondary/30 rounded-lg p-4 mb-6">
+                        <h4 class="font-bold text-accent mb-2"><i class="fas fa-exclamation-circle mr-2"></i>Important Note</h4>
+                        <p class="text-sm text-gray-300">
+                            All competition results and reward distributions are handled directly through Bybit. 
+                            You can check your progress and final results in your Bybit UI under the 'Rewards' or 'Events' tab.
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-center mb-6">
+                        <input type="checkbox" id="termsAgree" class="mr-3" required>
+                        <label for="termsAgree" class="text-sm text-gray-300">
+                            I agree to the competition rules and confirm I have a verified Bybit account
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-accent/90 transition-colors mb-4">
+                        Enter Competition
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Frequently Asked Questions</h2>
+                <button id="closeFaqModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="accordion">
+                    <button class="accordion-btn w-full text-left p-4 bg-secondary/30 rounded-lg hover:bg-secondary/50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold">How do I start earning rewards?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content px-4">
+                        <p class="py-4 text-gray-300">
+                            Sign up on Bybit via our referral link, then choose a competition from our hub. Start trading on Bybit as you normally would—your trades are automatically tracked for competitions you've entered.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <button class="accordion-btn w-full text-left p-4 bg-secondary/30 rounded-lg hover:bg-secondary/50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold">How are rewards distributed?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content px-4">
+                        <p class="py-4 text-gray-300">
+                            All rewards are distributed directly to your Bybit wallet. You can check your results in your Bybit UI under the 'Rewards' or 'Events' tab. No third-party access is required.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <button class="accordion-btn w-full text-left p-4 bg-secondary/30 rounded-lg hover:bg-secondary/50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold">Is there a fee to participate?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content px-4">
+                        <p class="py-4 text-gray-300">
+                            No, all competitions are completely free to enter. You only pay Bybit's standard trading fees. Some competitions may have minimum trading volume requirements.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <button class="accordion-btn w-full text-left p-4 bg-secondary/30 rounded-lg hover:bg-secondary/50 transition-colors">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold">Can beginners participate?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content px-4">
+                        <p class="py-4 text-gray-300">
+                            Absolutely! We have specific competitions for beginners like "Newbie Boost" and "Quiz Quest". These are designed to help new traders learn while earning rewards.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 p-4 bg-accent/10 border border-accent/30 rounded-lg">
+                <p class="text-sm text-gray-300">
+                    <i class="fas fa-headset mr-2 text-accent"></i>
+                    Still have questions? Contact our support team at support@traderewards.com or reach out to Bybit's 24/7 support directly.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const bybitModal = document.getElementById('bybitModal');
+        const competitionModal = document.getElementById('competitionModal');
+        const faqModal = document.getElementById('faqModal');
+        const closeBybitModal = document.getElementById('closeBybitModal');
+        const closeCompetitionModal = document.getElementById('closeCompetitionModal');
+        const closeFaqModal = document.getElementById('closeFaqModal');
+        const alreadyHaveAccount = document.getElementById('alreadyHaveAccount');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        // All competitions data
+        const competitions = [
+            {
+                id: 1,
+                name: "Daily Volume Dash Giveaway",
+                type: "giveaway",
+                frequency: "daily",
+                prize: "5,000 USDT",
+                description: "Trade a minimum of 1,000 USDT in spot markets daily; top 50 by volume win random draws for 100-500 USDT.",
+                participants: 1250,
+                duration: "24 hours, resets daily",
+                requirements: "Min 1,000 USDT daily volume",
+                tag: "Daily",
+                icon: "fa-tachometer-alt",
+                color: "from-accent/20 to-accentBlue/20"
+            },
+            {
+                id: 2,
+                name: "Futures Frenzy Competition",
+                type: "competition",
+                frequency: "weekly",
+                prize: "15,000 USDT",
+                description: "Compete in futures trading for highest ROI over a week; tiers for beginners (low leverage) and experts.",
+                participants: 850,
+                duration: "Weekly",
+                requirements: "Active futures trading, ROI-based",
+                tag: "Weekly",
+                icon: "fa-chart-candlestick",
+                color: "from-bybit/20 to-accentBlue/20"
+            },
+            {
+                id: 3,
+                name: "Referral Rally Giveaway",
+                type: "giveaway",
+                frequency: "monthly",
+                prize: "1 BTC + NFTs",
+                description: "Refer friends to Bybit via your link; each successful trade by a referral enters you into a monthly draw for NFTs or 1 BTC grand prize.",
+                participants: 3200,
+                duration: "Monthly",
+                requirements: "Refer new users to Bybit",
+                tag: "Monthly",
+                icon: "fa-user-friends",
+                color: "from-accent/20 to-bybit/20"
+            },
+            {
+                id: 4,
+                name: "Prediction Powerhouse Competition",
+                type: "competition",
+                frequency: "weekly",
+                prize: "10,000 USDT",
+                description: "Predict the closing price of BTC/USDT at week's end; closest guesses win shared pool of 10,000 USDT, with bonus for streak predictions.",
+                participants: 2100,
+                duration: "Weekly",
+                requirements: "Price prediction submissions",
+                tag: "Weekly",
+                icon: "fa-brain",
+                color: "from-purple-500/20 to-accentBlue/20"
+            },
+            {
+                id: 5,
+                name: "Options Oracle Giveaway",
+                type: "giveaway",
+                frequency: "weekly",
+                prize: "1,000 USDT",
+                description: "Trade options contracts; random weekly draws for active participants, with prizes scaled by trade count (up to 1,000 USDT).",
+                participants: 750,
+                duration: "Weekly",
+                requirements: "Options trading activity",
+                tag: "Weekly",
+                icon: "fa-chess-knight",
+                color: "from-accentBlue/20 to-purple-500/20"
+            },
+            {
+                id: 6,
+                name: "Newbie Boost Competition",
+                type: "competition",
+                frequency: "monthly",
+                prize: "500 USDT + Mentorship",
+                description: "For users with under 30 days on Bybit; achieve 5% profit on any trade to enter a leaderboard for mentorship sessions and 500 USDT cash.",
+                participants: 1800,
+                duration: "Monthly",
+                requirements: "New users (<30 days), 5%+ profit",
+                tag: "Monthly",
+                icon: "fa-rocket",
+                color: "from-green-500/20 to-accent/20"
+            },
+            {
+                id: 7,
+                name: "Social Share Sweepstakes",
+                type: "giveaway",
+                frequency: "weekly",
+                prize: "Gadgets + 200 USDT",
+                description: "Share your Bybit trade screenshots on social media with #TradeRewardsHub; verified shares enter you for weekly gadget prizes plus 200 USDT.",
+                participants: 2900,
+                duration: "Weekly",
+                requirements: "Social media sharing",
+                tag: "Weekly",
+                icon: "fa-share-alt",
+                color: "from-blue-500/20 to-accent/20"
+            },
+            {
+                id: 8,
+                name: "Leverage Leaderboard Competition",
+                type: "competition",
+                frequency: "monthly",
+                prize: "2,000 USDT",
+                description: "Highest safe leverage usage without liquidation over a month; rewards for risk-managed trades, top prize 2,000 USDT.",
+                participants: 620,
+                duration: "Monthly",
+                requirements: "Leverage trading, no liquidations",
+                tag: "Monthly",
+                icon: "fa-chart-line",
+                color: "from-orange-500/20 to-accent/20"
+            },
+            {
+                id: 9,
+                name: "Quiz Quest Giveaway",
+                type: "giveaway",
+                frequency: "daily",
+                prize: "5,000 USDT Monthly",
+                description: "Answer daily trading quizzes on the website (pulled from Bybit academy); correct answers accumulate points for monthly prize pools of 5,000 USDT.",
+                participants: 4100,
+                duration: "Daily + Monthly",
+                requirements: "Quiz participation",
+                tag: "Daily",
+                icon: "fa-question-circle",
+                color: "from-yellow-500/20 to-accent/20"
+            },
+            {
+                id: 10,
+                name: "Endurance Exchange Competition",
+                type: "competition",
+                frequency: "monthly",
+                prize: "VIP Perks + 1,000 USDT",
+                description: "Longest streak of profitable trades (minimum 10 trades); monthly winners get exclusive Bybit VIP perks plus 1,000 USDT.",
+                participants: 930,
+                duration: "Monthly",
+                requirements: "10+ profitable trades streak",
+                tag: "Monthly",
+                icon: "fa-fire",
+                color: "from-red-500/20 to-accent/20"
+            }
+        ];
+
+        // Leaderboard data
+        const leaderboardData = [
+            { rank: 1, traderId: "TR*****23", competition: "Futures Frenzy", points: 9850, reward: "5,000 USDT" },
+            { rank: 2, traderId: "CR*****89", competition: "Volume Dash", points: 8765, reward: "2,500 USDT" },
+            { rank: 3, traderId: "BT*****47", competition: "Prediction", points: 8120, reward: "1,500 USDT" },
+            { rank: 4, traderId: "SK*****12", competition: "Endurance", points: 7980, reward: "1,000 USDT" },
+            { rank: 5, traderId: "AL*****65", competition: "Options", points: 7450, reward: "800 USDT" },
+            { rank: 6, traderId: "MA*****33", competition: "Leverage", points: 6980, reward: "600 USDT" },
+            { rank: 7, traderId: "JO*****78", competition: "Newbie Boost", points: 6540, reward: "500 USDT" },
+            { rank: 8, traderId: "DA*****91", competition: "Referral", points: 6120, reward: "NFT + 200 USDT" },
+        ];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render competitions
+            renderCompetitions(competitions);
+            
+            // Render leaderboard
+            renderLeaderboard();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize calculator
+            initCalculator();
+            
+            // Animate reward particles
+            createRewardParticles();
+            
+            // Simulate live updates
+            simulateLiveUpdates();
+        });
+
+        // Render competitions to the grid
+        function renderCompetitions(competitionsToRender) {
+            const grid = document.getElementById('competitionsGrid');
+            grid.innerHTML = '';
+            
+            competitionsToRender.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'bg-primary rounded-xl overflow-hidden card-glow slide-up';
+                card.style.animationDelay = `${comp.id * 0.1}s`;
+                
+                card.innerHTML = `
+                    <div class="h-40 bg-gradient-to-r ${comp.color} flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas ${comp.icon} text-4xl text-accent"></i>
+                            <div class="mt-2">
+                                <span class="text-xs bg-black/50 text-white px-2 py-1 rounded">${comp.tag}</span>
+                                ${comp.type === 'giveaway' ? 
+                                    '<span class="text-xs bg-accent/20 text-accent px-2 py-1 rounded ml-1">Giveaway</span>' : 
+                                    '<span class="text-xs bg-accentBlue/20 text-accentBlue px-2 py-1 rounded ml-1">Competition</span>'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3">${comp.name}</h3>
+                        <div class="flex justify-between mb-4">
+                            <span class="text-accent font-bold">PRIZE POOL</span>
+                            <span class="font-bold">${comp.prize}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6">${comp.description}</p>
+                        <div class="flex justify-between text-sm text-gray-500 mb-4">
+                            <span><i class="fas fa-users mr-1"></i> ${comp.participants.toLocaleString()} participants</span>
+                            <span><i class="far fa-clock mr-1"></i> ${comp.duration}</span>
+                        </div>
+                        <button class="join-competition-btn w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-accent/90 transition-colors" data-id="${comp.id}">
+                            Join Competition
+                        </button>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            // Add event listeners to join buttons
+            document.querySelectorAll('.join-competition-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const compId = parseInt(this.getAttribute('data-id'));
+                    const competition = competitions.find(c => c.id === compId);
+                    openCompetitionModal(competition);
+                });
+            });
+        }
+
+        // Render leaderboard
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = '';
+            
+            leaderboardData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'leaderboard-row border-b border-gray-800';
+                
+                tr.innerHTML = `
+                    <td class="py-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full ${row.rank <= 3 ? 'bg-accent/20 text-accent' : 'bg-gray-800 text-gray-300'} flex items-center justify-center mr-3 font-bold">
+                                ${row.rank}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4">${row.traderId}</td>
+                    <td class="py-4">${row.competition}</td>
+                    <td class="py-4 text-right font-bold">${row.points.toLocaleString()}</td>
+                    <td class="py-4 text-right text-accent font-bold">${row.reward}</td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Modal open buttons
+            const modalTriggers = [
+                ...document.querySelectorAll('[id*="SignupBtn"]'),
+                ...document.querySelectorAll('.bybit-modal-btn')
+            ];
+            
+            modalTriggers.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    bybitModal.style.display = 'flex';
+                });
+            });
+            
+            document.getElementById('faqBtn')?.addEventListener('click', () => {
+                faqModal.style.display = 'flex';
+            });
+            
+            document.getElementById('watchDemoBtn')?.addEventListener('click', () => {
+                alert('Demo video would play here. In a real implementation, this would open a video player.');
+            });
+            
+            // Modal close buttons
+            closeBybitModal.addEventListener('click', () => {
+                bybitModal.style.display = 'none';
+            });
+            
+            closeCompetitionModal.addEventListener('click', () => {
+                competitionModal.style.display = 'none';
+            });
+            
+            closeFaqModal.addEventListener('click', () => {
+                faqModal.style.display = 'none';
+            });
+            
+            alreadyHaveAccount.addEventListener('click', () => {
+                bybitModal.style.display = 'none';
+                alert('To link your existing account, please enter your Bybit UID in any competition entry form.');
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === bybitModal) bybitModal.style.display = 'none';
+                if (e.target === competitionModal) competitionModal.style.display = 'none';
+                if (e.target === faqModal) faqModal.style.display = 'none';
+            });
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active button
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-accent', 'text-black'));
+                    this.classList.add('active', 'bg-accent', 'text-black');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    let filteredComps = competitions;
+                    
+                    if (filter !== 'all') {
+                        if (filter === 'giveaway') {
+                            filteredComps = competitions.filter(c => c.type === 'giveaway');
+                        } else if (filter === 'competition') {
+                            filteredComps = competitions.filter(c => c.type === 'competition');
+                        } else if (filter === 'daily') {
+                            filteredComps = competitions.filter(c => c.frequency === 'daily');
+                        } else if (filter === 'weekly') {
+                            filteredComps = competitions.filter(c => c.frequency === 'weekly');
+                        }
+                    }
+                    
+                    renderCompetitions(filteredComps);
+                });
+            });
+            
+            // Accordion functionality
+            document.querySelectorAll('.accordion-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const accordion = this.parentElement;
+                    const content = this.nextElementSibling;
+                    
+                    // Close other accordions
+                    document.querySelectorAll('.accordion').forEach(acc => {
+                        if (acc !== accordion) {
+                            acc.classList.remove('active');
+                            acc.querySelector('.accordion-content').style.maxHeight = null;
+                            acc.querySelector('.fa-chevron-down').style.transform = 'rotate(0deg)';
+                        }
+                    });
+                    
+                    // Toggle current accordion
+                    accordion.classList.toggle('active');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        this.querySelector('.fa-chevron-down').style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        this.querySelector('.fa-chevron-down').style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+            
+            // Competition form submission
+            document.getElementById('competitionForm')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('bybitUsername').value;
+                const referral = document.getElementById('referralLink').value;
+                
+                // In a real app, this would send data to backend
+                console.log('Competition entry:', { username, referral });
+                
+                // Show success message
+                competitionModal.style.display = 'none';
+                alert(`Success! You've entered the competition. Check your Bybit UI for tracking.${referral ? ' Your referral link has been recorded.' : ''}`);
+                
+                // Reset form
+                this.reset();
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Close mobile menu if open
+                        mobileMenu.classList.add('hidden');
+                        
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Open competition modal with specific competition data
+        function openCompetitionModal(competition) {
+            document.getElementById('modalCompetitionTitle').textContent = competition.name;
+            document.getElementById('modalCompetitionDescription').textContent = competition.description;
+            competitionModal.style.display = 'flex';
+        }
+
+        // Initialize rewards calculator
+        function initCalculator() {
+            const volumeSlider = document.getElementById('calcVolume');
+            const volumeValue = document.getElementById('volumeValue');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const skillLevelBtns = document.querySelectorAll('.skill-level');
+            
+            // Update volume value display
+            volumeSlider.addEventListener('input', function() {
+                const value = parseInt(this.value).toLocaleString();
+                volumeValue.textContent = `${value} USDT`;
+            });
+            
+            // Skill level buttons
+            skillLevelBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    skillLevelBtns.forEach(b => {
+                        b.classList.remove('bg-accent/10', 'text-accent', 'border-accent');
+                        b.classList.add('border-gray-600');
+                    });
+                    
+                    this.classList.add('bg-accent/10', 'text-accent', 'border-accent');
+                    this.classList.remove('border-gray-600');
+                });
+            });
+            
+            // Calculate button
+            calculateBtn.addEventListener('click', calculateRewards);
+            
+            // Initial calculation
+            calculateRewards();
+        }
+
+        // Calculate potential rewards
+        function calculateRewards() {
+            const volume = parseInt(document.getElementById('calcVolume').value);
+            const competition = document.getElementById('calcCompetition').value;
+            const frequency = document.getElementById('calcFrequency').value;
+            
+            // Base calculation
+            let baseReward = 0;
+            let prizePool = 5000;
+            let sharePercentage = 5;
+            
+            // Adjust based on competition
+            if (competition === 'futures-frenzy') {
+                prizePool = 15000;
+                sharePercentage = volume > 50000 ? 12 : volume > 10000 ? 8 : 4;
+            } else if (competition === 'referral-rally') {
+                prizePool = 30000; // BTC value approx
+                sharePercentage = 2;
+            } else if (competition === 'prediction') {
+                prizePool = 10000;
+                sharePercentage = 10;
+            } else if (competition === 'options') {
+                prizePool = 1000;
+                sharePercentage = 15;
+            }
+            
+            // Adjust based on volume
+            if (volume > 50000) sharePercentage *= 1.5;
+            if (volume > 100000) sharePercentage *= 2;
+            
+            // Adjust based on frequency
+            if (frequency === 'daily') sharePercentage *= 30;
+            if (frequency === 'weekly') sharePercentage *= 4;
+            
+            baseReward = (prizePool * sharePercentage) / 100;
+            
+            // Add referral bonus
+            const referralBonus = Math.min(volume * 0.02, 1000);
+            
+            // Total estimate
+            const totalEstimate = baseReward + referralBonus + 30; // + $30 welcome bonus
+            
+            // Update UI
+            document.getElementById('rewardEstimate').textContent = `$${Math.round(totalEstimate).toLocaleString()}`;
+            document.getElementById('prizePool').textContent = `$${prizePool.toLocaleString()}`;
+            document.getElementById('yourShare').textContent = `${sharePercentage.toFixed(1)}%`;
+            document.getElementById('referralBonus').textContent = `+$${Math.round(referralBonus).toLocaleString()}`;
+        }
+
+        // Create animated reward particles
+        function createRewardParticles() {
+            const container = document.querySelector('body');
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'reward-particle';
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                // Random size
+                const size = Math.random() * 6 + 4;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random color variation
+                const hue = Math.random() > 0.5 ? 120 : 195; // Green or blue
+                particle.style.backgroundColor = `hsl(${hue}, 100%, 60%)`;
+                
+                container.appendChild(particle);
+                
+                // Animate
+                animateParticle(particle);
+            }
+        }
+
+        // Animate a single particle
+        function animateParticle(particle) {
+            const duration = Math.random() * 4 + 3;
+            const delay = Math.random() * 5;
+            
+            // Set initial animation
+            particle.style.transition = `all ${duration}s ease-in-out ${delay}s`;
+            particle.style.opacity = '0.8';
+            
+            // Move particle
+            setTimeout(() => {
+                particle.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px)`;
+                particle.style.opacity = '0';
+            }, 100);
+            
+            // Reset and repeat
+            setTimeout(() => {
+                particle.style.transition = 'none';
+                particle.style.transform = 'translate(0, 0)';
+                particle.style.opacity = '0';
+                
+                // New random position
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                // Restart animation
+                setTimeout(() => {
+                    particle.style.transition = `all ${duration}s ease-in-out`;
+                    animateParticle(particle);
+                }, 100);
+            }, (duration + delay) * 1000);
+        }
+
+        // Simulate live updates
+        function simulateLiveUpdates() {
+            // Update leaderboard every 10 seconds
+            setInterval(() => {
+                // Randomly update points
+                leaderboardData.forEach(row => {
+                    row.points += Math.floor(Math.random() * 50);
+                });
+                
+                // Sort by points
+                leaderboardData.sort((a, b) => b.points - a.points);
+                
+                // Update ranks
+                leaderboardData.forEach((row, index) => {
+                    row.rank = index + 1;
+                });
+                
+                renderLeaderboard();
+            }, 10000);
+            
+            // Update participant counts every 15 seconds
+            setInterval(() => {
+                competitions.forEach(comp => {
+                    comp.participants += Math.floor(Math.random() * 10);
+                });
+                
+                // Re-render competitions if on competitions page
+                const activeFilter = document.querySelector('.filter-btn.active');
+                if (activeFilter && window.location.hash === '#competitions') {
+                    const filter = activeFilter.getAttribute('data-filter');
+                    let filteredComps = competitions;
+                    
+                    if (filter !== 'all') {
+                        if (filter === 'giveaway') {
+                            filteredComps = competitions.filter(c => c.type === 'giveaway');
+                        } else if (filter === 'competition') {
+                            filteredComps = competitions.filter(c => c.type === 'competition');
+                        } else if (filter === 'daily') {
+                            filteredComps = competitions.filter(c => c.frequency === 'daily');
+                        } else if (filter === 'weekly') {
+                            filteredComps = competitions.filter(c => c.frequency === 'weekly');
+                        }
+                    }
+                    
+                    renderCompetitions(filteredComps);
+                }
+            }, 15000);
+        }
+
+        // Copy referral code to clipboard
+        function copyReferralCode() {
+            const code = 'TRADEREWARDS2026';
+            navigator.clipboard.writeText(code).then(() => {
+                // Show copied message
+                const copyBtn = event.target.closest('button');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                copyBtn.classList.add('bg-green-500');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('bg-green-500');
+                }, 2000);
+            });
+        }
+    </script>
+
+    <!-- Analytics Script -->
+    <script>
+        // Google Analytics simulation (replace with real GA code)
+        (function() {
+            console.log('Analytics loaded: TradeRewards Hub');
+            
+            // Track signup clicks
+            document.querySelectorAll('[id*="SignupBtn"], .bybit-modal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    console.log('Signup attempt tracked');
+                    // In real implementation: gtag('event', 'signup_click', {...});
+                });
+            });
+            
+            // Track competition entries
+            document.querySelectorAll('.join-competition-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const compId = this.getAttribute('data-id');
+                    console.log(`Competition entry attempt: ${compId}`);
+                    // In real implementation: gtag('event', 'competition_entry', {...});
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
