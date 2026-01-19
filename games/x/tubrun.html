@@ -1,1 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viking Fortune Raid</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(139, 69, 19, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(220, 38, 38, 0.8); }
+        }
+        @keyframes coin-spin {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(360deg); }
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        @keyframes axe-swing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+        @keyframes fire-flicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        .coin-spin {
+            animation: coin-spin 2s linear infinite;
+        }
+        .axe-swing {
+            animation: axe-swing 2s ease-in-out infinite;
+        }
+        .fire-flicker {
+            animation: fire-flicker 1s ease-in-out infinite;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #dc2626;
+            opacity: 0.7;
+            animation: confetti-fall 5s linear infinite;
+        }
+        .game-container {
+            background: linear-gradient(135deg, #1c1917 0%, #450a0a 50%, #7c2d12 100%);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 53, 15, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.2) 0%, transparent 50%);
+        }
+        .crypto-card {
+            background: rgba(28, 25, 23, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(120, 53, 15, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(90deg, #92400e 0%, #dc2626 100%);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+        }
+        .coin {
+            background: radial-gradient(circle at 30% 30%, #92400e, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fbbf24;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+            border: 2px solid #fbbf24;
+        }
+        .viking-coin {
+            background: radial-gradient(circle at 30% 30%, #92400e, #b45309, #dc2626);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #fbbf24;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+        }
+        .viking-coin::before {
+            content: "⚔️";
+            font-size: 32px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.8));
+        }
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        .wallet-card {
+            background: linear-gradient(135deg, #92400e 0%, #dc2626 100%);
+            border: 2px solid #fbbf24;
+        }
+        .modal-step {
+            transition: all 0.3s ease;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .benefit-icon {
+            color: #fbbf24;
+            margin-right: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #92400e 0%, #dc2626 100%);
+            color: #ffffff;
+            font-weight: bold;
+            border: 1px solid #fbbf24;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #7c2d12 0%, #b91c1c 100%);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #292524;
+            color: #ffffff;
+            border: 1px solid #78716c;
+        }
+        .btn-secondary:hover {
+            background-color: #44403c;
+        }
+        .btn-success {
+            background-color: #16a34a;
+            color: #ffffff;
+            border: 1px solid #22c55e;
+        }
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+        .btn-info {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: 1px solid #60a5fa;
+        }
+        .btn-info:hover {
+            background-color: #2563eb;
+        }
+        .game-area {
+            background: rgba(120, 53, 15, 0.15);
+            border: 2px solid rgba(120, 53, 15, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .viking-bg {
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(220, 38, 38, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.1) 0%, transparent 20%);
+        }
+        .fire {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to top, rgba(220, 38, 38, 0.6), transparent);
+        }
+        .shield-border {
+            border: 3px solid #92400e;
+            border-radius: 10px;
+            box-shadow: inset 0 0 20px rgba(220, 38, 38, 0.3);
+        }
+        .runes-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="game-container text-white font-sans runes-bg">
+    <!-- Game Header -->
+    <header class="p-4 flex justify-between items-center">
+        <div class="text-xl font-bold flex items-center">
+            <i class="fas fa-helmet-battle text-yellow-500 mr-2"></i>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-red-600">Viking Raid</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center bg-stone-900 bg-opacity-70 px-4 py-2 rounded-lg border border-yellow-800">
+                <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                <span class="font-bold" id="balance">0.00</span>
+                <span class="ml-1 text-yellow-300">Gold</span>
+            </div>
+            <button id="wallet-btn" class="btn-primary px-4 py-2 rounded-lg text-sm font-bold">
+                <i class="fas fa-chess-rook mr-1"></i>Treasure Chest
+            </button>
+        </div>
+    </header>
 
+    <!-- Main Game Area -->
+    <main class="p-4 max-w-md mx-auto">
+        <!-- Game Progress -->
+        <div class="mb-6">
+            <div class="flex justify-between text-sm mb-2">
+                <span class="text-yellow-400 font-bold">Raid 1</span>
+                <span id="progress-text" class="font-bold text-yellow-300">0/10</span>
+                <span class="text-red-400 font-bold">Raid 2</span>
+            </div>
+            <div class="h-3 bg-stone-800 rounded-full overflow-hidden shield-border">
+                <div id="progress-bar" class="progress-bar h-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Game Title -->
+        <h1 class="text-3xl font-bold text-center mb-2">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-red-500 to-yellow-500">Viking Fortune Raid</span>
+        </h1>
+        <p class="text-center text-yellow-200 mb-6">Battle for treasure and earn your fortune!</p>
+
+        <!-- Game Area -->
+        <div class="relative h-72 game-area rounded-xl mb-6 overflow-hidden viking-bg">
+            <!-- Fire Effect -->
+            <div class="fire fire-flicker"></div>
+            
+            <!-- Animated Background Elements -->
+            <div class="absolute top-8 left-6 w-10 h-10 rounded-full bg-red-600 opacity-20 float-animation"></div>
+            <div class="absolute bottom-12 right-8 w-8 h-8 rounded-full bg-yellow-600 opacity-20 float-animation" style="animation-delay: 1s;"></div>
+            <div class="absolute top-16 left-1/4 w-12 h-12 rounded-full bg-orange-600 opacity-20 float-animation" style="animation-delay: 2s;"></div>
+            
+            <!-- Viking Ship Silhouette -->
+            <div class="absolute bottom-0 left-0 right-0 h-16">
+                <div class="absolute bottom-0 left-1/4 w-32 h-8 bg-stone-800 rounded-t-lg"></div>
+                <div class="absolute bottom-8 left-1/4 w-32 h-2 bg-stone-700"></div>
+                <div class="absolute bottom-10 left-1/2 w-4 h-16 bg-stone-900"></div>
+                <div class="absolute bottom-16 left-1/2 w-16 h-4 bg-red-800 transform -translate-x-1/2"></div>
+            </div>
+            
+            <!-- Clickable Coins -->
+            <div id="coin-container" class="absolute inset-0">
+                <!-- Coins will be dynamically added here -->
+            </div>
+            
+            <!-- Game Instructions -->
+            <div id="instructions" class="absolute inset-0 flex items-center justify-center flex-col bg-stone-900/80 backdrop-blur-sm">
+                <div class="viking-coin w-20 h-20 mb-6 pulse-glow flex items-center justify-center axe-swing">
+                </div>
+                <p class="text-center px-6 text-xl font-semibold text-yellow-200">Raid the treasure!<br>Tap to collect gold and jewels!</p>
+                <div class="mt-6 flex space-x-4">
+                    <div class="w-8 h-8 bg-yellow-500 rounded-full"></div>
+                    <div class="w-8 h-8 bg-red-500 rounded-full"></div>
+                    <div class="w-8 h-8 bg-yellow-500 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="crypto-card rounded-lg p-4 text-center shield-border">
+                <div class="text-2xl font-bold text-yellow-400" id="coins-collected">0</div>
+                <div class="text-sm text-yellow-200">Treasure Collected</div>
+                <div class="text-xs text-yellow-300 mt-1">⚔️ ⚔️ ⚔️</div>
+            </div>
+            <div class="crypto-card rounded-lg p-4 text-center shield-border">
+                <div class="text-2xl font-bold text-red-400" id="current-multiplier">1x</div>
+                <div class="text-sm text-red-200">Battle Rage</div>
+                <div class="text-xs text-red-300 mt-1">🔥 🔥 🔥</div>
+            </div>
+            <div class="crypto-card rounded-lg p-4 text-center shield-border">
+                <div class="text-2xl font-bold text-yellow-400" id="total-winnings">$0</div>
+                <div class="text-sm text-yellow-200">Plunder Total</div>
+                <div class="text-xs text-yellow-300 mt-1">💰 💰 💰</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4 mb-8">
+            <button id="boost-btn" class="flex-1 btn-primary py-4 rounded-xl font-bold flex items-center justify-center text-lg">
+                <i class="fas fa-fire mr-2 fire-flicker"></i> Berserk (2x)
+            </button>
+            <button id="collect-btn" class="flex-1 btn-secondary py-4 rounded-xl font-bold flex items-center justify-center text-lg">
+                <i class="fas fa-gem mr-2 text-yellow-300"></i> Plunder
+            </button>
+        </div>
+
+        <!-- Battle Status -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center bg-stone-900/70 px-4 py-2 rounded-full border border-yellow-800">
+                <i class="fas fa-shield-alt text-yellow-400 mr-2"></i>
+                <span class="text-yellow-200">Next Raid Bonus: </span>
+                <span class="ml-2 font-bold text-yellow-300">$10 Gold</span>
+                <i class="fas fa-trophy text-yellow-400 ml-2"></i>
+            </div>
+        </div>
+    </main>
+
+    <!-- E-Wallet Modal - Step 1: eWallet Check -->
+    <div id="wallet-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden">
+        <div class="bg-stone-900 rounded-2xl p-6 max-w-sm w-full mx-4 wallet-card">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-chess-rook mr-2 text-yellow-400"></i>
+                    Viking Treasure Chest
+                </h2>
+                <button id="close-modal" class="text-white hover:text-yellow-300 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Step 1: eWallet Check -->
+            <div id="step-1" class="modal-step">
+                <div class="mb-6 text-center">
+                    <div class="text-4xl font-bold mb-2 text-yellow-300" id="wallet-balance">$0.00</div>
+                    <p class="text-yellow-200">Gold in Your Chest</p>
+                    <div class="mt-2 text-2xl">
+                        <i class="fas fa-coins text-yellow-500"></i>
+                        <i class="fas fa-gem text-red-500 mx-2"></i>
+                        <i class="fas fa-coins text-yellow-500"></i>
+                    </div>
+                </div>
+                
+                <div class="mb-6 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-helmet-battle text-5xl text-yellow-400 axe-swing"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-4 text-white">Ready to claim your plunder?</h3>
+                    <p class="text-yellow-200 mb-6">You'll need an eWallet to withdraw your Viking gold</p>
+                    
+                    <button id="has-wallet-btn" class="w-full btn-success py-3 rounded-xl font-bold mb-3">
+                        <i class="fas fa-shield-alt mr-2"></i>Yes, I have an eWallet
+                    </button>
+                    
+                    <button id="no-wallet-btn" class="w-full btn-info py-3 rounded-xl font-bold">
+                        <i class="fas fa-ship mr-2"></i>No, I need to create one
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Cash Out Form (for users with eWallet) -->
+            <div id="step-2" class="modal-step hidden">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-white flex items-center">
+                        <i class="fas fa-treasure-chest mr-2 text-yellow-400"></i>
+                        Claim Your Plunder
+                    </h3>
+                    <div class="space-y-3 bg-stone-800/50 p-4 rounded-xl border border-yellow-900">
+                        <div class="flex justify-between items-center">
+                            <span class="text-yellow-200 flex items-center">
+                                <i class="fas fa-coins mr-2"></i>Plunder:
+                            </span>
+                            <span id="wallet-winnings" class="font-bold text-yellow-300">$0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-yellow-200 flex items-center">
+                                <i class="fas fa-crown mr-2"></i>Victory Bonus:
+                            </span>
+                            <span id="wallet-bonus" class="font-bold text-red-300">$0.00</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-yellow-900 items-center">
+                            <span class="text-white flex items-center">
+                                <i class="fas fa-trophy mr-2 text-yellow-400"></i>Total:
+                            </span>
+                            <span id="wallet-total" class="text-yellow-300">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2 text-yellow-200">Withdrawal Amount (Max: $500)</label>
+                    <input type="number" id="withdraw-amount" class="w-full bg-stone-800 text-white rounded-lg p-3 border border-yellow-800 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="Enter amount of gold" min="1" max="500">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2 text-yellow-200">E-Wallet Address</label>
+                    <input type="text" id="wallet-address" class="w-full bg-stone-800 text-white rounded-lg p-3 border border-yellow-800 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="Enter your longship dock address">
+                </div>
+                
+                <button id="cashout-btn" class="w-full btn-success py-3 rounded-xl font-bold mb-3">
+                    <i class="fas fa-anchor mr-2"></i>Send Plunder Home
+                </button>
+                
+                <p class="text-xs text-center text-yellow-200">
+                    By claiming your plunder, you swear by Odin to our terms and activate your e-wallet for withdrawal.
+                </p>
+            </div>
+            
+            <!-- Step 3: Bybit Signup Promotion -->
+            <div id="step-3" class="modal-step hidden">
+                <div class="mb-6 text-center">
+                    <div class="text-yellow-400 text-5xl mb-4 axe-swing">
+                        <i class="fas fa-axe"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4 text-white">Allied with Bybit</h3>
+                    <p class="text-yellow-200 mb-6">Get full access to ALL our premium raid signals and treasures for FREE!</p>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-bold mb-3 text-yellow-300">By joining forces with Bybit you gain:</h4>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span class="text-yellow-100">Activate your Treasure Chest for withdrawals</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span class="text-yellow-100">FREE access to ALL Viking trading signals</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span class="text-yellow-100">Premium treasure maps (usually $9.99/month)</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-check benefit-icon"></i>
+                        <span class="text-yellow-100">Battle-tested trading tools</span>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-6 bg-stone-800/50 p-4 rounded-xl border border-yellow-900">
+                    <p class="text-sm text-yellow-200 mb-2">
+                        <i class="fas fa-helmet-battle text-yellow-400 mr-1"></i>
+                        Other raiders pay $9.99/month for these maps
+                    </p>
+                    <p class="text-lg font-bold text-yellow-300">
+                        You get them FREE with your Bybit alliance!
+                    </p>
+                </div>
+                
+                <a href="https://partner.bybit.com/b/35978" target="_blank" rel="noopener noreferrer">
+                    <button class="w-full btn-primary py-3 rounded-xl font-bold mb-3">
+                        <i class="fas fa-handshake mr-2"></i>Forge Alliance with Bybit
+                    </button>
+                </a>
+                
+                <button id="back-to-wallet-check" class="w-full btn-secondary py-3 rounded-xl font-bold">
+                    <i class="fas fa-arrow-left mr-2"></i>Return to Chest
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden">
+        <div class="bg-stone-900 rounded-2xl p-6 max-w-sm w-full mx-4 text-center border-2 border-yellow-700">
+            <div class="text-yellow-400 text-5xl mb-4">
+                <i class="fas fa-trophy"></i>
+                <i class="fas fa-check ml-2 text-green-400"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2 text-white">Plunder Secured!</h2>
+            <p class="mb-6 text-yellow-200">Your Viking gold is sailing to your e-wallet. Expect it within 24 hours.</p>
+            <button id="success-ok" class="w-full btn-primary py-3 rounded-xl font-bold">
+                <i class="fas fa-helmet-battle mr-2"></i>Continue Raiding
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            balance: 0,
+            coinsCollected: 0,
+            currentMultiplier: 1,
+            totalWinnings: 0,
+            progress: 0,
+            boostActive: false,
+            boostEndTime: 0
+        };
+
+        // DOM elements
+        const balanceEl = document.getElementById('balance');
+        const coinsCollectedEl = document.getElementById('coins-collected');
+        const currentMultiplierEl = document.getElementById('current-multiplier');
+        const totalWinningsEl = document.getElementById('total-winnings');
+        const progressBarEl = document.getElementById('progress-bar');
+        const progressTextEl = document.getElementById('progress-text');
+        const coinContainerEl = document.getElementById('coin-container');
+        const instructionsEl = document.getElementById('instructions');
+        const boostBtn = document.getElementById('boost-btn');
+        const collectBtn = document.getElementById('collect-btn');
+        const walletBtn = document.getElementById('wallet-btn');
+        const walletModal = document.getElementById('wallet-modal');
+        const closeModal = document.getElementById('close-modal');
+        const walletBalanceEl = document.getElementById('wallet-balance');
+        const walletWinningsEl = document.getElementById('wallet-winnings');
+        const walletBonusEl = document.getElementById('wallet-bonus');
+        const walletTotalEl = document.getElementById('wallet-total');
+        const withdrawAmountEl = document.getElementById('withdraw-amount');
+        const walletAddressEl = document.getElementById('wallet-address');
+        const cashoutBtn = document.getElementById('cashout-btn');
+        const successModal = document.getElementById('success-modal');
+        const successOk = document.getElementById('success-ok');
+        
+        // New modal step elements
+        const step1El = document.getElementById('step-1');
+        const step2El = document.getElementById('step-2');
+        const step3El = document.getElementById('step-3');
+        const hasWalletBtn = document.getElementById('has-wallet-btn');
+        const noWalletBtn = document.getElementById('no-wallet-btn');
+        const backToWalletCheckBtn = document.getElementById('back-to-wallet-check');
+
+        // Initialize game
+        function initGame() {
+            loadGameState();
+            updateUI();
+            startCoinGeneration();
+            
+            // Event listeners
+            boostBtn.addEventListener('click', activateBoost);
+            collectBtn.addEventListener('click', collectWinnings);
+            walletBtn.addEventListener('click', openWalletModal);
+            closeModal.addEventListener('click', closeWalletModal);
+            cashoutBtn.addEventListener('click', processCashout);
+            successOk.addEventListener('click', closeSuccessModal);
+            
+            // New modal step listeners
+            hasWalletBtn.addEventListener('click', showCashoutForm);
+            noWalletBtn.addEventListener('click', showBybitPromotion);
+            backToWalletCheckBtn.addEventListener('click', showWalletCheck);
+            
+            // Close modals when clicking outside
+            walletModal.addEventListener('click', (e) => {
+                if (e.target === walletModal) closeWalletModal();
+            });
+            successModal.addEventListener('click', (e) => {
+                if (e.target === successModal) closeSuccessModal();
+            });
+        }
+
+        // Load game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('vikingGameState');
+            if (savedState) {
+                Object.assign(gameState, JSON.parse(savedState));
+            }
+        }
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('vikingGameState', JSON.stringify(gameState));
+        }
+
+        // Update UI with current game state
+        function updateUI() {
+            balanceEl.textContent = gameState.balance.toFixed(2);
+            coinsCollectedEl.textContent = gameState.coinsCollected;
+            currentMultiplierEl.textContent = gameState.currentMultiplier + 'x';
+            totalWinningsEl.textContent = '$' + gameState.totalWinnings.toFixed(2);
+            
+            // Update progress
+            const progressPercent = (gameState.progress / 10) * 100;
+            progressBarEl.style.width = `${progressPercent}%`;
+            progressTextEl.textContent = `${gameState.progress}/10`;
+            
+            // Update boost button
+            if (gameState.boostActive) {
+                const timeLeft = Math.max(0, gameState.boostEndTime - Date.now());
+                if (timeLeft > 0) {
+                    boostBtn.innerHTML = `<i class="fas fa-fire mr-2 fire-flicker"></i> Berserk (${Math.ceil(timeLeft/1000)}s)`;
+                    boostBtn.classList.add('opacity-90');
+                    boostBtn.disabled = true;
+                } else {
+                    gameState.boostActive = false;
+                    gameState.currentMultiplier = 1;
+                    boostBtn.innerHTML = `<i class="fas fa-fire mr-2 fire-flicker"></i> Berserk (2x)`;
+                    boostBtn.classList.remove('opacity-90');
+                    boostBtn.disabled = false;
+                    saveGameState();
+                }
+            } else {
+                boostBtn.innerHTML = `<i class="fas fa-fire mr-2 fire-flicker"></i> Berserk (2x)`;
+                boostBtn.classList.remove('opacity-90');
+                boostBtn.disabled = false;
+            }
+        }
+
+        // Generate coins in the game area
+        function startCoinGeneration() {
+            setInterval(() => {
+                if (Math.random() < 0.7) { // 70% chance to generate a coin
+                    createCoin();
+                }
+            }, 1000);
+        }
+
+        // Create a clickable coin
+        function createCoin() {
+            const isVikingCoin = Math.random() > 0.4; // 60% chance for Viking coin
+            const coin = document.createElement('div');
+            
+            if (isVikingCoin) {
+                coin.className = 'viking-coin absolute w-16 h-16 cursor-pointer axe-swing';
+                coin.innerHTML = '⚔️';
+            } else {
+                coin.className = 'coin absolute w-14 h-14 cursor-pointer coin-spin';
+                // Random Viking icon
+                const icons = ['fas fa-helmet-battle', 'fas fa-axe', 'fas fa-shield-alt', 'fas fa-ship', 'fas fa-crown', 'fas fa-gem'];
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                coin.innerHTML = `<i class="${randomIcon}"></i>`;
+            }
+            
+            // Random position
+            const x = Math.random() * 80 + 10; // 10-90% of container width
+            const y = Math.random() * 70 + 15; // 15-85% of container height
+            
+            coin.style.left = `${x}%`;
+            coin.style.top = `${y}%`;
+            
+            // Click event
+            coin.addEventListener('click', () => {
+                collectCoin(coin, isVikingCoin);
+            });
+            
+            coinContainerEl.appendChild(coin);
+            
+            // Remove coin after 5 seconds if not collected
+            setTimeout(() => {
+                if (coin.parentNode) {
+                    coin.remove();
+                }
+            }, 5000);
+            
+            // Hide instructions when first coin appears
+            if (instructionsEl.style.display !== 'none') {
+                instructionsEl.style.display = 'none';
+            }
+        }
+
+        // Collect a coin
+        function collectCoin(coin, isVikingCoin) {
+            // Add to collected count
+            gameState.coinsCollected++;
+            
+            // Viking coins are worth more
+            const baseMultiplier = isVikingCoin ? 2 : 1;
+            const baseValue = (0.5 + Math.random() * 1.5) * baseMultiplier; // $0.50 - $2.00 (more for Viking coins)
+            const value = baseValue * gameState.currentMultiplier;
+            
+            gameState.balance += value;
+            gameState.totalWinnings += value;
+            
+            // Update progress
+            gameState.progress = (gameState.progress + 1) % 10;
+            if (gameState.progress === 0) {
+                // Level up - apply bonus
+                gameState.balance += 10;
+                showLevelUpAnimation();
+            }
+            
+            // Animate coin collection
+            coin.style.transition = 'all 0.5s ease';
+            coin.style.transform = 'scale(0) rotate(180deg)';
+            coin.style.opacity = '0';
+            
+            setTimeout(() => {
+                coin.remove();
+            }, 500);
+            
+            // Show floating text with value
+            showFloatingText(`+$${value.toFixed(2)}`, coin, isVikingCoin ? 'gold' : 'red');
+            
+            saveGameState();
+            updateUI();
+        }
+
+        // Show floating text animation
+        function showFloatingText(text, element, color = 'gold') {
+            const floatingText = document.createElement('div');
+            floatingText.textContent = text;
+            floatingText.className = `absolute font-bold text-lg ${color === 'gold' ? 'text-yellow-300' : 'text-red-300'}`;
+            floatingText.style.left = element.style.left;
+            floatingText.style.top = element.style.top;
+            floatingText.style.textShadow = `0 0 10px ${color === 'gold' ? 'rgba(251, 191, 36, 0.8)' : 'rgba(220, 38, 38, 0.8)'}`;
+            
+            coinContainerEl.appendChild(floatingText);
+            
+            // Animate upward
+            setTimeout(() => {
+                floatingText.style.transition = 'all 1s ease';
+                floatingText.style.transform = 'translateY(-40px)';
+                floatingText.style.opacity = '0';
+                
+                setTimeout(() => {
+                    floatingText.remove();
+                }, 1000);
+            }, 100);
+        }
+
+        // Show level up animation
+        function showLevelUpAnimation() {
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = Math.random() > 0.5 ? '#fbbf24' : '#dc2626';
+                confetti.style.animationDuration = (2 + Math.random() * 3) + 's';
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                
+                coinContainerEl.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 6000);
+            }
+            
+            // Show level up message
+            const levelUpDiv = document.createElement('div');
+            levelUpDiv.textContent = '⚔️ RAID COMPLETE! +$10 GOLD ⚔️';
+            levelUpDiv.className = 'absolute text-yellow-300 font-bold text-xl';
+            levelUpDiv.style.left = '50%';
+            levelUpDiv.style.top = '50%';
+            levelUpDiv.style.transform = 'translate(-50%, -50%)';
+            levelUpDiv.style.textShadow = '0 0 20px rgba(251, 191, 36, 0.8)';
+            
+            coinContainerEl.appendChild(levelUpDiv);
+            
+            setTimeout(() => {
+                levelUpDiv.style.transition = 'all 1s ease';
+                levelUpDiv.style.opacity = '0';
+                levelUpDiv.style.transform = 'translate(-50%, -70px)';
+                
+                setTimeout(() => {
+                    levelUpDiv.remove();
+                }, 1000);
+            }, 1500);
+        }
+
+        // Activate boost multiplier
+        function activateBoost() {
+            if (gameState.boostActive) return;
+            
+            gameState.boostActive = true;
+            gameState.currentMultiplier = 2;
+            gameState.boostEndTime = Date.now() + 30000; // 30 seconds
+            
+            boostBtn.classList.add('opacity-90');
+            boostBtn.disabled = true;
+            
+            // Show boost activation effect
+            const boostEffect = document.createElement('div');
+            boostEffect.className = 'absolute inset-0 bg-gradient-to-r from-red-500/20 to-yellow-500/20';
+            boostEffect.style.animation = 'pulse-glow 0.5s ease-out';
+            document.querySelector('.game-area').appendChild(boostEffect);
+            
+            setTimeout(() => {
+                boostEffect.remove();
+            }, 500);
+            
+            saveGameState();
+            updateUI();
+        }
+
+        // Collect winnings (manual collection)
+        function collectWinnings() {
+            if (gameState.balance > 0) {
+                gameState.totalWinnings += gameState.balance;
+                showFloatingText(`⚔️ Plundered $${gameState.balance.toFixed(2)}!`, {style: {left: '50%', top: '50%'}}, 'gold');
+                gameState.balance = 0;
+                saveGameState();
+                updateUI();
+            }
+        }
+
+        // Open wallet modal
+        function openWalletModal() {
+            // Reset to step 1
+            showWalletCheck();
+            
+            // Update wallet display
+            walletBalanceEl.textContent = `$${gameState.balance.toFixed(2)}`;
+            
+            walletModal.classList.remove('hidden');
+        }
+
+        // Show step 1: Wallet check
+        function showWalletCheck() {
+            step1El.classList.remove('hidden');
+            step2El.classList.add('hidden');
+            step3El.classList.add('hidden');
+        }
+
+        // Show step 2: Cash out form (for users with eWallet)
+        function showCashoutForm() {
+            step1El.classList.add('hidden');
+            step2El.classList.remove('hidden');
+            step3El.classList.add('hidden');
+            
+            // Update wallet details
+            walletWinningsEl.textContent = `$${gameState.totalWinnings.toFixed(2)}`;
+            
+            // Calculate bonus (15% of winnings for Viking theme)
+            const bonus = gameState.totalWinnings * 0.15;
+            walletBonusEl.textContent = `$${bonus.toFixed(2)}`;
+            
+            // Calculate total
+            const total = gameState.balance + gameState.totalWinnings + bonus;
+            walletTotalEl.textContent = `$${total.toFixed(2)}`;
+            
+            // Set max withdraw amount
+            withdrawAmountEl.max = Math.min(500, total).toFixed(2);
+            withdrawAmountEl.value = Math.min(500, total).toFixed(2);
+        }
+
+        // Show step 3: Bybit promotion (for users without eWallet)
+        function showBybitPromotion() {
+            step1El.classList.add('hidden');
+            step2El.classList.add('hidden');
+            step3El.classList.remove('hidden');
+        }
+
+        // Close wallet modal
+        function closeWalletModal() {
+            walletModal.classList.add('hidden');
+        }
+
+        // Process cashout
+        function processCashout() {
+            const amount = parseFloat(withdrawAmountEl.value);
+            const walletAddress = walletAddressEl.value.trim();
+            
+            if (!amount || amount <= 0) {
+                alert('Enter a valid amount of gold to plunder!');
+                return;
+            }
+            
+            if (amount > 500) {
+                alert('Maximum plunder is $500 per raid.');
+                return;
+            }
+            
+            const total = gameState.balance + gameState.totalWinnings + (gameState.totalWinnings * 0.15);
+            if (amount > total) {
+                alert('Not enough gold in your treasure chest!');
+                return;
+            }
+            
+            if (!walletAddress) {
+                alert('Enter your longship dock address!');
+                return;
+            }
+            
+            // In a real app, this would connect to a payment processor
+            // For this demo, we'll just show success
+            
+            // Reset game state (simulating withdrawal)
+            gameState.balance = 0;
+            gameState.totalWinnings = 0;
+            gameState.coinsCollected = 0;
+            gameState.progress = 0;
+            
+            saveGameState();
+            updateUI();
+            
+            closeWalletModal();
+            successModal.classList.remove('hidden');
+            
+            // Show confirmation message
+            setTimeout(() => {
+                alert(`⚔️ SUCCESS! $${amount.toFixed(2)} gold is sailing to ${walletAddress}! Expect it within 24 hours. ⚔️`);
+            }, 500);
+        }
+
+        // Close success modal
+        function closeSuccessModal() {
+            successModal.classList.add('hidden');
+        }
+
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', initGame);
+
+        // Update boost timer every second
+        setInterval(updateUI, 1000);
+    </script>
+
+<!-- Default Statcounter code for Token
+https://signalstrike.online/games/token.html -->
+<script type="text/javascript">
+var sc_project=13196465; 
+var sc_invisible=1; 
+var sc_security="9c1dd02b"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="free hit
+counter" href="https://statcounter.com/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/13196465/0/9c1dd02b/1/"
+alt="free hit counter"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+    
+</body>
+</html>
