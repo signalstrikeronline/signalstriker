@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalStrike Trader Pools | Bybit Partner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000',
+                        accent: '#f7a600',
+                        secondary: '#1a1a1a',
+                        success: '#00ff00',
+                        danger: '#ff0000',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: white;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(90deg, #f7a600 0%, #ffcc00 100%);
+        }
+        
+        .card-glow {
+            box-shadow: 0 0 15px rgba(247, 166, 0, 0.3);
+        }
+        
+        .card-glow:hover {
+            box-shadow: 0 0 25px rgba(247, 166, 0, 0.5);
+        }
+        
+        .signal-up {
+            color: #00ff00;
+        }
+        
+        .signal-down {
+            color: #ff0000;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f7a600 0%, #ffcc00 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(247, 166, 0, 0.5);
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            background: rgba(247, 166, 0, 0.1);
+            border: 1px solid rgba(247, 166, 0, 0.3);
+        }
+        
+        .trader-rank-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #f7a600 100%);
+            color: black;
+        }
+        
+        .trader-rank-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
+            color: black;
+        }
+        
+        .trader-rank-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #b5651d 100%);
+            color: black;
+        }
+        
+        .pool-active {
+            border: 2px solid #f7a600;
+            box-shadow: 0 0 20px rgba(247, 166, 0, 0.4);
+        }
+        
+        .trader-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .trader-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(247, 166, 0, 0.2);
+        }
+        
+        .following {
+            background: rgba(247, 166, 0, 0.1);
+            border-color: #f7a600;
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #f7a600;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .scrollbar-thin {
+            scrollbar-width: thin;
+            scrollbar-color: #f7a600 #1a1a1a;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 3px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #f7a600;
+            border-radius: 3px;
+        }
+        
+        .typing-animation {
+            overflow: hidden;
+            border-right: 2px solid #f7a600;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #f7a600 }
+        }
+        
+        .chart-mini {
+            height: 40px;
+            width: 100px;
+        }
+        
+        .chart-mini-line {
+            fill: none;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full accent-gradient flex items-center justify-center">
+                    <i class="fas fa-users text-black"></i>
+                </div>
+                <span class="text-xl font-bold">Signal<span class="text-accent">POOLS</span></span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#dashboard" class="hover:text-accent transition-colors">Dashboard</a>
+                <a href="#pools" class="hover:text-accent transition-colors">Trader Pools</a>
+                <a href="#winners" class="hover:text-accent transition-colors">Top Winners</a>
+                <a href="#following" class="hover:text-accent transition-colors">Following</a>
+                <a href="#signals" class="hover:text-accent transition-colors">AI Signals</a>
+                <a href="#rewards" class="hover:text-accent transition-colors">Rewards</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 text-sm">
+                    <span class="text-gray-400">Connected as:</span>
+                    <span id="userDisplay" class="text-accent font-semibold">Guest</span>
+                </div>
+                <button id="loginBtn" class="px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors">
+                    Connect Bybit
+                </button>
+                <div class="relative">
+                    <button id="followingBadge" class="hidden md:flex items-center space-x-1 px-3 py-1 bg-gray-800 rounded-full hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-user-plus text-accent"></i>
+                        <span id="followingCount" class="font-semibold">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <section id="dashboard" class="py-8 px-4">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column - User Stats -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- User Profile Card -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="relative">
+                                <div class="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center border-2 border-accent">
+                                    <i class="fas fa-user-tie text-2xl text-accent"></i>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-black text-xs"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h2 id="userName" class="text-xl font-bold">Guest Trader</h2>
+                                <p class="text-gray-400">Connect your Bybit account to start</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-xs bg-gray-700 px-2 py-1 rounded">Level 0</span>
+                                    <div class="ml-2 w-24 progress-bar">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-900 rounded-lg p-3 text-center">
+                                <div class="text-2xl font-bold text-accent" id="totalFollowing">0</div>
+                                <div class="text-xs text-gray-400">Following</div>
+                            </div>
+                            <div class="bg-gray-900 rounded-lg p-3 text-center">
+                                <div class="text-2xl font-bold text-accent" id="totalPools">0</div>
+                                <div class="text-xs text-gray-400">Active Pools</div>
+                            </div>
+                        </div>
+                        
+                        <button id="connectBybitBtn" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors mb-3">
+                            <i class="fas fa-plug mr-2"></i>Connect Bybit Account
+                        </button>
+                        <p class="text-xs text-gray-400 text-center">Connect to get free Pro access</p>
+                    </div>
+                    
+                    <!-- Quick Stats -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-glow">
+                        <h3 class="text-lg font-bold mb-4">Today's Highlights</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Active Traders</span>
+                                <span class="font-bold">1,248</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Signals Generated</span>
+                                <span class="font-bold text-accent">3,456</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Total Volume</span>
+                                <span class="font-bold">$42.8M</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Avg. ROI</span>
+                                <span class="font-bold signal-up">+5.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Middle Column - Trader Pools -->
+                <div class="lg:col-span-2">
+                    <!-- Pool Navigation -->
+                    <div class="bg-gray-800 rounded-xl p-6 card-glow mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Trader Performance Pools</h2>
+                            <div class="flex space-x-2">
+                                <button id="prevPool" class="p-2 rounded-lg bg-gray-700 hover:bg-gray-600">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button id="nextPool" class="p-2 rounded-lg bg-gray-700 hover:bg-gray-600">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Pool Tabs -->
+                        <div class="flex overflow-x-auto pb-2 mb-6 scrollbar-thin">
+                            <div id="poolTabs" class="flex space-x-2">
+                                <!-- Pool tabs will be generated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- Current Pool Info -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 id="currentPoolName" class="text-xl font-bold">Select a Pool</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-400">Traders:</span>
+                                    <span id="poolTradersCount" class="font-bold">0</span>
+                                </div>
+                            </div>
+                            <p id="poolDescription" class="text-gray-400 mb-4">Select a trading pool to view top performers</p>
+                            <div class="flex justify-between text-sm">
+                                <span>Avg. Performance: <span id="poolAvgPerf" class="font-bold">0%</span></span>
+                                <span>Success Rate: <span id="poolSuccessRate" class="font-bold">0%</span></span>
+                                <span>Active Since: <span id="poolActiveSince" class="font-bold">-</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Traders Grid -->
+                    <div id="tradersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Traders will be loaded here -->
+                        <div class="col-span-full text-center py-12">
+                            <div class="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-users text-3xl text-gray-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Select a Trading Pool</h3>
+                            <p class="text-gray-400">Choose from 30 specialized pools to find traders matching your strategy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Winners Section -->
+    <section id="winners" class="py-12 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-2">Top Weekly Winners</h2>
+            <p class="text-gray-400 text-center mb-8">Highest performing traders across all pools</p>
+            
+            <!-- Winners Leaderboard -->
+            <div class="bg-gray-800 rounded-xl overflow-hidden card-glow">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-900">
+                                <th class="text-left py-4 px-6">Rank</th>
+                                <th class="text-left py-4 px-6">Trader</th>
+                                <th class="text-left py-4 px-6">Pool</th>
+                                <th class="text-left py-4 px-6">ROI</th>
+                                <th class="text-left py-4 px-6">Win Rate</th>
+                                <th class="text-left py-4 px-6">Followers</th>
+                                <th class="text-left py-4 px-6">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="winnersTable">
+                            <!-- Winners will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Following Section -->
+    <section id="following" class="py-12 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-2">Traders You Follow</h2>
+            <p class="text-gray-400 text-center mb-8">Your personalized dashboard of followed traders</p>
+            
+            <div id="followingContainer" class="bg-gray-800 rounded-xl p-6 card-glow min-h-[200px]">
+                <div id="emptyFollowing" class="text-center py-12">
+                    <div class="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user-plus text-3xl text-gray-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">No traders followed yet</h3>
+                    <p class="text-gray-400 mb-6">Start following traders to see their performance here</p>
+                    <button class="px-6 py-3 bg-accent text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors">
+                        Explore Pools
+                    </button>
+                </div>
+                
+                <div id="followingGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Followed traders will appear here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Signals Section -->
+    <section id="signals" class="py-12 px-4 bg-gray-900 bg-opacity-50">
+        <div class="container mx-auto">
+            <div class="bg-gray-800 rounded-xl p-8 card-glow">
+                <div class="flex flex-col md:flex-row items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">Free AI Crypto Signals</h2>
+                        <p class="text-gray-400">Get premium signals when you connect your Bybit account</p>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <span class="text-4xl font-bold text-accent">$29.99</span>
+                        <span class="text-gray-400 line-through ml-2">/month</span>
+                        <span class="ml-2 text-accent font-bold">FREE</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">What you get:</h3>
+                        <ul class="space-y-3 mb-6">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>Real-time AI trading signals</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>Market trend predictions</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>Risk level indicators</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>Entry & exit points</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-accent mr-3"></i>
+                                <span>Portfolio optimization</span>
+                            </li>
+                        </ul>
+                        
+                        <div class="bg-gray-900 rounded-lg p-4 mb-6">
+                            <h4 class="font-bold mb-2 text-accent">How to get free access:</h4>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                                <li>Connect your Bybit account</li>
+                                <li>Follow at least 5 traders</li>
+                                <li>Get free Pro subscription for 30 days</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-gray-900 rounded-xl p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center mr-3">
+                                        <span class="font-bold text-black">B</span>
+                                    </div>
+                                    <span class="font-bold">BTC/USDT</span>
+                                </div>
+                                <span class="signal-up font-bold">BUY</span>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Entry:</span>
+                                    <span class="font-bold">$68,200 - $68,500</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Targets:</span>
+                                    <span class="font-bold">$69,500 / $70,800 / $72,000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Stop Loss:</span>
+                                    <span class="font-bold">$67,400</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Risk Level:</span>
+                                    <span class="font-bold text-accent">Medium</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="getSignalsBtn" class="w-full py-4 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors text-lg">
+                            <i class="fas fa-robot mr-2"></i>Get Free AI Signals
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 px-4 border-t border-gray-800">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 rounded-full accent-gradient flex items-center justify-center">
+                            <i class="fas fa-users text-black"></i>
+                        </div>
+                        <span class="text-xl font-bold">Signal<span class="text-accent">POOLS</span></span>
+                    </div>
+                    <p class="text-gray-400 max-w-md">Follow top traders, get AI signals, and maximize your crypto profits. Official Bybit Partner.</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-telegram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-accent transition-colors">
+                        <i class="fab fa-discord text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 SignalStrike Pools. All rights reserved. | Official Bybit Partner</p>
+                <p class="text-sm mt-2">Connect your Bybit account for free Pro subscription to AI Crypto Signals</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Connect Bybit Account</h2>
+                <button id="closeLoginModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-gray-400 mb-2" for="bybitId">Bybit User ID</label>
+                    <input type="text" id="bybitId" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter your Bybit User ID" required>
+                    <p class="text-xs text-gray-500 mt-1">Find your User ID in Bybit account settings</p>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-400 mb-2" for="apiKey">Bybit API Key (Optional)</label>
+                    <input type="password" id="apiKey" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent" placeholder="Enter API Key for auto-follow">
+                    <p class="text-xs text-gray-500 mt-1">For automatic trade copying (read-only)</p>
+                </div>
+                
+                <button type="submit" class="w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors mb-4">
+                    Connect Account
+                </button>
+                
+                <div class="text-center mb-4">
+                    <p class="text-gray-400">Don't have a Bybit account?</p>
+                </div>
+                
+                <button type="button" id="createAccountBtn" class="w-full py-3 border border-accent text-accent font-semibold rounded-lg hover:bg-accent hover:text-black transition-colors">
+                    Create Bybit Account
+                </button>
+            </form>
+            
+            <div class="mt-6 p-4 bg-gray-900 rounded-lg">
+                <h4 class="font-bold text-accent mb-2">Benefits of connecting:</h4>
+                <ul class="text-sm text-gray-300 space-y-1">
+                    <li><i class="fas fa-check text-accent mr-2"></i>Free Pro AI Signals ($29.99/month value)</li>
+                    <li><i class="fas fa-check text-accent mr-2"></i>Auto-follow top traders</li>
+                    <li><i class="fas fa-check text-accent mr-2"></i>Exclusive rewards & airdrops</li>
+                    <li><i class="fas fa-check text-accent mr-2"></i>Portfolio tracking</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trader Details Modal -->
+    <div id="traderModal" class="modal">
+        <div class="modal-content max-w-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="traderModalTitle" class="text-2xl font-bold">Trader Details</h2>
+                <button id="closeTraderModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="traderModalContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let userData = {
+            isLoggedIn: false,
+            bybitId: '',
+            following: [],
+            freeSignalAccess: false
+        };
+
+        // Sample data for 30 pools with 20 traders each
+        const tradingPools = Array.from({ length: 30 }, (_, i) => ({
+            id: i + 1,
+            name: `Pool ${i + 1}: ${['Scalping', 'Swing', 'Day Trading', 'Position', 'Algorithmic', 'Options', 'Futures', 'Spot', 'Arbitrage', 'Momentum'][i % 10]} ${['Masters', 'Elite', 'Pro', 'Advanced', 'Expert'][Math.floor(i / 10)]}`,
+            description: `Specialized in ${['high-frequency scalping', 'swing trading strategies', 'intraday trading', 'long-term positions', 'algorithmic execution', 'options trading', 'futures contracts', 'spot market trading', 'arbitrage opportunities', 'momentum trading'][i % 10]}.`,
+            avgPerformance: (Math.random() * 20 + 5).toFixed(1),
+            successRate: (Math.random() * 30 + 65).toFixed(1),
+            activeSince: `${2020 + Math.floor(Math.random() * 4)}`,
+            traders: Array.from({ length: 20 }, (_, j) => ({
+                id: i * 20 + j + 1,
+                name: `Trader${i * 20 + j + 1}_${['Crypto', 'Bit', 'Coin', 'Block', 'Chain', 'Hash', 'Ledger', 'Token', 'Wallet', 'Mining'][j % 10]}`,
+                poolId: i + 1,
+                roi: (Math.random() * 40 - 10).toFixed(2),
+                winRate: (Math.random() * 40 + 55).toFixed(1),
+                trades: Math.floor(Math.random() * 500 + 50),
+                followers: Math.floor(Math.random() * 1000 + 100),
+                riskLevel: ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)],
+                status: ['online', 'offline', 'trading'][Math.floor(Math.random() * 3)],
+                performanceChart: Array.from({ length: 10 }, () => Math.random() * 100),
+                isFollowing: false
+            }))
+        }));
+
+        // Top winners data
+        const topWinners = [...tradingPools]
+            .flatMap(pool => pool.traders)
+            .sort((a, b) => parseFloat(b.roi) - parseFloat(a.roi))
+            .slice(0, 10)
+            .map((trader, index) => ({
+                ...trader,
+                rank: index + 1
+            }));
+
+        // DOM Elements
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const traderModal = document.getElementById('traderModal');
+        const closeTraderModal = document.getElementById('closeTraderModal');
+        const loginForm = document.getElementById('loginForm');
+        const createAccountBtn = document.getElementById('createAccountBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const connectBybitBtn = document.getElementById('connectBybitBtn');
+        const getSignalsBtn = document.getElementById('getSignalsBtn');
+        const poolTabs = document.getElementById('poolTabs');
+        const tradersGrid = document.getElementById('tradersGrid');
+        const winnersTable = document.getElementById('winnersTable');
+        const followingGrid = document.getElementById('followingGrid');
+        const emptyFollowing = document.getElementById('emptyFollowing');
+        const followingContainer = document.getElementById('followingContainer');
+        const followingCount = document.getElementById('followingCount');
+        const followingBadge = document.getElementById('followingBadge');
+        const totalFollowing = document.getElementById('totalFollowing');
+        const totalPools = document.getElementById('totalPools');
+        const userDisplay = document.getElementById('userDisplay');
+        const userName = document.getElementById('userName');
+        const prevPool = document.getElementById('prevPool');
+        const nextPool = document.getElementById('nextPool');
+        const currentPoolName = document.getElementById('currentPoolName');
+        const poolDescription = document.getElementById('poolDescription');
+        const poolAvgPerf = document.getElementById('poolAvgPerf');
+        const poolSuccessRate = document.getElementById('poolSuccessRate');
+        const poolActiveSince = document.getElementById('poolActiveSince');
+        const poolTradersCount = document.getElementById('poolTradersCount');
+
+        // Current pool index
+        let currentPoolIndex = 0;
+
+        // Initialize the application
+        function initApp() {
+            loadUserData();
+            renderPoolTabs();
+            renderPool(currentPoolIndex);
+            renderTopWinners();
+            updateUI();
+        }
+
+        // Load user data from localStorage
+        function loadUserData() {
+            const saved = localStorage.getItem('signalPoolsUser');
+            if (saved) {
+                userData = JSON.parse(saved);
+            }
+        }
+
+        // Save user data to localStorage
+        function saveUserData() {
+            localStorage.setItem('signalPoolsUser', JSON.stringify(userData));
+        }
+
+        // Update UI based on user state
+        function updateUI() {
+            // Update user display
+            if (userData.isLoggedIn) {
+                userDisplay.textContent = userData.bybitId;
+                userName.textContent = `${userData.bybitId}`;
+                loginBtn.textContent = 'Connected';
+                loginBtn.classList.remove('bg-accent');
+                loginBtn.classList.add('bg-green-600', 'text-white');
+                connectBybitBtn.textContent = 'Account Connected';
+                connectBybitBtn.classList.remove('bg-accent');
+                connectBybitBtn.classList.add('bg-green-600', 'text-white');
+                connectBybitBtn.disabled = true;
+                
+                // Enable signals if following >= 5
+                if (userData.following.length >= 5 && !userData.freeSignalAccess) {
+                    userData.freeSignalAccess = true;
+                    saveUserData();
+                    showNotification('Congratulations! You now have free access to AI Signals!', 'success');
+                }
+            } else {
+                userDisplay.textContent = 'Guest';
+                userName.textContent = 'Guest Trader';
+                loginBtn.textContent = 'Connect Bybit';
+                loginBtn.className = 'px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors';
+                connectBybitBtn.textContent = 'Connect Bybit Account';
+                connectBybitBtn.className = 'w-full py-3 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors mb-3';
+                connectBybitBtn.disabled = false;
+            }
+
+            // Update following count
+            followingCount.textContent = userData.following.length;
+            totalFollowing.textContent = userData.following.length;
+            
+            // Calculate active pools
+            const activePools = new Set(userData.following.map(f => f.poolId)).size;
+            totalPools.textContent = activePools;
+
+            // Show/hide following badge
+            if (userData.following.length > 0) {
+                followingBadge.classList.remove('hidden');
+                emptyFollowing.classList.add('hidden');
+                followingGrid.classList.remove('hidden');
+                renderFollowing();
+            } else {
+                followingBadge.classList.add('hidden');
+                emptyFollowing.classList.remove('hidden');
+                followingGrid.classList.add('hidden');
+            }
+
+            // Update signals button
+            if (userData.freeSignalAccess) {
+                getSignalsBtn.innerHTML = '<i class="fas fa-robot mr-2"></i>Access Your AI Signals';
+                getSignalsBtn.classList.remove('bg-accent');
+                getSignalsBtn.classList.add('bg-green-600', 'text-white');
+            } else if (userData.isLoggedIn) {
+                getSignalsBtn.innerHTML = `<i class="fas fa-robot mr-2"></i>Follow ${5 - userData.following.length} More Traders for Free Signals`;
+                getSignalsBtn.classList.remove('bg-accent');
+                getSignalsBtn.classList.add('bg-blue-600', 'text-white');
+            } else {
+                getSignalsBtn.innerHTML = '<i class="fas fa-robot mr-2"></i>Get Free AI Signals';
+                getSignalsBtn.className = 'w-full py-4 bg-accent text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors text-lg';
+            }
+        }
+
+        // Render pool tabs
+        function renderPoolTabs() {
+            poolTabs.innerHTML = '';
+            tradingPools.forEach((pool, index) => {
+                const tab = document.createElement('div');
+                tab.className = `px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap transition-colors ${index === currentPoolIndex ? 'bg-accent text-black font-bold pool-active' : 'bg-gray-700 hover:bg-gray-600'}`;
+                tab.textContent = `Pool ${pool.id}`;
+                tab.addEventListener('click', () => {
+                    currentPoolIndex = index;
+                    renderPoolTabs();
+                    renderPool(currentPoolIndex);
+                });
+                poolTabs.appendChild(tab);
+            });
+        }
+
+        // Render a specific pool
+        function renderPool(poolIndex) {
+            const pool = tradingPools[poolIndex];
+            
+            // Update pool info
+            currentPoolName.textContent = pool.name;
+            poolDescription.textContent = pool.description;
+            poolAvgPerf.textContent = `${pool.avgPerformance}%`;
+            poolSuccessRate.textContent = `${pool.successRate}%`;
+            poolActiveSince.textContent = pool.activeSince;
+            poolTradersCount.textContent = pool.traders.length;
+            
+            // Clear traders grid
+            tradersGrid.innerHTML = '';
+            
+            // Add traders
+            pool.traders.forEach(trader => {
+                const isFollowing = userData.following.some(f => f.id === trader.id);
+                
+                const traderCard = document.createElement('div');
+                traderCard.className = `trader-card bg-gray-800 rounded-xl p-4 border ${isFollowing ? 'border-accent following' : 'border-gray-700'}`;
+                traderCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full ${trader.status === 'online' ? 'bg-green-500' : trader.status === 'trading' ? 'bg-accent' : 'bg-gray-600'} flex items-center justify-center mr-3">
+                                <i class="fas fa-user ${trader.status === 'online' || trader.status === 'trading' ? 'text-black' : 'text-white'}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">${trader.name}</h4>
+                                <p class="text-xs text-gray-400">${trader.riskLevel} Risk</p>
+                            </div>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded ${parseFloat(trader.roi) >= 0 ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
+                            ${parseFloat(trader.roi) >= 0 ? '+' : ''}${trader.roi}%
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <svg viewBox="0 0 100 40" class="chart-mini">
+                            <polyline points="${trader.performanceChart.map((v, i) => `${i * 10},${40 - v * 0.4}`).join(' ')}" 
+                                     class="chart-mini-line ${parseFloat(trader.roi) >= 0 ? 'stroke-green-500' : 'stroke-red-500'}" />
+                        </svg>
+                    </div>
+                    
+                    <div class="flex justify-between text-sm mb-4">
+                        <div class="text-center">
+                            <div class="font-bold">${trader.winRate}%</div>
+                            <div class="text-xs text-gray-400">Win Rate</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold">${trader.trades}</div>
+                            <div class="text-xs text-gray-400">Trades</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold">${trader.followers}</div>
+                            <div class="text-xs text-gray-400">Followers</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button class="follow-btn flex-1 py-2 ${isFollowing ? 'bg-gray-700 text-accent' : 'bg-accent text-black'} font-semibold rounded-lg transition-colors" data-trader-id="${trader.id}">
+                            ${isFollowing ? '<i class="fas fa-user-check mr-2"></i>Following' : '<i class="fas fa-user-plus mr-2"></i>Follow'}
+                        </button>
+                        <button class="view-btn px-3 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors" data-trader-id="${trader.id}">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                    </div>
+                `;
+                
+                tradersGrid.appendChild(traderCard);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.follow-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const traderId = parseInt(e.target.closest('.follow-btn').dataset.traderId);
+                    toggleFollowTrader(traderId);
+                });
+            });
+            
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const traderId = parseInt(e.target.closest('.view-btn').dataset.traderId);
+                    showTraderDetails(traderId);
+                });
+            });
+        }
+
+        // Render top winners table
+        function renderTopWinners() {
+            winnersTable.innerHTML = '';
+            topWinners.forEach(winner => {
+                const isFollowing = userData.following.some(f => f.id === winner.id);
+                
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700 hover:bg-gray-750';
+                row.innerHTML = `
+                    <td class="py-4 px-6">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 ${winner.rank <= 3 ? `trader-rank-${winner.rank}` : 'bg-gray-700'}">
+                                <span class="font-bold">${winner.rank}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="font-semibold">${winner.name}</div>
+                        <div class="text-sm text-gray-400">Pool ${winner.poolId}</div>
+                    </td>
+                    <td class="py-4 px-6">Pool ${winner.poolId}</td>
+                    <td class="py-4 px-6 ${parseFloat(winner.roi) >= 0 ? 'signal-up' : 'signal-down'} font-bold">
+                        ${parseFloat(winner.roi) >= 0 ? '+' : ''}${winner.roi}%
+                    </td>
+                    <td class="py-4 px-6">${winner.winRate}%</td>
+                    <td class="py-4 px-6">${winner.followers}</td>
+                    <td class="py-4 px-6">
+                        <button class="follow-winner-btn px-4 py-1 ${isFollowing ? 'bg-gray-700 text-accent border border-accent' : 'bg-accent text-black'} rounded-lg font-semibold transition-colors" data-trader-id="${winner.id}">
+                            ${isFollowing ? 'Following' : 'Follow'}
+                        </button>
+                    </td>
+                `;
+                winnersTable.appendChild(row);
+            });
+            
+            // Add event listeners to follow buttons
+            document.querySelectorAll('.follow-winner-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const traderId = parseInt(e.target.closest('.follow-winner-btn').dataset.traderId);
+                    toggleFollowTrader(traderId);
+                });
+            });
+        }
+
+        // Render followed traders
+        function renderFollowing() {
+            followingGrid.innerHTML = '';
+            userData.following.forEach(followed => {
+                const traderCard = document.createElement('div');
+                traderCard.className = 'trader-card bg-gray-800 rounded-xl p-4 border border-accent';
+                traderCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-black"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">${followed.name}</h4>
+                                <p class="text-xs text-gray-400">Pool ${followed.poolId}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded ${parseFloat(followed.roi) >= 0 ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
+                            ${parseFloat(followed.roi) >= 0 ? '+' : ''}${followed.roi}%
+                        </span>
+                    </div>
+                    
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Win Rate:</span>
+                            <span class="font-bold">${followed.winRate}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Trades:</span>
+                            <span class="font-bold">${followed.trades}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Risk:</span>
+                            <span class="font-bold ${followed.riskLevel === 'High' ? 'text-red-400' : followed.riskLevel === 'Medium' ? 'text-yellow-400' : 'text-green-400'}">${followed.riskLevel}</span>
+                        </div>
+                    </div>
+                    
+                    <button class="unfollow-btn w-full mt-4 py-2 bg-gray-700 text-accent font-semibold rounded-lg hover:bg-gray-600 transition-colors" data-trader-id="${followed.id}">
+                        <i class="fas fa-user-minus mr-2"></i>Unfollow
+                    </button>
+                `;
+                followingGrid.appendChild(traderCard);
+            });
+            
+            // Add event listeners to unfollow buttons
+            document.querySelectorAll('.unfollow-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const traderId = parseInt(e.target.closest('.unfollow-btn').dataset.traderId);
+                    toggleFollowTrader(traderId);
+                });
+            });
+        }
+
+        // Toggle follow/unfollow a trader
+        function toggleFollowTrader(traderId) {
+            if (!userData.isLoggedIn) {
+                showNotification('Please connect your Bybit account first', 'warning');
+                loginModal.style.display = 'flex';
+                return;
+            }
+            
+            // Find trader in all pools
+            let trader = null;
+            for (const pool of tradingPools) {
+                const found = pool.traders.find(t => t.id === traderId);
+                if (found) {
+                    trader = { ...found };
+                    break;
+                }
+            }
+            
+            if (!trader) return;
+            
+            const isFollowing = userData.following.some(f => f.id === traderId);
+            
+            if (isFollowing) {
+                // Unfollow
+                userData.following = userData.following.filter(f => f.id !== traderId);
+                showNotification(`Unfollowed ${trader.name}`, 'info');
+            } else {
+                // Follow
+                userData.following.push({
+                    id: trader.id,
+                    name: trader.name,
+                    poolId: trader.poolId,
+                    roi: trader.roi,
+                    winRate: trader.winRate,
+                    trades: trader.trades,
+                    riskLevel: trader.riskLevel
+                });
+                showNotification(`Now following ${trader.name}`, 'success');
+                
+                // Check for free signal access
+                if (userData.following.length >= 5 && !userData.freeSignalAccess) {
+                    userData.freeSignalAccess = true;
+                    showNotification('Congratulations! You now have free access to AI Signals!', 'success');
+                }
+            }
+            
+            saveUserData();
+            updateUI();
+            renderPool(currentPoolIndex);
+            renderTopWinners();
+        }
+
+        // Show trader details modal
+        function showTraderDetails(traderId) {
+            // Find trader
+            let trader = null;
+            for (const pool of tradingPools) {
+                const found = pool.traders.find(t => t.id === traderId);
+                if (found) {
+                    trader = found;
+                    break;
+                }
+            }
+            
+            if (!trader) return;
+            
+            const isFollowing = userData.following.some(f => f.id === traderId);
+            
+            document.getElementById('traderModalTitle').textContent = `${trader.name} - Details`;
+            document.getElementById('traderModalContent').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="bg-gray-900 rounded-xl p-6 mb-4">
+                            <div class="flex items-center mb-4">
+                                <div class="w-16 h-16 rounded-full ${trader.status === 'online' ? 'bg-green-500' : trader.status === 'trading' ? 'bg-accent' : 'bg-gray-600'} flex items-center justify-center mr-4">
+                                    <i class="fas fa-user text-2xl ${trader.status === 'online' || trader.status === 'trading' ? 'text-black' : 'text-white'}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold">${trader.name}</h3>
+                                    <p class="text-gray-400">Pool ${trader.poolId}</p>
+                                    <span class="text-xs px-2 py-1 rounded ${trader.status === 'online' ? 'bg-green-900 text-green-300' : trader.status === 'trading' ? 'bg-yellow-900 text-yellow-300' : 'bg-gray-700 text-gray-300'}">
+                                        ${trader.status === 'online' ? 'Online' : trader.status === 'trading' ? 'Trading Now' : 'Offline'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="text-center p-3 bg-gray-800 rounded-lg">
+                                    <div class="text-2xl font-bold ${parseFloat(trader.roi) >= 0 ? 'text-green-400' : 'text-red-400'}">
+                                        ${parseFloat(trader.roi) >= 0 ? '+' : ''}${trader.roi}%
+                                    </div>
+                                    <div class="text-sm text-gray-400">Total ROI</div>
+                                </div>
+                                <div class="text-center p-3 bg-gray-800 rounded-lg">
+                                    <div class="text-2xl font-bold">${trader.winRate}%</div>
+                                    <div class="text-sm text-gray-400">Win Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-900 rounded-xl p-6">
+                            <h4 class="font-bold mb-4">Recent Performance</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Weekly P&L:</span>
+                                    <span class="${Math.random() > 0.5 ? 'text-green-400' : 'text-red-400'}">${Math.random() > 0.5 ? '+' : ''}${(Math.random() * 15).toFixed(2)}%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Monthly P&L:</span>
+                                    <span class="${parseFloat(trader.roi) >= 0 ? 'text-green-400' : 'text-red-400'}">${parseFloat(trader.roi) >= 0 ? '+' : ''}${trader.roi}%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Avg. Trade Size:</span>
+                                    <span>$${(Math.random() * 5000 + 1000).toFixed(0)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Max Drawdown:</span>
+                                    <span class="text-red-400">-${(Math.random() * 8).toFixed(1)}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-gray-900 rounded-xl p-6 mb-4">
+                            <h4 class="font-bold mb-4">Trading Statistics</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-gray-400">Total Trades</span>
+                                        <span class="font-bold">${trader.trades}</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${Math.min(trader.trades / 10, 100)}%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-gray-400">Followers</span>
+                                        <span class="font-bold">${trader.followers}</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${Math.min(trader.followers / 20, 100)}%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-gray-400">Risk Level</span>
+                                        <span class="font-bold ${trader.riskLevel === 'High' ? 'text-red-400' : trader.riskLevel === 'Medium' ? 'text-yellow-400' : 'text-green-400'}">${trader.riskLevel}</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${trader.riskLevel === 'High' ? '80' : trader.riskLevel === 'Medium' ? '50' : '20'}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-900 rounded-xl p-6">
+                            <h4 class="font-bold mb-4">Preferred Markets</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">BTC/USDT:</span>
+                                    <span class="font-bold">${(Math.random() * 40 + 30).toFixed(0)}%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">ETH/USDT:</span>
+                                    <span class="font-bold">${(Math.random() * 30 + 20).toFixed(0)}%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Altcoins:</span>
+                                    <span class="font-bold">${(Math.random() * 30 + 10).toFixed(0)}%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Futures:</span>
+                                    <span class="font-bold">${(Math.random() * 40 + 10).toFixed(0)}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex space-x-4">
+                    <button class="follow-modal-btn flex-1 py-3 ${isFollowing ? 'bg-gray-700 text-accent border border-accent' : 'bg-accent text-black'} font-bold rounded-lg transition-colors" data-trader-id="${traderId}">
+                        ${isFollowing ? '<i class="fas fa-user-check mr-2"></i>Following' : '<i class="fas fa-user-plus mr-2"></i>Follow This Trader'}
+                    </button>
+                    <button class="copy-trades-btn py-3 px-6 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-copy mr-2"></i>Copy Trades
+                    </button>
+                </div>
+            `;
+            
+            traderModal.style.display = 'flex';
+            
+            // Add event listener to follow button in modal
+            document.querySelector('.follow-modal-btn').addEventListener('click', () => {
+                toggleFollowTrader(traderId);
+                traderModal.style.display = 'none';
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            // Remove existing notification
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-up ${type === 'success' ? 'bg-green-900 text-green-100' : type === 'warning' ? 'bg-yellow-900 text-yellow-100' : 'bg-gray-800 text-white'}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Event Listeners
+        loginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+
+        connectBybitBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+
+        closeLoginModal.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+
+        closeTraderModal.addEventListener('click', () => {
+            traderModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+            if (e.target === traderModal) {
+                traderModal.style.display = 'none';
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const bybitId = document.getElementById('bybitId').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            
+            if (!bybitId) {
+                showNotification('Please enter your Bybit User ID', 'warning');
+                return;
+            }
+            
+            // Simulate login
+            userData.isLoggedIn = true;
+            userData.bybitId = bybitId;
+            userData.apiKey = apiKey;
+            
+            saveUserData();
+            updateUI();
+            loginModal.style.display = 'none';
+            
+            showNotification('Bybit account connected successfully!', 'success');
+            
+            // Reset form
+            loginForm.reset();
+        });
+
+        createAccountBtn.addEventListener('click', () => {
+            window.open('https://partner.bybit.com/b/WEBAPP', '_blank');
+        });
+
+        getSignalsBtn.addEventListener('click', () => {
+            if (!userData.isLoggedIn) {
+                showNotification('Please connect your Bybit account first', 'warning');
+                loginModal.style.display = 'flex';
+                return;
+            }
+            
+            if (!userData.freeSignalAccess) {
+                showNotification(`Follow ${5 - userData.following.length} more traders to unlock free AI Signals`, 'warning');
+                return;
+            }
+            
+            // Redirect to signals page or show signals
+            showNotification('Loading your AI Signals...', 'success');
+            // In a real app, you would redirect or load signals here
+            setTimeout(() => {
+                alert('AI Signals Feature:\n\n1. BTC/USDT: STRONG BUY\n2. ETH/USDT: BUY\n3. SOL/USDT: HOLD\n\nFull analysis available in your dashboard.');
+            }, 500);
+        });
+
+        prevPool.addEventListener('click', () => {
+            currentPoolIndex = (currentPoolIndex - 1 + tradingPools.length) % tradingPools.length;
+            renderPoolTabs();
+            renderPool(currentPoolIndex);
+        });
+
+        nextPool.addEventListener('click', () => {
+            currentPoolIndex = (currentPoolIndex + 1) % tradingPools.length;
+            renderPoolTabs();
+            renderPool(currentPoolIndex);
+        });
+
+        // Following badge click shows following section
+        followingBadge.addEventListener('click', () => {
+            document.getElementById('following').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Initialize the app
+        initApp();
+    </script>
+</body>
+</html>
