@@ -371,94 +371,146 @@
     </div>
 
     <!-- MODAL overlay (hidden by default, shown after load) -->
-    <div id="modalOverlay" class="modal-overlay hidden">
-        <div class="country-modal">
-            <h2>🇿🇦 where from? <small>select your country</small></h2>
+   <!-- MODAL overlay (hidden by default, shown after load) -->
+<div id="modalOverlay" class="modal-overlay hidden">
+    <div class="country-modal">
+        <h2>🇿🇦 where from? <small>select your country</small></h2>
 
-            <!-- country list: south africa + 10 diverse (spanish, german, french) -->
-            <ul class="country-list" id="countryList">
-                <!-- South Africa first (ZA) -->
-                <li data-country="South Africa" class="selected-country">
-                    <span class="flag-placeholder">🇿🇦</span> South Africa
-                </li>
-                <!-- then 10 countries: spanish (spain, mexico, argentina), german (germany, austria, switzerland), french (france, belgium, canada, luxembourg) and one extra -->
-                <li data-country="Spain"><span class="flag-placeholder">🇪🇸</span> Spain (Spanish)</li>
-                <li data-country="Mexico"><span class="flag-placeholder">🇲🇽</span> Mexico (Spanish)</li>
-                <li data-country="Argentina"><span class="flag-placeholder">🇦🇷</span> Argentina (Spanish)</li>
-                <li data-country="Germany"><span class="flag-placeholder">🇩🇪</span> Germany (German)</li>
-                <li data-country="Austria"><span class="flag-placeholder">🇦🇹</span> Austria (German)</li>
-                <li data-country="Switzerland"><span class="flag-placeholder">🇨🇭</span> Switzerland (German/French)</li>
-                <li data-country="France"><span class="flag-placeholder">🇫🇷</span> France (French)</li>
-                <li data-country="Belgium"><span class="flag-placeholder">🇧🇪</span> Belgium (French/Dutch)</li>
-                <li data-country="Canada"><span class="flag-placeholder">🇨🇦</span> Canada (French/English)</li>
-                <li data-country="Luxembourg"><span class="flag-placeholder">🇱🇺</span> Luxembourg (French/German)</li>
-                <!-- total: 1 + 10 = 11. south africa + ten others. perfect. -->
-            </ul>
+        <!-- country list: South Africa first, then specified countries -->
+        <ul class="country-list" id="countryList">
+            <!-- South Africa first -->
+            <li data-country="South Africa" data-domain="co.za" class="selected-country">
+                <span class="flag-placeholder">🇿🇦</span> South Africa
+            </li>
+            <!-- USA -->
+            <li data-country="USA" data-domain="com">
+                <span class="flag-placeholder">🇺🇸</span> USA
+            </li>
+            <!-- Argentina -->
+            <li data-country="Argentina" data-domain="com.ar">
+                <span class="flag-placeholder">🇦🇷</span> Argentina
+            </li>
+            <!-- Germany -->
+            <li data-country="Germany" data-domain="de">
+                <span class="flag-placeholder">🇩🇪</span> Germany
+            </li>
+            <!-- France -->
+            <li data-country="France" data-domain="fr">
+                <span class="flag-placeholder">🇫🇷</span> France
+            </li>
+            <!-- EU -->
+            <li data-country="EU" data-domain="eu">
+                <span class="flag-placeholder">🇪🇺</span> EU
+            </li>
+            <!-- Brazil -->
+            <li data-country="Brazil" data-domain="com.br">
+                <span class="flag-placeholder">🇧🇷</span> Brazil
+            </li>
+            <!-- Canada -->
+            <li data-country="Canada" data-domain="ca">
+                <span class="flag-placeholder">🇨🇦</span> Canada
+            </li>
+        </ul>
 
-            <div class="note">
-                🌍 we’ll remember your choice (kinda)
-            </div>
-            <button class="close-btn" id="closeModalBtn" onclick="window.location.href='index.html'">got it, continue</button>
+        <div class="note">
+            🌍 you'll be redirected to your regional site
         </div>
+        <button class="close-btn" id="closeModalBtn">got it, continue</button>
     </div>
+</div>
 
-    <!-- tiny script: show modal immediately, handle selection -->
-    <script>
-        (function() {
-            // ----- show modal on page load -----
-            const modal = document.getElementById('modalOverlay');
-            const countryItems = document.querySelectorAll('#countryList li');
-            const closeBtn = document.getElementById('closeModalBtn');
+    <!-- tiny script: show modal immediately, handle selection and redirect -->
+<script>
+    (function() {
+        // ----- show modal on page load -----
+        const modal = document.getElementById('modalOverlay');
+        const countryItems = document.querySelectorAll('#countryList li');
+        const closeBtn = document.getElementById('closeModalBtn');
 
-            // Helper to hide modal
-            function hideModal() {
-                modal.classList.add('hidden');
-            }
+        // Helper to hide modal
+        function hideModal() {
+            modal.classList.add('hidden');
+        }
 
-            // When any country clicked: mark as selected, then close modal (optional)
-            function onCountryClick(e) {
-                const li = e.currentTarget;
-                // remove previous selected class from all
-                countryItems.forEach(item => item.classList.remove('selected-country'));
-                li.classList.add('selected-country');
-
-                // you could store the selection here, but we just hide modal after short nap
-                // slight delay feels sleepy
-                setTimeout(() => {
-                    hideModal();
-                }, 120);
-            }
-
-            // Attach click to every country line
-            countryItems.forEach(item => {
-                item.addEventListener('click', onCountryClick);
-            });
-
-            // Close modal with button – also closes without changing (but keeps default ZA)
-            closeBtn.addEventListener('click', function(e) {
-                e.preventDefault();
+        // Redirect to subdomain based on selected country
+        function redirectToSubdomain(countryData) {
+            const country = countryData.country;
+            const domain = countryData.domain;
+            
+            // Get current subdomain (if any)
+            const hostname = window.location.hostname;
+            const parts = hostname.split('.');
+            
+            // Different logic based on environment
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                // Local development - just show alert for demo
+                alert(`Redirecting to: ${country}.domain.${domain} (simulated)`);
+                console.log(`Would redirect to: ${country.toLowerCase().replace(/\s+/g, '')}.domain.${domain}`);
                 hideModal();
-            });
-
-            // optional: click outside modal? not implemented (focus on list)
-
-            // wait for everything to load, then remove hidden class – show modal
-            window.addEventListener('load', function() {
-                // tiny delay to make it feel like a popup after render (still immediate)
-                setTimeout(() => {
-                    modal.classList.remove('hidden');
-                }, 30);
-            });
-
-            // extra: make sure if someone clicks on the backdrop (modal-overlay) we close?
-            // but avoid closing when clicking inside modal
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {   // click on overlay background
-                    hideModal();
+            } else {
+                // Production - construct subdomain URL
+                const subdomain = country.toLowerCase().replace(/\s+/g, '');
+                let newUrl;
+                
+                // Handle different domain structures
+                if (parts.length >= 2) {
+                    // e.g., example.com or subdomain.example.com
+                    const mainDomain = parts.slice(-2).join('.');
+                    newUrl = `https://${subdomain}.${mainDomain}`;
+                } else {
+                    // Fallback
+                    newUrl = `https://${subdomain}.domain.${domain}`;
                 }
-            });
-        })();
-    </script>
+                
+                // Redirect
+                window.location.href = newUrl;
+            }
+        }
+
+        // When any country clicked: mark as selected, then redirect
+        function onCountryClick(e) {
+            const li = e.currentTarget;
+            const country = li.getAttribute('data-country');
+            const domain = li.getAttribute('data-domain');
+            
+            // remove previous selected class from all
+            countryItems.forEach(item => item.classList.remove('selected-country'));
+            li.classList.add('selected-country');
+
+            // Redirect with slight delay (feels sleepy)
+            setTimeout(() => {
+                redirectToSubdomain({ country, domain });
+            }, 300);
+        }
+
+        // Attach click to every country line
+        countryItems.forEach(item => {
+            item.addEventListener('click', onCountryClick);
+        });
+
+        // Close modal with button – opens index.html
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'index.html';
+        });
+
+        // wait for everything to load, then remove hidden class – show modal
+        window.addEventListener('load', function() {
+            // tiny delay to make it feel like a popup after render (still immediate)
+            setTimeout(() => {
+                modal.classList.remove('hidden');
+            }, 30);
+        });
+
+        // extra: make sure if someone clicks on the backdrop (modal-overlay) we close?
+        // but avoid closing when clicking inside modal
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {   // click on overlay background
+                window.location.href = 'index.html';
+            }
+        });
+    })();
+</script>
 
     <!-- subtle: pre-selected South Africa, and includes german/spanish/french mix -->
     <!-- The list order: 1. South Africa, then Spain, Mexico, Argentina (spanish), Germany, Austria, Switzerland (german), France, Belgium, Canada, Luxembourg (french +) exactly 10 after ZA -->
