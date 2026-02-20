@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRA·GOT · masked intelligence</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #0c0b0f;
+            background-image: radial-gradient(circle at 15% 30%, #1e1a2a 0%, #0a0812 90%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            color: #eae6f0;
+        }
+
+        .dashboard {
+            max-width: 1440px;
+            width: 100%;
+        }
+
+        /* header / title row */
+        .title-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .title-block h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            background: linear-gradient(130deg, #cbb9ff, #f5b9ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .title-block h1 i {
+            color: #b39ddb;
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+        .mask-badge {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(210, 180, 255, 0.2);
+            padding: 0.5rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            color: #ccbdff;
+            backdrop-filter: blur(4px);
+        }
+        .mask-badge i {
+            margin-right: 0.4rem;
+            color: #ffd966;
+        }
+
+        /* grid layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.4rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(20, 15, 30, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(160, 130, 255, 0.15);
+            border-radius: 32px;
+            padding: 1.5rem 1.4rem 1rem 1.4rem;
+            box-shadow: 0 25px 40px -15px rgba(0,0,0,0.8);
+            transition: transform 0.15s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            border-color: rgba(200, 160, 255, 0.3);
+            background: rgba(25, 18, 38, 0.7);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            color: #cfc1ff;
+        }
+        .card-header i {
+            font-size: 1.5rem;
+            color: #b380ff;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.4rem 0;
+            border-bottom: 1px dotted rgba(255,255,255,0.05);
+            font-size: 0.98rem;
+        }
+        .stat-label {
+            color: #9e94b0;
+        }
+        .stat-value {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            color: #dad2f0;
+        }
+        .asterisk {
+            color: #ffb86b;
+            font-weight: 600;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+        }
+
+        /* extra sections (expanded) */
+        .extra-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+            margin-top: 1.2rem;
+        }
+
+        .subsection {
+            background: rgba(0,0,0,0.25);
+            border-radius: 24px;
+            padding: 1.2rem 1.4rem 1rem 1.4rem;
+            border-left: 3px solid #7c5acf;
+        }
+        .subsection-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #d0bfff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* tweets dissection */
+        .tweet-item {
+            background: rgba(255,255,255,0.02);
+            border-radius: 18px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 0.7rem;
+        }
+        .tweet-header {
+            display: flex;
+            gap: 0.6rem;
+            color: #ada4c6;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .tweet-ai {
+            color: #a8e5a8;
+            font-size: 0.9rem;
+            background: rgba(70, 200, 120, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        /* signal tags */
+        .signal-tag {
+            display: inline-block;
+            background: #322b44;
+            border-radius: 30px;
+            padding: 0.2rem 0.9rem;
+            margin-right: 0.4rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
+            border: 1px solid #55457c;
+            color: #cfc2ff;
+        }
+
+        /* fear & greed custom */
+        .fear-greed-bar {
+            background: #262035;
+            height: 8px;
+            width: 100%;
+            border-radius: 20px;
+            margin: 0.8rem 0 0.3rem;
+            overflow: hidden;
+        }
+        .fg-fill {
+            width: 67%; /* just visual placeholder — masked anyway */
+            height: 100%;
+            background: linear-gradient(90deg, #fd8b78, #f5e47b, #91f79b);
+            border-radius: 20px;
+        }
+
+        /* CONNECT BUTTON under each section */
+        .connect-wrapper {
+            margin-top: 1.2rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .connect-btn {
+            background: transparent;
+            border: 1px solid #7f61d4;
+            color: #cbb5ff;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            backdrop-filter: blur(5px);
+        }
+        .connect-btn i {
+            font-size: 0.9rem;
+            color: #b18eff;
+        }
+        .connect-btn:hover {
+            background: #352e4b;
+            border-color: #b18eff;
+        }
+
+        /* MODAL (hidden by default – no pop on load) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(8, 5, 15, 0.9);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.25s ease, visibility 0.25s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-card {
+            background: #1e1830;
+            max-width: 480px;
+            width: 90%;
+            border-radius: 48px;
+            padding: 2rem 1.8rem;
+            border: 1px solid #9f7aff;
+            box-shadow: 0 30px 50px #00000066;
+            color: #f0eaff;
+        }
+        .modal-card h3 {
+            font-size: 1.9rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #ffd966, #c394ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        .subh {
+            color: #b5a4e0;
+            margin-bottom: 1.8rem;
+            font-size: 0.95rem;
+        }
+        .option-block {
+            background: #231e36;
+            border-radius: 32px;
+            padding: 1.2rem 1.2rem;
+            margin-bottom: 1rem;
+            border: 1px solid #4e3f70;
+        }
+        .option-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .option-desc {
+            color: #b7accf;
+            font-size: 0.9rem;
+            margin-left: 1.8rem;
+        }
+        .bybit-input {
+            background: #120e1e;
+            border: 1px solid #6b50a6;
+            border-radius: 60px;
+            padding: 0.7rem 1rem;
+            width: 100%;
+            color: white;
+            margin: 0.8rem 0 0.2rem;
+        }
+        .bybit-input::placeholder {
+            color: #6a5a8b;
+        }
+        .small-btn {
+            background: #4a3779;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #9375e6;
+            margin-top: 0.5rem;
+        }
+        .membership-badge {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #ffe484;
+            margin-left: 0.5rem;
+        }
+        .divider {
+            width: 100%; height: 1px; background: #3f3461; margin: 1rem 0;
+        }
+        .close-icon {
+            float: right;
+            font-size: 2rem;
+            line-height: 1;
+            color: #a590d0;
+            cursor: pointer;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* CTA buttons for unlock (optional, keep for compatibility) */
+        .unlock-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn {
+            background: transparent;
+            border: 1.5px solid #7a5acf;
+            color: #d3c2ff;
+            padding: 0.7rem 2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background: #6246b8;
+            border-color: #a07eff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #7f5fda;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3.5rem;
+            color: #5e5377;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <!-- header -->
+    <div class="title-block">
+        <h1><i class="fas fa-crown"></i> AGRA·GOT · intelligence</h1>
+        <div class="mask-badge"><i class="fas fa-eye-slash"></i> all data masked · signup to reveal</div>
+    </div>
+
+    <!-- main grid – with CONNECT buttons under each card -->
+    <div class="grid">
+        <!-- pump.fun section -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-water"></i> pump.fun</div>
+            <div class="stat-row"><span class="stat-label">new tokens (24h)</span><span class="stat-value"><span class="asterisk">••••</span></span></div>
+            <div class="stat-row"><span class="stat-label">avg. liquidity</span><span class="stat-value"><span class="asterisk">••••••</span> SOL</span></div>
+            <div class="stat-row"><span class="stat-label">volume (1h)</span><span class="stat-value">$<span class="asterisk">••••</span>k</span></div>
+            <div class="stat-row"><span class="stat-label">king of the hill</span><span class="stat-value"><span class="asterisk">•••••••</span></span></div>
+            <div class="connect-wrapper"><button class="connect-btn" data-section="pump.fun"><i class="fas fa-plug"></i> Connect</button></div>
+        </div>
+
+        <!-- NFT section -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-image"></i> NFT · wash & real</div>
+            <div class="stat-row"><span class="stat-label">blue chip index</span><span class="stat-value"><span class="asterisk">••••</span> ETH</span></div>
+            <div class="stat-row"><span class="stat-label">total sales (7d)</span><span class="stat-value"><span class="asterisk">••••••</span></span></div>
+            <div class="stat-row"><span class="stat-label">top collection</span><span class="stat-value"><span class="asterisk">••••••••</span></span></div>
+            <div class="stat-row"><span class="stat-label">floor trend</span><span class="stat-value"><span class="asterisk">↑••</span>%</span></div>
+            <div class="connect-wrapper"><button class="connect-btn" data-section="NFT"><i class="fas fa-plug"></i> Connect</button></div>
+        </div>
+
+        <!-- Sentiment + Fear & Greed combined -->
+        <div class="card">
+            <div class="card-header"><i class="fas fa-smile"></i> sentiment · fear & greed</div>
+            <div class="stat-row"><span class="stat-label">overall sentiment</span><span class="stat-value"><span class="asterisk">••••••</span></span></div>
+            <div class="stat-row"><span class="stat-label">fear & greed</span><span class="stat-value"><span class="asterisk">••</span> / 100</span></div>
+            <div class="fear-greed-bar"><div class="fg-fill" style="width: 67%"></div></div>
+            <div class="stat-row"><span class="stat-label">put/call ratio</span><span class="stat-value"><span class="asterisk">•.••</span></span></div>
+            <div class="stat-row"><span class="stat-label">social volume</span><span class="stat-value"><span class="asterisk">•••••</span></span></div>
+            <div class="connect-wrapper"><button class="connect-btn" data-section="sentiment"><i class="fas fa-plug"></i> Connect</button></div>
+        </div>
+    </div>
+
+    <!-- extra expanded blocks (signals, trends, tweets, news) with connect buttons -->
+    <div class="extra-sections">
+
+        <!-- influential tweets + AI dissection -->
+        <div class="subsection">
+            <div class="subsection-title"><i class="fab fa-twitter" style="color:#7f64d6;"></i> influential tweets · AI dissected</div>
+            <div class="tweet-item">
+                <div class="tweet-header"><i class="fas fa-user-secret"></i> @cryptowhalemotion <span>• 2h ago</span></div>
+                <div class="stat-row"><span class="stat-label">AI summary</span><span class="stat-value"><span class="asterisk">••••••••••</span></span></div>
+                <div class="tweet-ai"><i class="fas fa-microchip"></i> sentiment: <span class="asterisk">••••</span> · impact score <span class="asterisk">••</span>/10</div>
+            </div>
+            <div class="tweet-item">
+                <div class="tweet-header"><i class="fas fa-user-secret"></i> @OnChainMatrix <span>• 5h ago</span></div>
+                <div class="stat-row"><span class="stat-label">AI dissection</span><span class="stat-value"><span class="asterisk">••••••• (alpha leak)</span></span></div>
+                <div class="tweet-ai"><i class="fas fa-robot"></i> key phrase: <span class="asterisk">•••••••</span></div>
+            </div>
+            <div class="tweet-item">
+                <div class="tweet-header"><i class="fas fa-user-secret"></i> @deltaxbt <span>• 12h ago</span></div>
+                <div class="stat-row"><span class="stat-label">AI narrative</span><span class="stat-value"><span class="asterisk">••••••••••</span></span></div>
+                <div><span class="signal-tag"><i class="fas-regular fa-chart-line"></i> momentum <span class="asterisk">••</span></span></div>
+            </div>
+            <div class="connect-wrapper"><button class="connect-btn" data-section="influential tweets"><i class="fas fa-plug"></i> Connect</button></div>
+        </div>
+
+        <!-- SIGNAL + TRENDS section -->
+        <div class="subsection">
+            <div class="subsection-title"><i class="fas fa-rss"></i> signal · trends · market impact</div>
+            <div class="stat-row"><span class="stat-label">new signal (15m)</span><span class="stat-value"><span class="asterisk">•••••• BUY</span></span></div>
+            <div class="stat-row"><span class="stat-label">trending narrative</span><span class="stat-value"><span class="asterisk">••• L2 •••</span></span></div>
+            <div class="stat-row"><span class="stat-label">market impact (AI)</span><span class="stat-value"><span class="asterisk">HIGH</span> (masked)</span></div>
+            <div style="margin-top: 0.8rem;">
+                <span class="signal-tag">#AI <span class="asterisk">•••</span></span>
+                <span class="signal-tag">#RWA <span class="asterisk">••</span></span>
+                <span class="signal-tag">#DeFi <span class="asterisk">••••</span></span>
+                <span class="signal-tag">#meme <span class="asterisk">••••</span></span>
+            </div>
+            <div class="connect-wrapper"><button class="connect-btn" data-section="trends"><i class="fas fa-plug"></i> Connect</button></div>
+        </div>
+
+        <!-- New affect the market (news) -->
+        <div class="subsection">
+            <div class="subsection-title"><i class="fas fa-newspaper"></i> news · affect the market</div>
+            <div class="stat-row"><span class="stat-label">macro news</span><span class="stat-value"><span class="asterisk">•••• FOMC ••••</span></span></div>
+            <div class="stat-row"><span class="stat-label">regulatory</span><span class="stat-value"><span class="asterisk">•••••••</span></span></div>
+            <div class="stat-row"><span class="stat-label">institutional flow</span><span class="stat-value">$<span class="asterisk">••••</span>M</span></div>
+            <div class="stat-row"><span class="stat-label">sentiment after news</span><span class="stat-value"><span class="asterisk">↘︎••</span>%</span></div>
+            <div class="connect-wrapper"><button class="connect-btn" data-section="news"><i class="fas fa-plug"></i> Connect</button></div>
+        </div>
+    </div>
+
+    <!-- legacy unlock actions (optional) but we keep for alternative calls -->
+    <div class="unlock-actions">
+        <button class="btn" id="legacySignupBtn"><i class="fas fa-envelope"></i> Sign up (free)</button>
+        <button class="btn btn-primary" id="legacyPayBtn"><i class="fas fa-lock-open"></i> Pay $69.99 · membership</button>
+    </div>
+    <footer>all masked values hidden · asterisks represent live data</footer>
+</div>
+
+<!-- unified MODAL overlay – hidden by default (no pop) -->
+<div class="modal-overlay" id="unifiedModal">
+    <div class="modal-card">
+        <span class="close-icon" id="closeModalBtn">&times;</span>
+        <h3>🔗 connect / unlock</h3>
+        <div class="subh" id="modalSectionDisplay">access real-time data</div>
+
+        <!-- option 1: bybit account -->
+        <div class="option-block">
+            <div class="option-title"><i class="fab fa-bitcoin" style="color:#f7a600;"></i> 1. Bybit account</div>
+            <div class="option-desc">Already have a Bybit account? Link your ID to activate.</div>
+            <input type="text" class="bybit-input" placeholder="Enter Bybit ID (optional demo)" id="bybitIdInput">
+            <button class="small-btn" id="linkBybitBtn"><i class="fas fa-link"></i> link & reveal</button>
+        </div>
+
+        <!-- option 2: free account (signup) -->
+        <div class="option-block">
+            <div class="option-title"><i class="fas fa-user-plus" style="color:#7ef0ba;"></i> 2. Create free account</div>
+            <div class="option-desc">No Bybit? Sign up free — partner activation required (still masked until verified).</div>
+            <button class="small-btn" id="freeSignupBtn"><i class="fas fa-envelope"></i> continue free</button>
+        </div>
+
+        <!-- option 3: $69.99 monthly membership -->
+        <div class="option-block">
+            <div class="option-title"><i class="fas fa-crown" style="color:#ffd966;"></i> 3. Premium membership <span class="membership-badge">$69.99</span><span style="font-size:0.8rem; margin-left:0.3rem;">/month</span></div>
+            <div class="option-desc">Full access, no masks, priority data.</div>
+            <button class="small-btn" id="premiumPayBtn"><i class="fas fa-lock-open"></i> activate $69.99</button>
+        </div>
+
+        <div class="divider"></div>
+        <p style="font-size:0.8rem; opacity:0.6; text-align:center;">Select any option – demo interaction (no real data)</p>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // modal elements
+        const modal = document.getElementById('unifiedModal');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const modalSectionSpan = document.getElementById('modalSectionDisplay');
+
+        // Buttons: all connect buttons + legacy triggers
+        const connectBtns = document.querySelectorAll('.connect-btn');
+        const legacySignup = document.getElementById('legacySignupBtn');
+        const legacyPay = document.getElementById('legacyPayBtn');
+
+        // inner modal action buttons
+        const linkBybitBtn = document.getElementById('linkBybitBtn');
+        const freeSignupBtn = document.getElementById('freeSignupBtn');
+        const premiumPayBtn = document.getElementById('premiumPayBtn');
+        const bybitInput = document.getElementById('bybitIdInput');
+
+        // function to show modal and optionally set section text
+        function showModal(sectionName = 'this section') {
+            modalSectionSpan.innerText = `unlock data for: ${sectionName}`;
+            modal.classList.add('active');
+        }
+
+        function hideModal() {
+            modal.classList.remove('active');
+        }
+
+        // attach event to every connect button
+        connectBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = btn.getAttribute('data-section') || 'selected area';
+                showModal(section);
+            });
+        });
+
+        // legacy buttons also open modal (with generic message)
+        legacySignup.addEventListener('click', () => showModal('account activation'));
+        legacyPay.addEventListener('click', () => showModal('premium upgrade'));
+
+        // close modal via X
+        closeBtn.addEventListener('click', hideModal);
+
+        // click outside to close
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideModal();
+        });
+
+        // --- modal inner button handlers (demo only) ---
+        linkBybitBtn.addEventListener('click', () => {
+            const id = bybitInput.value.trim();
+            alert(`[demo] Bybit account linked${id ? ' with ID: ' + id : ''}. Data would be revealed (simulated).`);
+            hideModal();
+        });
+
+        freeSignupBtn.addEventListener('click', () => {
+            alert('demo: free signup/partner activation started. Data remains masked until partner approval.');
+            hideModal();
+        });
+
+        premiumPayBtn.addEventListener('click', () => {
+            alert('demo: $69.99 membership activated (mock). All asterisks would disappear.');
+            hideModal();
+        });
+
+        // ensure modal hidden on load
+        window.addEventListener('load', () => {
+            modal.classList.remove('active');
+        });
+    })();
+</script>
+
+<!-- note: modal does NOT pop on open, only via connect buttons or legacy btns -->
+</body>
+</html>
