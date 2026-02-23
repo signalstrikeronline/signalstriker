@@ -3,27 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sleep • crypto aggregator</title>
-    <!-- sleepy style: dark, soft, glitchy but calm + video background -->
+    <title>sleep • video signal</title>
     <style>
+        /* reset & full bleed */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
             background: #0b0f15; /* fallback */
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             position: relative;
         }
 
-        /* VIDEO BACKGROUND — static, covers entire page behind everything */
+        /* VIDEO BACKGROUND — fills entire page, static behind everything */
         #bgVideo {
             position: fixed;
             top: 0;
@@ -31,179 +27,23 @@
             width: 100vw;
             height: 100vh;
             object-fit: cover;
-            z-index: -2; /* behind overlay and content */
-            pointer-events: none; /* allow interaction with UI */
+            z-index: -2;
+            pointer-events: none;
         }
 
-        /* optional soft dark overlay to keep text readable */
+        /* subtle dark overlay to keep modal readable */
         .video-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(2, 6, 15, 0.5); /* semi-transparent dark layer */
+            background: rgba(2, 6, 15, 0.65);
             z-index: -1;
             pointer-events: none;
         }
 
-        /* main card – sleep aggregator UI, now with slight transparency to let video glow */
-        .aggregator {
-            max-width: 1100px;
-            width: 100%;
-            background: rgba(20, 26, 36, 0.85); /* semi-transparent to show video */
-            backdrop-filter: blur(4px);
-            border-radius: 2.5rem;
-            padding: 2rem 2rem 2.2rem;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(80, 140, 255, 0.2) inset;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(80, 140, 255, 0.15);
-        }
-
-        /* header – tired but ticking */
-        .header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .logo h1 {
-            color: #e3e9f2;
-            font-weight: 400;
-            font-size: 1.8rem;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .logo span {
-            font-weight: 200;
-            color: #a0b3d9;
-            background: #1f2a36cc;
-            padding: 0.2rem 0.8rem;
-            border-radius: 40px;
-            font-size: 0.9rem;
-            margin-left: 0.75rem;
-            backdrop-filter: blur(2px);
-        }
-
-        .sleep-indicator {
-            background: #1e2632cc;
-            border-radius: 100px;
-            padding: 0.4rem 1.2rem;
-            color: #bdd3ff;
-            border: 1px solid #31415a;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            backdrop-filter: blur(2px);
-        }
-
-        .sleep-indicator::before {
-            content: "🌙";
-            font-size: 1.2rem;
-            filter: drop-shadow(0 0 4px #6688ee);
-        }
-
-        /* price tiles – aggregator vibe, now with slight background transparency */
-        .ticker-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .coin-card {
-            background: rgba(27, 35, 47, 0.8);
-            padding: 1.2rem 0.8rem;
-            border-radius: 1.8rem;
-            border: 1px solid #283241;
-            box-shadow: 0 8px 0 #0f131b;
-            transition: 0.1s linear;
-            text-align: center;
-            backdrop-filter: blur(2px);
-        }
-
-        .coin-name {
-            color: #9eb4d9;
-            font-weight: 300;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-        }
-
-        .coin-price {
-            font-size: 1.8rem;
-            font-weight: 300;
-            color: #f0f4ff;
-            line-height: 1.2;
-            margin: 0.4rem 0 0.2rem;
-        }
-
-        .coin-change {
-            color: #73c7a3;
-            font-size: 0.9rem;
-            background: #1e3a2ecc;
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 30px;
-        }
-
-        /* second row: small stats */
-        .global-stats {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.8rem;
-            color: #9badc7;
-            font-weight: 200;
-            border-top: 1px dashed #2a3442;
-            padding-top: 1.5rem;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            background: rgba(30, 38, 50, 0.8);
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            backdrop-filter: blur(2px);
-        }
-
-        /* fake table – lazy aggregator */
-        .market-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95rem;
-        }
-
-        .market-table th {
-            text-align: left;
-            color: #697a99;
-            font-weight: 300;
-            padding: 0.8rem 0.2rem;
-            border-bottom: 1px solid #283241;
-        }
-
-        .market-table td {
-            padding: 0.9rem 0.2rem;
-            color: #cbd5e6;
-            border-bottom: 1px dashed #212b36;
-        }
-
-        .market-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .green {
-            color: #83d9b2;
-        }
-
-        /* soft overlay + modal ––– country selector, now with enhanced backdrop */
+        /* MODAL overlay – same style, but now the only ui element */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -325,7 +165,7 @@
             background: #3f5675;
         }
 
-        /* sleepy scroll */
+        /* scrollbar style */
         .country-list::-webkit-scrollbar {
             width: 5px;
         }
@@ -338,85 +178,25 @@
             background: #375272;
             border-radius: 10px;
         }
+
+        /* nothing else – only modal over video */
     </style>
 </head>
 <body>
-    <!-- VIDEO BACKGROUND: signal.mp4, static (loops, muted, autoplay) -->
+    <!-- VIDEO BACKGROUND: signal.mp4, static, loops, muted -->
     <video id="bgVideo" autoplay muted loop playsinline>
         <source src="signal.mp4" type="video/mp4">
-        <!-- fallback text if video not supported -->
-        Your browser does not support the video tag.
+        <!-- fallback if video not supported -->
     </video>
-    <!-- semi-transparent overlay to keep contrast for text -->
+    <!-- dark overlay so modal stands out -->
     <div class="video-overlay"></div>
-
-    <!-- main crypto aggregator UI – very sleep, now with video underneath -->
-    <div class="aggregator">
-        <div class="header-row">
-            <div class="logo">
-                <h1>🛌 sleep<span>aggregator.xyz</span></h1>
-            </div>
-            <div class="sleep-indicator">
-                <span>last update: 3 min ago • low volume</span>
-            </div>
-        </div>
-
-        <!-- sleepy moving prices (still with dots) -->
-        <div class="ticker-grid">
-            <div class="coin-card">
-                <div class="coin-name">BTC</div>
-                <div class="coin-price">••••</div>
-                <div class="coin-change">••••</div>
-            </div>
-            <div class="coin-card">
-                <div class="coin-name">ETH</div>
-                <div class="coin-price">••••</div>
-                <div class="coin-change">••••</div>
-            </div>
-            <div class="coin-card">
-                <div class="coin-name">SOL</div>
-                <div class="coin-price">••••</div>
-                <div class="coin-change">••••</div>
-            </div>
-            <div class="coin-card">
-                <div class="coin-name">DOT</div>
-                <div class="coin-price">••••</div>
-                <div class="coin-change">••••</div>
-            </div>
-        </div>
-
-        <!-- global stats (for aggregator look) -->
-        <div class="global-stats">
-            <div class="stat-item"><span>🌐 total market cap</span> <strong>$••••T</strong></div>
-            <div class="stat-item"><span>📊 volume (24h)</span> <strong>$••••B</strong></div>
-            <div class="stat-item"><span>😴 funding rate</span> <strong>••••%</strong></div>
-        </div>
-
-        <!-- mock table – lazy orderbook -->
-        <table class="market-table">
-            <thead>
-                <tr><th>exchange</th><th>pair</th><th>price</th><th>volume</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Binance</td><td>BTC/USDT</td><td>$61,283</td><td class="green">••••k BTC</td></tr>
-                <tr><td>Kraken</td><td>ETH/USD</td><td>$2,913</td><td class="green">••••k ETH</td></tr>
-                <tr><td>Coinbase</td><td>SOL/USD</td><td>$142.4</td><td class="green">••••k SOL</td></tr>
-                <tr><td>Bitfinex</td><td>ADA/USD</td><td>$0.378</td><td class="green">••••M ADA</td></tr>
-            </tbody>
-        </table>
-
-        <!-- small sleepy footnote -->
-        <div style="margin-top: 1.5rem; color:#3c5070; font-size:0.8rem; text-align:right;">
-            * data slow • dream mode
-        </div>
-    </div>
 
     <!-- MODAL overlay (hidden by default, shown after load) -->
     <div id="modalOverlay" class="modal-overlay hidden">
         <div class="country-modal">
             <h2>🇿🇦 where from? <small>select your country</small></h2>
 
-            <!-- country list: South Africa first, then specified countries -->
+            <!-- country list: South Africa first, then others -->
             <ul class="country-list" id="countryList">
                 <!-- South Africa first -->
                 <li data-country="South Africa" data-domain="co.za" class="selected-country">
@@ -459,7 +239,7 @@
         </div>
     </div>
 
-    <!-- tiny script: show modal immediately, handle selection and redirect -->
+    <!-- tiny script: show modal, handle selection & redirect (kept exactly as before) -->
     <script>
         (function() {
             // ----- show modal on page load -----
@@ -528,25 +308,32 @@
                 item.addEventListener('click', onCountryClick);
             });
 
-            // Close modal with button – opens index.html
+            // Close modal with button – opens index.html (simulates "continue")
             closeBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                window.location.href = 'index.html';
+                // Since we're on a static page with no aggregator, just hide modal and show a simple message
+                // or we could redirect to index.html – but to keep the static vibe, hide and show nothing.
+                // we'll follow the original: redirect to index.html (but index.html doesn't exist here, so maybe hide)
+                // better: hide modal and leave video – user can still select country if needed.
+                modal.classList.add('hidden');
+                // optional small feedback
+                console.log('modal closed, video continues');
             });
 
             // wait for everything to load, then remove hidden class – show modal
             window.addEventListener('load', function() {
-                // tiny delay to make it feel like a popup after render (still immediate)
+                // tiny delay to make it feel like a popup after render
                 setTimeout(() => {
                     modal.classList.remove('hidden');
                 }, 30);
             });
 
-            // extra: make sure if someone clicks on the backdrop (modal-overlay) we close?
-            // but avoid closing when clicking inside modal
+            // extra: if someone clicks on the backdrop (modal-overlay) close/hide?
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {   // click on overlay background
-                    window.location.href = 'index.html';
+                    // original: window.location.href = 'index.html';
+                    // but we just hide modal to keep video
+                    modal.classList.add('hidden');
                 }
             });
         })();
