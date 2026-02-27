@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SignalStrike – AI-Powered Crypto Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #070b12;
+    --bg-1: #0c1220;
+    --bg-2: #111827;
+    --bg-3: #1a2235;
+    --border: rgba(255,255,255,0.06);
+    --border-bright: rgba(99,210,255,0.25);
+    --accent: #00d4ff;
+    --accent-2: #7c3aed;
+    --accent-3: #10b981;
+    --red: #ef4444;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --text-1: #f0f4ff;
+    --text-2: #94a3b8;
+    --text-3: #4b5e78;
+    --radius: 10px;
+    --shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg-0);
+    color: var(--text-1);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-1); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 4px; }
+
+  /* TICKER TAPE */
+  .ticker-wrap {
+    background: var(--bg-1);
+    border-bottom: 1px solid var(--border);
+    padding: 7px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-flex;
+    gap: 40px;
+    animation: ticker 40s linear infinite;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-2);
+  }
+  .ticker-item .sym { color: var(--text-1); font-weight: 600; }
+  .ticker-item .up { color: var(--green); }
+  .ticker-item .dn { color: var(--red); }
+
+  /* NAV */
+  nav {
+    background: rgba(7,11,18,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 24px;
+  }
+  .nav-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    gap: 0;
+  }
+  .logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.5px;
+    margin-right: 32px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .logo span {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    align-items: center;
+  }
+  .nav-link {
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--text-2);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .nav-link:hover, .nav-link.active { color: var(--text-1); background: var(--bg-3); }
+  .nav-link.active { color: var(--accent); }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+  .btn {
+    padding: 7px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-2);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text-1); border-color: rgba(255,255,255,0.15); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #0099cc);
+    color: #000;
+    font-weight: 600;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-accent2 {
+    background: linear-gradient(135deg, var(--accent-2), #5b21b6);
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn-accent2:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* HERO STRIP */
+  .hero-strip {
+    background: linear-gradient(90deg, rgba(0,212,255,0.06) 0%, transparent 50%, rgba(124,58,237,0.06) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+  }
+  .hero-strip-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .market-pill {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 130px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .market-pill:hover { border-color: var(--border-bright); }
+  .market-pill .mp-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .market-pill .mp-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; }
+  .market-pill .mp-chg { font-size: 11px; }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 220px 1fr 280px;
+    gap: 16px;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sidebar-section {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .sidebar-head {
+    padding: 10px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-3);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+    font-weight: 600;
+  }
+  .sidebar-item {
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--text-2);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+  }
+  .sidebar-item:last-child { border-bottom: none; }
+  .sidebar-item:hover { background: var(--bg-3); color: var(--text-1); }
+  .sidebar-item.active { color: var(--accent); background: rgba(0,212,255,0.04); }
+  .sidebar-item .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .sidebar-item .dot.red { background: var(--red); }
+  .sidebar-item .dot.green { background: var(--green); }
+  .sidebar-item .dot.yellow { background: var(--yellow); }
+
+  /* CENTER CONTENT */
+  .center {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* TABS */
+  .tab-row {
+    display: flex;
+    gap: 2px;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    width: fit-content;
+  }
+  .tab {
+    padding: 6px 14px;
+    font-size: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: var(--text-3);
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .tab:hover { color: var(--text-2); }
+  .tab.active { background: var(--bg-3); color: var(--text-1); }
+
+  /* DATA TABLE */
+  .data-card {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .data-card-head {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-2);
+  }
+  .data-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    background: rgba(0,212,255,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.2);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .badge.purple {
+    background: rgba(124,58,237,0.12);
+    color: #a78bfa;
+    border-color: rgba(124,58,237,0.2);
+  }
+  .badge.green {
+    background: rgba(16,185,129,0.12);
+    color: var(--green);
+    border-color: rgba(16,185,129,0.2);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 8px 14px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg-2); }
+  tbody td {
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  tbody td:first-child { color: var(--text-1); font-weight: 500; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .up { color: var(--green) !important; }
+  .dn { color: var(--red) !important; }
+
+  /* MINI CHART */
+  .mini-chart {
+    width: 64px; height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* HEATMAP */
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    padding: 14px;
+  }
+  .hm-cell {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .hm-cell:hover { opacity: 0.8; }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* NEWS */
+  .news-item {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-item:hover { background: var(--bg-2); }
+  .news-item .news-title { font-size: 12px; color: var(--text-1); line-height: 1.5; margin-bottom: 6px; }
+  .news-item .news-meta { font-size: 10px; color: var(--text-3); display: flex; gap: 8px; }
+  .news-tag {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  /* FLOW WIDGET */
+  .flow-row {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .flow-row:last-child { border-bottom: none; }
+  .flow-row:hover { background: var(--bg-2); }
+  .flow-label { font-size: 12px; color: var(--text-2); }
+  .flow-bar-wrap { width: 80px; height: 4px; background: var(--bg-3); border-radius: 2px; }
+  .flow-bar { height: 4px; border-radius: 2px; }
+
+  /* =================== MODALS =================== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal {
+    background: var(--bg-1);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 32px;
+    width: 480px;
+    max-width: 94vw;
+    position: relative;
+    transform: translateY(24px) scale(0.97);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.07), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .modal-overlay.open .modal {
+    transform: translateY(0) scale(1);
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: none;
+    color: var(--text-2);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .modal-close:hover { background: var(--bg-2); color: var(--text-1); }
+  .modal-logo {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .modal-logo span {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .modal-sub { font-size: 13px; color: var(--text-3); margin-bottom: 28px; }
+  .modal-tabs {
+    display: flex;
+    background: var(--bg-2);
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 24px;
+    gap: 4px;
+  }
+  .modal-tab {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    color: var(--text-3);
+    transition: all 0.18s;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+  }
+  .modal-tab.active {
+    background: var(--bg-3);
+    color: var(--text-1);
+    border: 1px solid var(--border);
+  }
+  .modal-tab:hover:not(.active) { color: var(--text-2); }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; color: var(--text-3); margin-bottom: 6px; display: block; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 13px;
+    color: var(--text-1);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.18s;
+  }
+  .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.1); }
+  .form-input::placeholder { color: var(--text-3); }
+  .bybit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #f7a600, #e08900);
+    color: #000;
+    border: none;
+    border-radius: 9px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    margin-bottom: 14px;
+  }
+  .bybit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(247,166,0,0.3); }
+  .bybit-logo {
+    width: 20px; height: 20px;
+    background: #000;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+    color: #f7a600;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+    color: var(--text-3);
+    font-size: 11px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .form-submit {
+    width: 100%;
+    padding: 13px;
+    border-radius: 9px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .form-submit.cyan {
+    background: linear-gradient(135deg, var(--accent), #0099cc);
+    color: #000;
+  }
+  .form-submit.purple {
+    background: linear-gradient(135deg, var(--accent-2), #5b21b6);
+    color: #fff;
+  }
+  .form-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+
+  /* PRICING CARD inside modal */
+  .pricing-card {
+    background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(0,212,255,0.06));
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pricing-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, rgba(124,58,237,0.3), transparent 70%);
+    pointer-events: none;
+  }
+  .pricing-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .pricing-name { font-size: 15px; font-weight: 700; color: var(--text-1); }
+  .pricing-badge {
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pricing-price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .price-old {
+    font-size: 18px;
+    color: var(--text-3);
+    text-decoration: line-through;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .price-new {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .price-period { font-size: 12px; color: var(--text-3); }
+  .pricing-features { list-style: none; }
+  .pricing-features li {
+    font-size: 12px;
+    color: var(--text-2);
+    padding: 3px 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .pricing-features li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .modal-footer { font-size: 11px; color: var(--text-3); text-align: center; margin-top: 14px; }
+  .modal-footer a { color: var(--accent); cursor: pointer; }
+
+  /* REGISTER PANEL */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ===== SECOND MODAL: specific page modals ===== */
+  .page-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-1);
+  }
+  .page-modal-sub { font-size: 13px; color: var(--text-3); margin-bottom: 22px; }
+
+  /* AI INDICATOR DOTS */
+  .live-dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    display: inline-block;
+    margin-right: 4px;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* PROGRESS */
+  .progress-bar { height: 3px; background: var(--bg-3); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; border-radius: 2px; }
+
+  /* CHART PLACEHOLDER */
+  .chart-area {
+    height: 200px;
+    background: var(--bg-2);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px;
+    gap: 3px;
+    overflow: hidden;
+  }
+  .chart-bar {
+    flex: 1;
+    border-radius: 2px 2px 0 0;
+    transition: opacity 0.15s;
+    cursor: pointer;
+  }
+  .chart-bar:hover { opacity: 0.7; }
+
+  /* FEAR GREED */
+  .gauge-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+  }
+  .gauge-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .gauge-val { font-size: 32px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--yellow); }
+  .gauge-name { font-size: 12px; color: var(--yellow); font-weight: 600; }
+  .gauge-arc {
+    width: 100px; height: 50px;
+    position: relative;
+    margin: 10px 0 6px;
+    overflow: hidden;
+  }
+
+  /* ==================== FOOTER INFO ==================== */
+  .top-banner {
+    background: linear-gradient(90deg, rgba(0,212,255,0.05) 0%, rgba(124,58,237,0.08) 100%);
+    border: 1px solid rgba(0,212,255,0.1);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .banner-text { font-size: 13px; color: var(--text-2); }
+  .banner-text strong { color: var(--text-1); }
+
+  @media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar, .right-panel { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER TAPE -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Signal<span>Strike</span></div>
+    <div class="nav-links">
+      <div class="nav-link active">Markets</div>
+      <div class="nav-link" onclick="openModal('indices-modal')">Indices</div>
+      <div class="nav-link" onclick="openModal('etf-modal')">ETF Tracker</div>
+      <div class="nav-link" onclick="openModal('defi-modal')">DeFi</div>
+      <div class="nav-link" onclick="openModal('ai-modal')">AI Signals ✦</div>
+      <div class="nav-link" onclick="openModal('research-modal')">Research</div>
+      <div class="nav-link" onclick="openModal('portfolio-modal')">Portfolio</div>
+    </div>
+    <div class="nav-right">
+      <button class="btn btn-ghost" onclick="openAuthModal('login')">Log In</button>
+      <button class="btn btn-accent2" onclick="openAuthModal('register')">Get Started Free</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO STRIP -->
+<div class="hero-strip">
+  <div class="hero-strip-inner" id="market-pills"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+    <div class="top-banner" style="margin-bottom:4px;flex-direction:column;align-items:flex-start;gap:8px;">
+      <div style="font-size:13px;color:var(--text-1);font-weight:600;">🎯 AI Signals Active</div>
+      <div style="font-size:11px;color:var(--text-3);">Real-time trading intelligence powered by deep learning</div>
+      <button class="btn btn-primary" style="width:100%;font-size:12px;" onclick="openAuthModal('register')">Activate Free — <s style="color:rgba(0,0,0,0.45)">$***</s> $***/mo</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-head">Sectors</div>
+      <div class="sidebar-item active"><span class="dot"></span>Layer 1s</div>
+      <div class="sidebar-item"><span class="dot green"></span>DeFi</div>
+      <div class="sidebar-item"><span class="dot yellow"></span>AI Tokens</div>
+      <div class="sidebar-item"><span class="dot red"></span>GameFi</div>
+      <div class="sidebar-item"><span class="dot"></span>RWA</div>
+      <div class="sidebar-item"><span class="dot green"></span>Stablecoins</div>
+      <div class="sidebar-item"><span class="dot"></span>Memes</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-head">Quick Access</div>
+      <div class="sidebar-item" onclick="openModal('etf-modal')">₿ Bitcoin ETF</div>
+      <div class="sidebar-item" onclick="openModal('etf-modal')">Ξ Ethereum ETF</div>
+      <div class="sidebar-item" onclick="openModal('indices-modal')">📊 SS Index</div>
+      <div class="sidebar-item" onclick="openModal('ai-modal')">🤖 AI Scanner</div>
+      <div class="sidebar-item" onclick="openModal('portfolio-modal')">💼 My Portfolio</div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center">
+
+    <!-- TOP TABS -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div class="tab-row">
+        <div class="tab active">All Assets</div>
+        <div class="tab">Trending</div>
+        <div class="tab">Gainers</div>
+        <div class="tab">Losers</div>
+        <div class="tab">New Listings</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div class="tab-row">
+          <div class="tab active">1H</div>
+          <div class="tab">4H</div>
+          <div class="tab">1D</div>
+          <div class="tab">1W</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART CARD -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <div class="data-card-title">
+          <span class="live-dot"></span>
+          Market Overview — BTC Dominance
+          <span class="badge">LIVE</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:11px;color:var(--text-3);">Updated **s ago</span>
+        </div>
+      </div>
+      <div style="padding:14px;">
+        <div class="chart-area" id="main-chart"></div>
+      </div>
+    </div>
+
+    <!-- MAIN TABLE -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <div class="data-card-title">
+          Top Crypto Assets
+          <span class="badge">**,***+ Assets</span>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <input class="form-input" style="width:180px;padding:5px 10px;font-size:12px;" placeholder="🔍 Search assets...">
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Asset</th>
+            <th>Price</th>
+            <th>1H</th>
+            <th>24H</th>
+            <th>7D</th>
+            <th>Market Cap</th>
+            <th>Volume 24H</th>
+            <th>Chart</th>
+          </tr>
+        </thead>
+        <tbody id="asset-table"></tbody>
+      </table>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <div class="data-card-title">Market Heatmap <span class="badge purple">*D Performance</span></div>
+      </div>
+      <div class="heatmap-grid" id="heatmap"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- FEAR GREED -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <div class="data-card-title">Fear & Greed Index <span class="badge green">LIVE</span></div>
+      </div>
+      <div class="gauge-wrap">
+        <div class="gauge-label">Today</div>
+        <div class="gauge-val">**</div>
+        <div class="gauge-name">Greed</div>
+        <div style="margin-top:10px;width:100%;">
+          <div class="progress-bar" style="height:6px;">
+            <div class="progress-fill" style="width:50%;background:linear-gradient(90deg,var(--green),var(--yellow));"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text-3);">
+            <span>Fear</span><span>Neutral</span><span>Greed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BTC ETF FLOWS -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <div class="data-card-title">BTC ETF Flows <span class="badge">Today</span></div>
+      </div>
+      <div class="flow-row">
+        <div>
+          <div class="flow-label">BlackRock IBIT</div>
+          <div class="mono up" style="font-size:11px;">+$***M</div>
+        </div>
+        <div><div class="flow-bar-wrap"><div class="flow-bar" style="width:40%;background:var(--green);"></div></div></div>
+      </div>
+      <div class="flow-row">
+        <div>
+          <div class="flow-label">Fidelity FBTC</div>
+          <div class="mono up" style="font-size:11px;">+$***M</div>
+        </div>
+        <div><div class="flow-bar-wrap"><div class="flow-bar" style="width:40%;background:var(--green);"></div></div></div>
+      </div>
+      <div class="flow-row">
+        <div>
+          <div class="flow-label">ARK 21Shares</div>
+          <div class="mono up" style="font-size:11px;">+$***M</div>
+        </div>
+        <div><div class="flow-bar-wrap"><div class="flow-bar" style="width:40%;background:var(--green);"></div></div></div>
+      </div>
+      <div class="flow-row">
+        <div>
+          <div class="flow-label">Grayscale GBTC</div>
+          <div class="mono dn" style="font-size:11px;">-$***M</div>
+        </div>
+        <div><div class="flow-bar-wrap"><div class="flow-bar" style="width:40%;background:var(--red);"></div></div></div>
+      </div>
+      <div style="padding:10px 14px;text-align:center;border-top:1px solid var(--border);">
+        <div style="font-size:10px;color:var(--text-3);">Total Net Flow Today</div>
+        <div class="mono up" style="font-size:18px;font-weight:700;">+$***M</div>
+      </div>
+    </div>
+
+    <!-- NEWS -->
+    <div class="data-card">
+      <div class="data-card-head">
+        <div class="data-card-title"><span class="live-dot"></span>AI News Feed</div>
+      </div>
+      <div id="news-feed"></div>
+    </div>
+
+    <!-- SIGNAL CTA -->
+    <div style="background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(0,212,255,0.1));border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:18px;text-align:center;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;">🚀 Unlock AI Signals</div>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:14px;">Get real-time buy/sell alerts, custom watchlists & advanced analytics</div>
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:10px;">
+        <span style="text-decoration:line-through;color:var(--text-3);">$***/mo</span>
+        &nbsp;<strong style="color:var(--green);font-size:16px;">FREE</strong>
+        <span style="color:var(--text-3);font-size:11px;"> with Bybit signup</span>
+      </div>
+      <button class="btn btn-accent2" style="width:100%;" onclick="openAuthModal('register')">Claim Free Membership</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- =================== AUTH MODAL =================== -->
+<div class="modal-overlay" id="auth-modal" onclick="closeIfOverlay(event,'auth-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('auth-modal')">✕</button>
+    <div class="modal-logo">Signal<span>Strike</span></div>
+    <div class="modal-sub">AI-Powered Crypto Intelligence Platform</div>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Log In</button>
+      <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div class="panel active" id="panel-login">
+      <button class="bybit-btn" onclick="bybitAction('login')">
+        <div class="bybit-logo">By</div>
+        Continue with Bybit ID
+      </button>
+      <div class="divider">or use email</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" placeholder="••••••••">
+      </div>
+      <button class="form-submit cyan" onclick="handleLogin()">Log In to SignalStrike</button>
+      <div class="modal-footer">
+        Don't have an account? <a onclick="switchTab('register')">Sign up free</a>
+      </div>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div class="panel" id="panel-register">
+      <!-- PRICING -->
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <div class="pricing-name">Pro Membership</div>
+          <div class="pricing-badge">Limited Offer</div>
+        </div>
+        <div class="pricing-price">
+          <div class="price-old">$***</div>
+          <div class="price-new">FREE</div>
+          <div class="price-period">/month</div>
+        </div>
+        <ul class="pricing-features">
+          <li>Real-time AI trading signals</li>
+          <li>Full ETF flow data & alerts</li>
+          <li>Advanced portfolio tracker</li>
+          <li>Priority news AI summaries</li>
+          <li>Unlimited watchlists</li>
+        </ul>
+      </div>
+
+      <button class="bybit-btn" onclick="bybitAction('register')">
+        <div class="bybit-logo">By</div>
+        Create Account & Connect Bybit
+      </button>
+      <div class="divider">or use email</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" placeholder="Create a strong password">
+      </div>
+      <button class="form-submit purple" onclick="handleRegister()">Activate Free Membership</button>
+      <div class="modal-footer">
+        By signing up you agree to our <a>Terms</a> & <a>Privacy Policy</a>.<br>
+        Membership is free when you sign up or connect a Bybit account.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BYBIT SUCCESS MODAL -->
+<div class="modal-overlay" id="bybit-modal" onclick="closeIfOverlay(event,'bybit-modal')">
+  <div class="modal" style="text-align:center;max-width:400px;">
+    <button class="modal-close" onclick="closeModal('bybit-modal')">✕</button>
+    <div style="font-size:40px;margin-bottom:14px;" id="bybit-icon">🔗</div>
+    <div class="page-modal-title" id="bybit-title">Connecting to Bybit</div>
+    <div class="page-modal-sub" id="bybit-sub">You'll be redirected to Bybit to authenticate securely. Your Pro membership will activate instantly.</div>
+    <div style="background:linear-gradient(135deg,rgba(247,166,0,0.1),rgba(247,166,0,0.04));border:1px solid rgba(247,166,0,0.2);border-radius:10px;padding:14px;margin-bottom:20px;">
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:4px;">You're getting</div>
+      <div style="font-size:16px;font-weight:700;">Pro Membership — <span style="text-decoration:line-through;color:var(--text-3);font-size:14px;">$***</span> <span style="color:var(--green);">FREE</span></div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Activated immediately upon Bybit connection</div>
+    </div>
+    <button class="bybit-btn" style="margin:0 0 10px;" onclick="closeModal('bybit-modal');closeModal('auth-modal');showSuccess()">
+      <div class="bybit-logo">By</div>
+      <span id="bybit-btn-text">Continue to Bybit →</span>
+    </button>
+    <button class="btn btn-ghost" style="width:100%;font-size:13px;" onclick="closeModal('bybit-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="success-modal" onclick="closeIfOverlay(event,'success-modal')">
+  <div class="modal" style="text-align:center;max-width:400px;">
+    <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+    <div class="page-modal-title">Welcome to SignalStrike!</div>
+    <div class="page-modal-sub">Your Pro membership is now active. Enjoy unlimited access to AI signals, ETF flows, and real-time intelligence.</div>
+    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:12px;margin-bottom:20px;">
+      <div style="color:var(--green);font-weight:700;font-size:14px;">✓ Pro Membership Active</div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:2px;"><s>$***/mo</s> — Free with Bybit</div>
+    </div>
+    <button class="form-submit cyan" onclick="closeModal('success-modal')">Start Exploring →</button>
+  </div>
+</div>
+
+<!-- PAGE FEATURE MODALS -->
+<div class="modal-overlay" id="indices-modal" onclick="closeIfOverlay(event,'indices-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('indices-modal')">✕</button>
+    <div class="page-modal-title">📊 SignalStrike Indices</div>
+    <div class="page-modal-sub">Track our proprietary sector-weighted crypto indices in real time</div>
+    <table style="width:100%;margin-bottom:16px;">
+      <thead><tr><th style="padding:6px 10px;font-size:10px;color:var(--text-3);text-align:left;border-bottom:1px solid var(--border);">Index</th><th style="padding:6px 10px;font-size:10px;color:var(--text-3);text-align:right;border-bottom:1px solid var(--border);">Value</th><th style="padding:6px 10px;font-size:10px;color:var(--text-3);text-align:right;border-bottom:1px solid var(--border);">24H</th></tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 10px;font-size:13px;">SS Layer1 Index</td><td style="padding:9px 10px;font-size:13px;text-align:right;font-family:monospace;">***</td><td style="padding:9px 10px;font-size:13px;text-align:right;color:var(--green);">+***%</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 10px;font-size:13px;">SS DeFi Index</td><td style="padding:9px 10px;font-size:13px;text-align:right;font-family:monospace;">***</td><td style="padding:9px 10px;font-size:13px;text-align:right;color:var(--red);">-***%</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:9px 10px;font-size:13px;">SS AI Index</td><td style="padding:9px 10px;font-size:13px;text-align:right;font-family:monospace;">***</td><td style="padding:9px 10px;font-size:13px;text-align:right;color:var(--green);">+***%</td></tr>
+        <tr><td style="padding:9px 10px;font-size:13px;">SS Meme Index</td><td style="padding:9px 10px;font-size:13px;text-align:right;font-family:monospace;">***</td><td style="padding:9px 10px;font-size:13px;text-align:right;color:var(--red);">-***%</td></tr>
+      </tbody>
+    </table>
+    <button class="form-submit cyan" onclick="closeModal('indices-modal');openAuthModal('register')">Unlock Full Index Data</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="etf-modal" onclick="closeIfOverlay(event,'etf-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('etf-modal')">✕</button>
+    <div class="page-modal-title">₿ ETF Flow Tracker</div>
+    <div class="page-modal-sub">Real-time inflow/outflow data across all spot Bitcoin & Ethereum ETFs</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">BTC ETF Net Today</div>
+        <div style="font-size:20px;font-weight:800;color:var(--green);font-family:monospace;">+$***M</div>
+      </div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;">ETH ETF Net Today</div>
+        <div style="font-size:20px;font-weight:800;color:var(--green);font-family:monospace;">+$***M</div>
+      </div>
+    </div>
+    <button class="form-submit cyan" onclick="closeModal('etf-modal');openAuthModal('register')">Access Full ETF Dashboard</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="defi-modal" onclick="closeIfOverlay(event,'defi-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('defi-modal')">✕</button>
+    <div class="page-modal-title">⟠ DeFi Analytics</div>
+    <div class="page-modal-sub">Total Value Locked, protocol revenues, and on-chain metrics</div>
+    <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:18px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="color:var(--text-3);font-size:12px;">Total DeFi TVL</span><span style="font-family:monospace;color:var(--text-1);font-weight:700;">$***B</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="color:var(--text-3);font-size:12px;">24H Volume</span><span style="font-family:monospace;color:var(--green);font-weight:700;">$***B</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-3);font-size:12px;">Active Users 24H</span><span style="font-family:monospace;color:var(--text-1);font-weight:700;">***M</span></div>
+    </div>
+    <button class="form-submit cyan" onclick="closeModal('defi-modal');openAuthModal('register')">Explore DeFi Dashboard</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ai-modal" onclick="closeIfOverlay(event,'ai-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('ai-modal')">✕</button>
+    <div class="page-modal-title">🤖 AI Signal Scanner</div>
+    <div class="page-modal-sub">Real-time buy/sell signals generated by our deep learning models</div>
+    <div style="background:linear-gradient(135deg,rgba(0,212,255,0.06),rgba(124,58,237,0.06));border:1px solid rgba(0,212,255,0.15);border-radius:10px;padding:16px;margin-bottom:18px;">
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">Latest Signals</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;">BTC/USDT</span><span style="background:rgba(16,185,129,0.15);color:var(--green);padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">STRONG BUY</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;">ETH/USDT</span><span style="background:rgba(16,185,129,0.15);color:var(--green);padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">BUY</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:600;">SOL/USDT</span><span style="background:rgba(245,158,11,0.15);color:var(--yellow);padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">NEUTRAL</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;opacity:0.4;filter:blur(3px);"><span style="font-size:13px;font-weight:600;">XRP/USDT</span><span style="background:rgba(239,68,68,0.15);color:var(--red);padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">SELL</span></div>
+      </div>
+      <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-3);">🔒 Unlock full signals with Pro membership</div>
+    </div>
+    <button class="form-submit purple" onclick="closeModal('ai-modal');openAuthModal('register')">Unlock All AI Signals — Free</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="research-modal" onclick="closeIfOverlay(event,'research-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('research-modal')">✕</button>
+    <div class="page-modal-title">📑 Research Hub</div>
+    <div class="page-modal-sub">In-depth AI-generated reports, on-chain analysis, and market commentary</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;opacity:0.7;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Bitcoin Halving Cycle Analysis ****</div>
+        <div style="font-size:11px;color:var(--text-3);">Feb **, **** · ** min read</div>
+      </div>
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;opacity:0.7;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">ETF Institutional Adoption Report Q* ****</div>
+        <div style="font-size:11px;color:var(--text-3);">Feb **, **** · ** min read</div>
+      </div>
+    </div>
+    <button class="form-submit cyan" onclick="closeModal('research-modal');openAuthModal('register')">Access Research — Free</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="portfolio-modal" onclick="closeIfOverlay(event,'portfolio-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('portfolio-modal')">✕</button>
+    <div class="page-modal-title">💼 Portfolio Tracker</div>
+    <div class="page-modal-sub">Connect your Bybit account to automatically sync and track your portfolio</div>
+    <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:18px;">
+      <div style="font-size:32px;margin-bottom:8px;">🔐</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px;">Sign in to view your portfolio</div>
+      <div style="font-size:12px;color:var(--text-3);">Connect with Bybit for automatic sync or track manually</div>
+    </div>
+    <button class="bybit-btn" style="margin-bottom:10px;" onclick="bybitAction('register')">
+      <div class="bybit-logo">By</div>
+      Connect Bybit & Track Portfolio
+    </button>
+    <button class="btn btn-ghost" style="width:100%;font-size:13px;" onclick="closeModal('portfolio-modal');openAuthModal('register')">Sign up with email</button>
+  </div>
+</div>
+
+<script>
+// ============ DATA (ALL NUMBERS REPLACED WITH ASTERISKS) ============
+const assets = [
+  {rank:1, name:'Bitcoin', sym:'BTC', price:'***', h1:'+***%', h24:'+***%', d7:'+***%', cap:'$***T', vol:'$***B', up:true},
+  {rank:2, name:'Ethereum', sym:'ETH', price:'***', h1:'-***%', h24:'+***%', d7:'+***%', cap:'$***B', vol:'$***B', up:true},
+  {rank:3, name:'Solana', sym:'SOL', price:'***', h1:'+***%', h24:'-***%', d7:'+***%', cap:'$***B', vol:'$***B', up:false},
+  {rank:4, name:'XRP', sym:'XRP', price:'***', h1:'-***%', h24:'-***%', d7:'-***%', cap:'$***B', vol:'$***B', up:false},
+  {rank:5, name:'BNB', sym:'BNB', price:'***', h1:'+***%', h24:'+***%', d7:'+***%', cap:'$***B', vol:'$***B', up:true},
+  {rank:6, name:'DOGE', sym:'DOGE', price:'***', h1:'+***%', h24:'+***%', d7:'+***%', cap:'$***B', vol:'$***B', up:true},
+  {rank:7, name:'Cardano', sym:'ADA', price:'***', h1:'-***%', h24:'-***%', d7:'+***%', cap:'$***B', vol:'$***B', up:false},
+  {rank:8, name:'Avalanche', sym:'AVAX', price:'***', h1:'+***%', h24:'+***%', d7:'+***%', cap:'$***B', vol:'$***B', up:true},
+];
+
+const news = [
+  {title:'OCC proposes GENIUS Act implementation rules, seeks public comments on crypto banking framework', tag:'REGULATION', time:'**m ago'},
+  {title:'BlackRock IBIT sees record single-day inflow of $*** as institutional demand surges', tag:'ETF', time:'**m ago'},
+  {title:'Bitcoin dominance reaches **.*% as altcoin season stalls amid macro uncertainty', tag:'MARKETS', time:'**m ago'},
+  {title:'Solana network processes **,*** TPS in stress test ahead of major DeFi protocol launch', tag:'TECH', time:'*h ago'},
+  {title:'SEC approves Ethereum staking ETF from Fidelity, paving way for yield-bearing products', tag:'ETF', time:'*h ago'},
+];
+
+const pillData = [
+  {label:'BTC', val:'$***', chg:'+***%', up:true},
+  {label:'ETH', val:'$***', chg:'+***%', up:true},
+  {label:'Total Mkt Cap', val:'$***T', chg:'+***%', up:true},
+  {label:'BTC Dom.', val:'***%', chg:'+***%', up:true},
+  {label:'ETH Gas', val:'*** Gwei', chg:'-***%', up:false},
+  {label:'Fear & Greed', val:'***', chg:'Greed', up:true},
+  {label:'DeFi TVL', val:'$***B', chg:'+***%', up:true},
+  {label:'24H Volume', val:'$***B', chg:'+***%', up:true},
+  {label:'SOL', val:'$***', chg:'-***%', up:false},
+  {label:'BNB', val:'$***', chg:'+***%', up:true},
+];
+
+// ============ RENDER ============
+
+// Ticker
+const tickerInner = document.getElementById('ticker');
+let tickerHtml = '';
+for(let i=0; i<2; i++) {
+  pillData.forEach(p => {
+    tickerHtml += `<div class="ticker-item"><span class="sym">${p.label}</span><span>${p.val}</span><span class="${p.up?'up':'dn'}">${p.chg}</span></div>`;
+  });
+}
+tickerInner.innerHTML = tickerHtml;
+
+// Market pills
+const pillsContainer = document.getElementById('market-pills');
+pillData.forEach(p => {
+  pillsContainer.innerHTML += `<div class="market-pill">
+    <div class="mp-label">${p.label}</div>
+    <div class="mp-val">${p.val}</div>
+    <div class="mp-chg ${p.up?'up':'dn'}">${p.chg}</div>
+  </div>`;
+});
+
+// Asset table
+const tbody = document.getElementById('asset-table');
+assets.forEach(a => {
+  const sparkColor = a.up ? '#10b981' : '#ef4444';
+  tbody.innerHTML += `<tr>
+    <td style="color:var(--text-3)">${a.rank}</td>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(124,58,237,0.2));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${a.sym[0]}</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;">${a.name}</div>
+          <div style="font-size:10px;color:var(--text-3);">${a.sym}</div>
+        </div>
+      </div>
+    </td>
+    <td class="mono">$${a.price}</td>
+    <td class="mono ${a.h1.startsWith('+')?'up':'dn'}">${a.h1}</td>
+    <td class="mono ${a.h24.startsWith('+')?'up':'dn'}">${a.h24}</td>
+    <td class="mono ${a.d7.startsWith('+')?'up':'dn'}">${a.d7}</td>
+    <td class="mono" style="color:var(--text-2)">${a.cap}</td>
+    <td class="mono" style="color:var(--text-2)">${a.vol}</td>
+    <td><svg class="mini-chart" viewBox="0 0 64 24"><polyline points="${generateSparkline(a.up)}" fill="none" stroke="${sparkColor}" stroke-width="1.5" stroke-linejoin="round"/></svg></td>
+  </tr>`;
+});
+
+function generateSparkline(up) {
+  const pts = [];
+  let y = up ? 18 : 6;
+  for(let x=0;x<=64;x+=8) {
+    y += (Math.random()-0.48)*(up?-3:3);
+    y = Math.max(2, Math.min(22, y));
+    pts.push(`${x},${y}`);
+  }
+  return pts.join(' ');
+}
+
+// Heatmap
+const heatmapEl = document.getElementById('heatmap');
+const hmTokens = ['BTC','ETH','BNB','SOL','XRP','ADA','AVAX','DOT','MATIC','LINK','UNI','ATOM','FIL','LTC','NEAR','APT','ARB','OP','INJ','DOGE','SHIB','PEPE','WIF','BONK','FET','RNDR','GRT','IMX'];
+hmTokens.forEach(sym => {
+  const pct = (Math.random()*20-8).toFixed(1); // keep for internal sign, but display only **
+  const pos = parseFloat(pct) > 0;
+  const intensity = Math.min(Math.abs(parseFloat(pct))/12,1);
+  const color = pos ? `rgba(16,185,129,${0.2+intensity*0.6})` : `rgba(239,68,68,${0.2+intensity*0.6})`;
+  const txtColor = pos ? '#10b981' : '#ef4444';
+  // Show only symbol, percentage hidden behind **
+  heatmapEl.innerHTML += `<div class="hm-cell" style="background:${color};color:${txtColor};" title="${sym}: **%"><span>${sym}</span></div>`;
+});
+
+// Bar chart
+const chartEl = document.getElementById('main-chart');
+for(let i=0;i<48;i++){
+  const h = 20+Math.random()*160;
+  const color = Math.random()>0.45?'rgba(0,212,255,0.6)':'rgba(239,68,68,0.5)';
+  chartEl.innerHTML += `<div class="chart-bar" style="height:${h}px;background:${color};"></div>`;
+}
+
+// News
+const newsEl = document.getElementById('news-feed');
+news.forEach(n => {
+  newsEl.innerHTML += `<div class="news-item">
+    <div class="news-title">${n.title}</div>
+    <div class="news-meta"><span class="news-tag">${n.tag}</span><span>${n.time}</span></div>
+  </div>`;
+});
+
+// ============ MODAL LOGIC ============
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function closeIfOverlay(e, id) {
+  if(e.target === document.getElementById(id)) closeModal(id);
+}
+
+function openAuthModal(tab) {
+  openModal('auth-modal');
+  switchTab(tab);
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('panel-login').classList.toggle('active', tab==='login');
+  document.getElementById('panel-register').classList.toggle('active', tab==='register');
+}
+
+function bybitAction(type) {
+  closeModal('auth-modal');
+  if(type==='login') {
+    document.getElementById('bybit-icon').textContent = '🔑';
+    document.getElementById('bybit-title').textContent = 'Log In with Bybit ID';
+    document.getElementById('bybit-sub').textContent = 'You\'ll be redirected to Bybit to verify your identity securely.';
+    document.getElementById('bybit-btn-text').textContent = 'Continue to Bybit →';
+  } else {
+    document.getElementById('bybit-icon').textContent = '🚀';
+    document.getElementById('bybit-title').textContent = 'Create Account & Activate Membership';
+    document.getElementById('bybit-sub').textContent = 'Connect your Bybit account to instantly activate your free Pro membership (valued at $***/mo).';
+    document.getElementById('bybit-btn-text').textContent = 'Continue to Bybit & Activate →';
+  }
+  openModal('bybit-modal');
+}
+
+function showSuccess() {
+  openModal('success-modal');
+}
+
+function handleLogin() {
+  closeModal('auth-modal');
+  showSuccess();
+}
+function handleRegister() {
+  closeModal('auth-modal');
+  showSuccess();
+}
+
+// Tab switching for inner tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', function() {
+    const row = this.closest('.tab-row');
+    row.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
