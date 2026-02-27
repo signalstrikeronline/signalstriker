@@ -984,8 +984,11 @@
         <div class="bybit-logo">By</div>
         Continue with Bybit ID
       </button>
-      
-      
+      <div class="divider">or use email</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="you@example.com">
+      </div>
       <div class="form-group">
         <label class="form-label">Password</label>
         <input class="form-input" type="password" placeholder="••••••••">
@@ -1022,7 +1025,11 @@
         <div class="bybit-logo">By</div>
         Create Account & Connect Bybit
       </button>
-      
+      <div class="divider">or use email</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="you@example.com">
+      </div>
       <div class="form-group">
         <label class="form-label">Password</label>
         <input class="form-input" type="password" placeholder="Create a strong password">
@@ -1036,7 +1043,7 @@
   </div>
 </div>
 
-<!-- BYBIT SUCCESS MODAL -->
+<!-- BYBIT AFFILIATE MODAL (UPDATED WITH REAL LINK) -->
 <div class="modal-overlay" id="bybit-modal" onclick="closeIfOverlay(event,'bybit-modal')">
   <div class="modal" style="text-align:center;max-width:400px;">
     <button class="modal-close" onclick="closeModal('bybit-modal')">✕</button>
@@ -1048,7 +1055,8 @@
       <div style="font-size:16px;font-weight:700;">Pro Membership — <span style="text-decoration:line-through;color:var(--text-3);font-size:14px;">$***</span> <span style="color:var(--green);">FREE</span></div>
       <div style="font-size:11px;color:var(--text-3);margin-top:2px;">Activated immediately upon Bybit connection</div>
     </div>
-    <button class="bybit-btn" style="margin:0 0 10px;" onclick="closeModal('bybit-modal');closeModal('auth-modal');showSuccess()">
+    <!-- UPDATED BUTTON: closes modals and opens affiliate link -->
+    <button class="bybit-btn" style="margin:0 0 10px;" onclick="closeModal('auth-modal'); closeModal('portfolio-modal'); closeModal('bybit-modal'); window.open('https://partner.bybit.com/b/SIGNALSTRIKE', '_blank');">
       <div class="bybit-logo">By</div>
       <span id="bybit-btn-text">Continue to Bybit →</span>
     </button>
@@ -1324,7 +1332,7 @@ function switchTab(tab) {
 }
 
 function bybitAction(type) {
-  closeModal('auth-modal');
+  // Customize the bybit-modal text based on action
   if(type==='login') {
     document.getElementById('bybit-icon').textContent = '🔑';
     document.getElementById('bybit-title').textContent = 'Log In with Bybit ID';
