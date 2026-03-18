@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Strike — Crypto Intelligence Network</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --acid: #00ff88;
+    --strike: #ff3c3c;
+    --gold: #ffd700;
+    --dark: #080c10;
+    --panel: #0e1318;
+    --border: #1e2830;
+    --text: #c8d6e0;
+    --dim: #4a6070;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  ::selection { background: var(--acid); color: #000; }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.6;
+  }
+
+  /* SCANLINES */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.015) 2px, rgba(0,255,136,0.015) 4px);
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  /* TICKER */
+  .ticker-wrap {
+    background: var(--acid);
+    color: #000;
+    height: 32px;
+    overflow: hidden;
+    position: relative;
+  }
+  .ticker {
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: ticker 40s linear infinite;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 32px;
+  }
+  .ticker span { padding: 0 2rem; }
+  .ticker .up { color: #005500; }
+  .ticker .down { color: #880000; }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    background: rgba(8,12,16,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .logo .strike { color: var(--acid); }
+  .logo-icon { width: 32px; height: 32px; }
+
+  .nav-links {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.75rem;
+    border-radius: 2px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .nav-links a:hover { color: var(--acid); background: rgba(0,255,136,0.07); }
+
+  .nav-cta {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-acid {
+    background: var(--acid);
+    color: #000;
+  }
+  .btn-acid:hover {
+    background: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(0,255,136,0.4);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--acid);
+    border: 1px solid var(--acid);
+  }
+  .btn-outline:hover {
+    background: var(--acid);
+    color: #000;
+  }
+  .btn-strike {
+    background: var(--strike);
+    color: #fff;
+  }
+  .btn-strike:hover {
+    background: #ff6060;
+    box-shadow: 0 0 20px rgba(255,60,60,0.4);
+  }
+  .btn-gold {
+    background: var(--gold);
+    color: #000;
+  }
+  .btn-gold:hover {
+    background: #ffe94d;
+    box-shadow: 0 0 20px rgba(255,215,0,0.4);
+  }
+  .btn-tg {
+    background: #229ED9;
+    color: #fff;
+  }
+  .btn-tg:hover {
+    background: #4ab8f0;
+    box-shadow: 0 0 20px rgba(34,158,217,0.4);
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 92vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 3rem 5rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: var(--acid);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    width: fit-content;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--acid);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:0.4;transform:scale(1.5)}
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 8vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+  .hero-title .line-acid { color: var(--acid); }
+  .hero-title .line-strike {
+    color: var(--strike);
+    -webkit-text-stroke: 1px var(--strike);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--dim);
+    line-height: 1.7;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .hero-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ANIMATED DASHBOARD */
+  .dashboard-orb {
+    position: relative;
+    width: 420px;
+    height: 420px;
+  }
+  .orb-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(0,255,136,0.15);
+    animation: spin linear infinite;
+  }
+  .orb-ring:nth-child(1) { inset: 0; animation-duration: 20s; }
+  .orb-ring:nth-child(2) { inset: 30px; animation-duration: 15s; animation-direction: reverse; border-color: rgba(255,60,60,0.15); }
+  .orb-ring:nth-child(3) { inset: 60px; animation-duration: 25s; border-color: rgba(255,215,0,0.1); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .orb-center {
+    position: absolute;
+    inset: 90px;
+    background: radial-gradient(circle, rgba(0,255,136,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .orb-stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .orb-stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--acid);
+    letter-spacing: 0.05em;
+  }
+
+  /* floating nodes */
+  .float-node {
+    position: absolute;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.6rem 0.9rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    animation: floatNode 6s ease-in-out infinite;
+  }
+  .float-node:nth-child(5) { top: 10%; right: 5%; animation-delay: 0s; }
+  .float-node:nth-child(6) { bottom: 15%; left: 0%; animation-delay: 1.5s; }
+  .float-node:nth-child(7) { top: 55%; right: 0%; animation-delay: 3s; }
+  .float-node:nth-child(8) { top: 15%; left: 5%; animation-delay: 4.5s; }
+  @keyframes floatNode {
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-12px)}
+  }
+  .node-label { color: var(--dim); display: block; margin-bottom: 2px; }
+  .node-value { color: var(--acid); }
+  .node-value.red { color: var(--strike); }
+  .node-value.gold { color: var(--gold); }
+
+  /* STAT BAR */
+  .stat-bar {
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    color: var(--acid);
+    display: block;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.68rem;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-family: 'Space Mono', monospace;
+  }
+  .stat-div { width: 1px; height: 40px; background: var(--border); }
+
+  /* SECTIONS */
+  section { padding: 5rem 4rem; }
+  .section-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--acid);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-tag::before { content:''; display:block; width:24px; height:1px; background:var(--acid); }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: #fff;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.75rem;
+  }
+  .section-sub { color: var(--dim); font-size: 0.95rem; max-width: 520px; line-height: 1.7; }
+
+  /* CARDS */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.75rem;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--acid);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .card:hover { border-color: rgba(0,255,136,0.3); transform: translateY(-4px); }
+  .card:hover::before { transform: scaleX(1); }
+
+  .card-icon {
+    width: 48px; height: 48px;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,255,136,0.08);
+    border-radius: 4px;
+    border: 1px solid rgba(0,255,136,0.2);
+  }
+  .card-icon svg { color: var(--acid); }
+  .card-icon.red { background: rgba(255,60,60,0.08); border-color: rgba(255,60,60,0.2); }
+  .card-icon.red svg { color: var(--strike); }
+  .card-icon.gold { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.2); }
+  .card-icon.gold svg { color: var(--gold); }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+  .card-desc { font-size: 0.85rem; color: var(--dim); line-height: 1.65; }
+  .card-link {
+    margin-top: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--acid);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* WORK WITH US SECTION */
+  .work-section {
+    background: linear-gradient(135deg, #0a1a10 0%, #080c10 50%, #140808 100%);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .work-section::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,136,0.05) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+  }
+  .work-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .payout-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    border-radius: 2px;
+    margin-bottom: 1rem;
+  }
+  .payout-tiers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 2rem 0;
+  }
+  .tier {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.2s;
+  }
+  .tier:hover { border-color: var(--acid); }
+  .tier-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: #fff;
+    font-weight: 700;
+  }
+  .tier-desc { font-size: 0.78rem; color: var(--dim); margin-top: 2px; }
+  .tier-pay {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    text-align: right;
+  }
+  .tier-freq {
+    font-size: 0.6rem;
+    color: var(--dim);
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+  }
+
+  /* MAGAZINE / OPEN SOURCE */
+  .mag-section { background: var(--dark); }
+  .article-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .article-card:hover { border-color: rgba(0,255,136,0.3); transform: translateY(-3px); }
+  .article-card-body { padding: 1.25rem; }
+  .article-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+  }
+  .tag-scam { background: rgba(255,60,60,0.15); color: var(--strike); }
+  .tag-signal { background: rgba(0,255,136,0.1); color: var(--acid); }
+  .tag-whale { background: rgba(255,215,0,0.1); color: var(--gold); }
+  .tag-detective { background: rgba(120,80,255,0.15); color: #a78bfa; }
+  .tag-pump { background: rgba(255,140,0,0.15); color: #fb923c; }
+
+  .article-title { font-size: 0.9rem; color: #fff; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.4; }
+  .article-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--dim);
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.75rem;
+  }
+
+  /* TEAM SECTION */
+  .team-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .team-card:hover { border-color: rgba(0,255,136,0.3); transform: translateY(-3px); }
+  .team-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border);
+    font-size: 1.8rem;
+    background: var(--dark);
+  }
+  .team-name { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #fff; font-weight: 700; }
+  .team-role { font-size: 0.75rem; color: var(--acid); margin-top: 0.25rem; }
+  .team-bio { font-size: 0.78rem; color: var(--dim); margin-top: 0.75rem; line-height: 1.6; }
+
+  /* JOIN CTA */
+  .join-section {
+    background: linear-gradient(135deg, #00ff8815 0%, #08120a 40%, #130808 60%, #ff3c3c10 100%);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 6rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .join-glow {
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .join-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 7vw, 6rem);
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .join-title .accent { color: var(--acid); }
+  .join-sub { color: var(--dim); font-size: 1rem; margin-bottom: 2.5rem; line-height: 1.7; }
+  .join-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  /* FOOTER */
+  footer {
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    padding: 3rem 4rem 2rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 2.5rem;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .footer-logo .strike { color: var(--acid); }
+  .footer-desc { font-size: 0.8rem; color: var(--dim); line-height: 1.7; max-width: 260px; }
+  .footer-col-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--acid);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .footer-links a {
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 0.82rem;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .footer-links a:hover { color: var(--acid); }
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--dim);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 9990;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-width: 680px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    transform: translateY(30px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .modal-overlay.active .modal {
+    transform: translateY(0) scale(1);
+  }
+  .modal-header {
+    padding: 1.75rem 2rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--panel);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 1;
+  }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: #fff;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .modal-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--acid);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .modal-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    width: 32px; height: 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+  }
+  .modal-close:hover { color: #fff; border-color: var(--strike); background: rgba(255,60,60,0.1); }
+  .modal-body { padding: 2rem; }
+  .modal-body p { color: var(--dim); font-size: 0.88rem; line-height: 1.75; margin-bottom: 1rem; }
+  .modal-body h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--acid);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 1.5rem 0 0.75rem;
+  }
+  .modal-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .modal-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .modal-list li::before {
+    content: '▸';
+    color: var(--acid);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .modal-actions { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+  .modal-divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  /* SIGNUP FORM */
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+  .form-input {
+    width: 100%;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    color: #fff;
+    padding: 0.65rem 0.9rem;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--acid); }
+  .form-input::placeholder { color: var(--dim); }
+  .form-select {
+    width: 100%;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    color: #fff;
+    padding: 0.65rem 0.9rem;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .form-select:focus { border-color: var(--acid); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    section { padding: 3.5rem 1.5rem; }
+    .stat-bar { padding: 1rem 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .work-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .hero-left { padding: 3rem 1.5rem; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+
+  /* animate in */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1.25rem; }
+  @media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr 1fr}}
+  @media(max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+  .mt-3{margin-top:1.5rem}
+  .mt-4{margin-top:2rem}
+  .mb-2{margin-bottom:1rem}
+  .mb-3{margin-bottom:1.5rem}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker">
+    <span>BTC/USD <span class="up">▲ $97,842.10 +2.4%</span></span>
+    <span>ETH/USD <span class="down">▼ $3,521.88 -0.8%</span></span>
+    <span>SOL/USD <span class="up">▲ $192.44 +5.2%</span></span>
+    <span>⚠️ WHALE ALERT: 2,400 BTC moved to unknown wallet</span>
+    <span>pump.fun NEW LAUNCH: $REKT — 200% in 12 mins</span>
+    <span>SIGNAL STRIKE EXCLUSIVE: rug pull detected on $MOONX</span>
+    <span>BNB/USD <span class="up">▲ $612.30 +1.1%</span></span>
+    <span>AVAX/USD <span class="down">▼ $38.90 -2.3%</span></span>
+    <span>ARB/USD <span class="up">▲ $1.14 +3.7%</span></span>
+    <span>CHAIN SLEUTH: Bridge exploit confirmed — $4.2M drained</span>
+    <span>DOGE/USD <span class="up">▲ $0.18 +8.1%</span></span>
+    <!-- duplicate for seamless loop -->
+    <span>BTC/USD <span class="up">▲ $97,842.10 +2.4%</span></span>
+    <span>ETH/USD <span class="down">▼ $3,521.88 -0.8%</span></span>
+    <span>SOL/USD <span class="up">▲ $192.44 +5.2%</span></span>
+    <span>⚠️ WHALE ALERT: 2,400 BTC moved to unknown wallet</span>
+    <span>pump.fun NEW LAUNCH: $REKT — 200% in 12 mins</span>
+    <span>SIGNAL STRIKE EXCLUSIVE: rug pull detected on $MOONX</span>
+    <span>BNB/USD <span class="up">▲ $612.30 +1.1%</span></span>
+    <span>AVAX/USD <span class="down">▼ $38.90 -2.3%</span></span>
+    <span>ARB/USD <span class="up">▲ $1.14 +3.7%</span></span>
+    <span>CHAIN SLEUTH: Bridge exploit confirmed — $4.2M drained</span>
+    <span>DOGE/USD <span class="up">▲ $0.18 +8.1%</span></span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="16,2 30,28 2,28" fill="none" stroke="#00ff88" stroke-width="2"/>
+      <line x1="16" y1="10" x2="16" y2="20" stroke="#ff3c3c" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="16" cy="24" r="1.5" fill="#ff3c3c"/>
+    </svg>
+    SIGNAL <span class="strike">STRIKE</span>
+  </div>
+  <ul class="nav-links">
+    <li><a onclick="openModal('signals')">Signals</a></li>
+    <li><a onclick="openModal('detectives')">Chain Sleuths</a></li>
+    <li><a onclick="openModal('whales')">Whale Watch</a></li>
+    <li><a onclick="openModal('pump')">Pump.fun</a></li>
+    <li><a onclick="openModal('scams')">Scam Alerts</a></li>
+    <li><a onclick="openModal('magazine')">Magazine</a></li>
+    <li><a onclick="openModal('work')">Work With Us</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn btn-outline" onclick="openModal('work')">Work With Us</button>
+    <button class="btn btn-acid" onclick="openModal('join')">Join Today</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding:0">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-left">
+    <div class="hero-badge"><span class="badge-dot"></span> Live Intelligence Network</div>
+    <h1 class="hero-title">
+      THE CRYPTO<br>
+      <span class="line-acid">SIGNAL</span><br>
+      <span class="line-strike">STRIKES</span><br>FIRST
+    </h1>
+    <p class="hero-sub">World-class crypto detectives, chain sleuths, whale trackers, pump.fun trenchers & scam investigators. An open-source intelligence magazine — entirely community-run.</p>
+    <div class="hero-actions">
+      <button class="btn btn-acid" onclick="openModal('join')" style="font-size:0.8rem;padding:0.75rem 1.75rem">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Join The Network
+      </button>
+      <button class="btn btn-outline" onclick="openModal('work')" style="font-size:0.8rem;padding:0.75rem 1.75rem">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Work With Us
+      </button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="dashboard-orb">
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb-center">
+        <span class="orb-stat-label">Signals Fired</span>
+        <span class="orb-stat-value">847</span>
+        <span class="orb-stat-label">This Week</span>
+      </div>
+      <div class="float-node">
+        <span class="node-label">BTC Dominance</span>
+        <span class="node-value">54.2%</span>
+      </div>
+      <div class="float-node">
+        <span class="node-label">Scams Flagged</span>
+        <span class="node-value red">23 Today</span>
+      </div>
+      <div class="float-node">
+        <span class="node-label">Pump.fun Calls</span>
+        <span class="node-value gold">12 Live</span>
+      </div>
+      <div class="float-node">
+        <span class="node-label">Whale Moves</span>
+        <span class="node-value">$420M</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STAT BAR -->
+<div class="stat-bar fade-in">
+  <div class="stat-item">
+    <span class="stat-num">48K+</span>
+    <span class="stat-label">Community Members</span>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <span class="stat-num">2.1K</span>
+    <span class="stat-label">Scams Exposed</span>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <span class="stat-num">$900M+</span>
+    <span class="stat-label">Whale Volume Tracked</span>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <span class="stat-num">94%</span>
+    <span class="stat-label">Signal Accuracy</span>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat-item">
+    <span class="stat-num">340+</span>
+    <span class="stat-label">Magazine Issues</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services" style="padding-top:5rem;padding-bottom:5rem;padding-left:4rem;padding-right:4rem">
+  <div class="fade-in">
+    <div class="section-tag">What We Do</div>
+    <h2 class="section-title">INTELLIGENCE<br>ACROSS THE CHAIN</h2>
+    <p class="section-sub" style="margin-bottom:2.5rem">From raw signals to full-blown investigations — our network covers every angle of the crypto landscape, 24/7.</p>
+  </div>
+  <div class="grid-3 fade-in">
+    <div class="card" onclick="openModal('signals')">
+      <div class="card-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="card-title">Trading Signals</div>
+      <div class="card-desc">High-accuracy entry/exit signals vetted by our analyst network. Spot, futures, and DeFi opportunities — delivered before the crowd.</div>
+      <div class="card-link">Explore Signals →</div>
+    </div>
+    <div class="card" onclick="openModal('detectives')">
+      <div class="card-icon red">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v3l2 2"/></svg>
+      </div>
+      <div class="card-title">Crypto Detectives & Chain Sleuths</div>
+      <div class="card-desc">On-chain forensics, wallet clustering, transaction tracing. We follow the money, expose exploiters, and document every dirty trail.</div>
+      <div class="card-link">View Investigations →</div>
+    </div>
+    <div class="card" onclick="openModal('whales')">
+      <div class="card-icon gold">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 1 0 6H4l14-6zm0 12a3 3 0 0 0 0 6H4l14-6z"/></svg>
+      </div>
+      <div class="card-title">Whale Exchange Tracking</div>
+      <div class="card-desc">Real-time alerts when whales move massive positions. Smart money flows, exchange inflows/outflows, and OTC deal analysis.</div>
+      <div class="card-link">Watch Whales →</div>
+    </div>
+    <div class="card" onclick="openModal('pump')">
+      <div class="card-icon" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.2)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      </div>
+      <div class="card-title">Pump.fun Trenchers</div>
+      <div class="card-desc">We live in the trenches. Early launch calls, dev wallet analysis, bundler detection, and momentum plays — from people who actually trade pump.fun daily.</div>
+      <div class="card-link">See Calls →</div>
+    </div>
+    <div class="card" onclick="openModal('scams')">
+      <div class="card-icon red">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="card-title">Scam & Rug Pull Alerts</div>
+      <div class="card-desc">Honeypots, rug pulls, Ponzi schemes, fake influencers — we name names. Our database has saved communities millions in losses.</div>
+      <div class="card-link">View Alerts →</div>
+    </div>
+    <div class="card" onclick="openModal('magazine')">
+      <div class="card-icon" style="background:rgba(167,139,250,0.08);border-color:rgba(167,139,250,0.2)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <div class="card-title">Open Source Magazine</div>
+      <div class="card-desc">Completely member-run crypto publication. Submit articles, earn bylines, shape narratives. 100% community-controlled editorial independence.</div>
+      <div class="card-link">Read & Contribute →</div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK WITH US -->
+<section class="work-section" id="work">
+  <div class="work-grid fade-in">
+    <div>
+      <div class="payout-badge">💰 Get Paid For Your Work</div>
+      <div class="section-tag">Work With Us</div>
+      <h2 class="section-title">TURN YOUR<br>CRYPTO EDGE<br><span style="color:var(--gold)">INTO INCOME</span></h2>
+      <p class="section-sub" style="margin-bottom:1.5rem">Signal Strike pays contributors for valid, verified leads, signals, investigations, and scoops. Daily and weekly payouts — your schedule, your terms. All you need is the edge.</p>
+      <p style="font-size:0.82rem;color:var(--dim);line-height:1.7;margin-bottom:2rem">We're looking for chain sleuths, pump.fun trenchers, whale watchers, market analysts, writers, developers, and anyone with real alpha — similar to the calibre of James Wynn and top on-chain analysts.</p>
+      <button class="btn btn-gold" onclick="openModal('work')" style="font-size:0.8rem;padding:0.75rem 2rem">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        See Benefits & Apply
+      </button>
+    </div>
+    <div>
+      <div class="payout-tiers">
+        <div class="tier">
+          <div>
+            <div class="tier-name">📡 Signal Analyst</div>
+            <div class="tier-desc">Verified trade calls with ≥70% accuracy</div>
+          </div>
+          <div>
+            <div class="tier-pay">$50–200</div>
+            <div class="tier-freq">Per Signal / Daily</div>
+          </div>
+        </div>
+        <div class="tier">
+          <div>
+            <div class="tier-name">🔍 Chain Sleuth</div>
+            <div class="tier-desc">Scam exposés, wallet traces, exploit docs</div>
+          </div>
+          <div>
+            <div class="tier-pay">$100–500</div>
+            <div class="tier-freq">Per Report</div>
+          </div>
+        </div>
+        <div class="tier">
+          <div>
+            <div class="tier-name">🐋 Whale Intel</div>
+            <div class="tier-desc">Verified large wallet moves & OTC data</div>
+          </div>
+          <div>
+            <div class="tier-pay">$25–150</div>
+            <div class="tier-freq">Per Alert / Daily</div>
+          </div>
+        </div>
+        <div class="tier">
+          <div>
+            <div class="tier-name">✍️ Magazine Writer</div>
+            <div class="tier-desc">Original articles, analysis, investigations</div>
+          </div>
+          <div>
+            <div class="tier-pay">$75–300</div>
+            <div class="tier-freq">Per Article</div>
+          </div>
+        </div>
+        <div class="tier">
+          <div>
+            <div class="tier-name">🚀 Pump.fun Trencher</div>
+            <div class="tier-desc">Early launch calls, dev analysis</div>
+          </div>
+          <div>
+            <div class="tier-pay">$20–100</div>
+            <div class="tier-freq">Per Valid Call</div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:0.72rem;color:var(--dim);font-family:'Space Mono',monospace;line-height:1.6">* Payouts processed daily or weekly. All leads verified before payment. Crypto & fiat options available.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" style="padding:5rem 4rem">
+  <div class="fade-in">
+    <div class="section-tag">Our People</div>
+    <h2 class="section-title">THE NETWORK<br>BEHIND THE SIGNAL</h2>
+    <p class="section-sub" style="margin-bottom:2.5rem">Pseudo-anonymous investigators, veteran traders, on-chain analysts, and community builders — united by one mission: radical crypto transparency.</p>
+  </div>
+  <div class="grid-4 fade-in">
+    <div class="team-card" onclick="openModal('team-ghost')">
+      <div class="team-avatar">🎯</div>
+      <div class="team-name">GhostChain</div>
+      <div class="team-role">Lead Chain Sleuth</div>
+      <div class="team-bio">Former DeFi dev turned on-chain investigator. Traced $200M+ in exploits. 3 years in the trenches.</div>
+    </div>
+    <div class="team-card" onclick="openModal('team-wynn')">
+      <div class="team-avatar">🐋</div>
+      <div class="team-name">WynnStyle</div>
+      <div class="team-role">Whale Strategist</div>
+      <div class="team-bio">Perpetual futures specialist. James Wynn calibre market reads. Tracks top 500 whale wallets daily.</div>
+    </div>
+    <div class="team-card" onclick="openModal('team-pump')">
+      <div class="team-avatar">🚀</div>
+      <div class="team-name">PumpDaddy</div>
+      <div class="team-role">pump.fun Trencher</div>
+      <div class="team-bio">Lives in the launch feed. 6-figure month calling memecoins. Bundler and sniper detection specialist.</div>
+    </div>
+    <div class="team-card" onclick="openModal('team-editor')">
+      <div class="team-avatar">📰</div>
+      <div class="team-name">The Archivist</div>
+      <div class="team-role">Magazine Editor</div>
+      <div class="team-bio">Runs the open-source publication. 340+ issues shipped. Community editorial board curator.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAGAZINE ARTICLES -->
+<section style="padding:5rem 4rem;background:var(--panel);border-top:1px solid var(--border)">
+  <div class="fade-in">
+    <div class="section-tag">Open Source Magazine</div>
+    <h2 class="section-title">LATEST FROM<br>THE COMMUNITY</h2>
+    <p class="section-sub" style="margin-bottom:2.5rem">Every article written and fact-checked by members. Zero corporate bias. Pure signal.</p>
+  </div>
+  <div class="grid-3 fade-in">
+    <div class="article-card" onclick="openModal('article-1')">
+      <div class="article-card-body">
+        <span class="article-tag tag-scam">🚨 Scam Alert</span>
+        <div class="article-title">Inside the $12M MOONX Rug Pull: How They Hid The Exit Wallet</div>
+        <div class="article-meta"><span>by GhostChain</span><span>14 Mar 2026</span><span>8 min read</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="openModal('article-2')">
+      <div class="article-card-body">
+        <span class="article-tag tag-whale">🐋 Whale Watch</span>
+        <div class="article-title">Satoshi-Era Wallet Woke Up: 1,200 BTC Moved — What It Means</div>
+        <div class="article-meta"><span>by WynnStyle</span><span>12 Mar 2026</span><span>6 min read</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="openModal('article-3')">
+      <div class="article-card-body">
+        <span class="article-tag tag-pump">🚀 pump.fun</span>
+        <div class="article-title">How to Spot Bundled Launches Before They Dump On You</div>
+        <div class="article-meta"><span>by PumpDaddy</span><span>11 Mar 2026</span><span>10 min read</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="openModal('article-4')">
+      <div class="article-card-body">
+        <span class="article-tag tag-detective">🔍 Investigation</span>
+        <div class="article-title">Bridge Exploit Post-Mortem: $4.2M Gone — The Chain Trail</div>
+        <div class="article-meta"><span>by GhostChain</span><span>9 Mar 2026</span><span>12 min read</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="openModal('article-5')">
+      <div class="article-card-body">
+        <span class="article-tag tag-signal">⚡ Signal</span>
+        <div class="article-title">Why SOL Is Setting Up for a 40% Move — On-Chain Confluence</div>
+        <div class="article-meta"><span>by SignalStrike Team</span><span>8 Mar 2026</span><span>5 min read</span></div>
+      </div>
+    </div>
+    <div class="article-card" onclick="openModal('article-6')">
+      <div class="article-card-body">
+        <span class="article-tag tag-scam">🚨 Scam Alert</span>
+        <div class="article-title">Fake Influencer Network: 47 Accounts Promoting the Same Exit Scam</div>
+        <div class="article-meta"><span>by The Archivist</span><span>6 Mar 2026</span><span>9 min read</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:2.5rem">
+    <button class="btn btn-outline" onclick="openModal('magazine')" style="padding:0.75rem 2rem;font-size:0.78rem">View All Articles →</button>
+  </div>
+</section>
+
+<!-- JOIN CTA -->
+<section class="join-section">
+  <div class="join-glow"></div>
+  <div style="position:relative;z-index:1">
+    <div class="section-tag" style="justify-content:center">Join Signal Strike</div>
+    <h2 class="join-title">READY TO STRIKE<br><span class="accent">FIRST?</span></h2>
+    <p class="join-sub">Immediate access. No gatekeepers. Join 48,000+ members getting signals, alerts, and intel — before anyone else.</p>
+    <div class="join-actions">
+      <button class="btn btn-acid" onclick="openModal('join')" style="font-size:0.85rem;padding:0.85rem 2rem">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Sign Up Immediately
+      </button>
+      <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg" style="font-size:0.85rem;padding:0.85rem 2rem">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.502c-.147.66-.537.82-1.088.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.216-3.053 5.56-5.023c.242-.215-.054-.335-.373-.12L7.092 14.56l-2.965-.924c-.645-.2-.658-.645.134-.955l11.57-4.46c.537-.196 1.006.13.731.027z"/></svg>
+        Join on Telegram
+      </a>
+      <button class="btn btn-outline" onclick="openModal('work')" style="font-size:0.85rem;padding:0.85rem 2rem">Work With Us →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><polygon points="16,2 30,28 2,28" fill="none" stroke="#00ff88" stroke-width="2"/><line x1="16" y1="10" x2="16" y2="20" stroke="#ff3c3c" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="24" r="1.5" fill="#ff3c3c"/></svg>
+        SIGNAL <span class="strike">STRIKE</span>
+      </div>
+      <p class="footer-desc">The most trusted name in crypto intelligence. Community-run, radical transparency, real signals — 24/7.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Intelligence</div>
+      <ul class="footer-links">
+        <li><a onclick="openModal('signals')">Trading Signals</a></li>
+        <li><a onclick="openModal('whales')">Whale Watch</a></li>
+        <li><a onclick="openModal('pump')">Pump.fun Calls</a></li>
+        <li><a onclick="openModal('scams')">Scam Alerts</a></li>
+        <li><a onclick="openModal('detectives')">Chain Sleuths</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Community</div>
+      <ul class="footer-links">
+        <li><a onclick="openModal('magazine')">Open Magazine</a></li>
+        <li><a onclick="openModal('join')">Join Today</a></li>
+        <li><a onclick="openModal('work')">Work With Us</a></li>
+        <li><a onclick="openModal('about')">About Signal Strike</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Connect</div>
+      <ul class="footer-links">
+        <li><a href="https://t.me/signalstrike" target="_blank">Telegram Community</a></li>
+        <li><a onclick="openModal('contact')">Contact Us</a></li>
+        <li><a onclick="openModal('submit')">Submit a Lead</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Signal Strike. Community-run. All intelligence is for educational purposes.</span>
+    <span>Not financial advice. DYOR.</span>
+  </div>
+</footer>
+
+
+<!-- ===== MODALS ===== -->
+
+<!-- SIGNALS MODAL -->
+<div class="modal-overlay" id="modal-signals" onclick="closeOnOverlay(event,'signals')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Intelligence Service</div><div class="modal-title">Trading Signals</div></div>
+      <button class="modal-close" onclick="closeModal('signals')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Signal Strike's trading signals are generated by a network of professional analysts, algo-quants, and veteran on-chain traders. Every signal is peer-reviewed before publication — no noise, pure alpha.</p>
+      <h3>What You Get</h3>
+      <ul class="modal-list">
+        <li>Spot, futures, and DeFi entry/exit signals with precise price targets and stop-losses</li>
+        <li>Multi-timeframe confluence analysis: on-chain data + technicals + market structure</li>
+        <li>94% historical accuracy rate tracked and publicly audited by community</li>
+        <li>Real-time alerts via Telegram, with full trade rationale included</li>
+        <li>Weekly performance reports reviewed and published by the editorial board</li>
+        <li>Risk-rated signals from conservative to high-conviction plays</li>
+      </ul>
+      <h3>Signal Categories</h3>
+      <ul class="modal-list">
+        <li>🟢 <strong>Strong Buy</strong> — High conviction, multi-source confirmation</li>
+        <li>🟡 <strong>Watch Zone</strong> — Setup forming, prepare entries</li>
+        <li>🔴 <strong>Exit Alert</strong> — Risk-off, take profits or cut losses</li>
+        <li>⚡ <strong>Flash Signal</strong> — Momentum plays, short-duration high upside</li>
+      </ul>
+      <div class="modal-divider"></div>
+      <p style="font-size:0.78rem;color:var(--dim)">All signals are for educational purposes. Not financial advice. Always do your own research.</p>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('signals');openModal('join')">Join To Access Signals</button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">Get On Telegram</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETECTIVES MODAL -->
+<div class="modal-overlay" id="modal-detectives" onclick="closeOnOverlay(event,'detectives')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Investigations</div><div class="modal-title">Chain Sleuths</div></div>
+      <button class="modal-close" onclick="closeModal('detectives')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Our crypto detectives and chain sleuths are among the most respected on-chain investigators in the space. Trained in blockchain forensics, wallet analysis, and cross-chain tracing — they follow every dollar, no matter how it's laundered.</p>
+      <h3>Investigation Capabilities</h3>
+      <ul class="modal-list">
+        <li>Wallet clustering and address labeling across EVM, Solana, Bitcoin, and Cosmos chains</li>
+        <li>Transaction graph analysis to trace fund flows through mixers and bridges</li>
+        <li>Smart contract auditing and honeypot detection before you ape in</li>
+        <li>Exchange deposit address identification — who cashed out, and where</li>
+        <li>Exploit post-mortems within hours of an attack — before the protocol even confirms it</li>
+        <li>Public documentation shared with authorities and affected communities</li>
+      </ul>
+      <h3>Notable Cases</h3>
+      <ul class="modal-list">
+        <li>MOONX Rug Pull — $12M traced in 6 hours, perpetrators identified</li>
+        <li>Bridge Protocol Exploit — $4.2M fund flow mapped across 3 chains</li>
+        <li>Fake Influencer Ring — 47 coordinated accounts linked to single operator</li>
+        <li>Satoshi Wallet Analysis — Contextualised the February 2026 movement</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('detectives');openModal('join')">Join the Network</button>
+        <button class="btn btn-outline" onclick="closeModal('detectives');openModal('work')">Become a Sleuth</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WHALE MODAL -->
+<div class="modal-overlay" id="modal-whales" onclick="closeOnOverlay(event,'whales')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Market Intelligence</div><div class="modal-title">Whale Watch</div></div>
+      <button class="modal-close" onclick="closeModal('whales')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Whales move markets. We move with them — or ahead of them. Our whale tracking operation monitors hundreds of high-value wallets across every major chain, giving our community advance notice of moves that will shake prices.</p>
+      <h3>What We Track</h3>
+      <ul class="modal-list">
+        <li>Top 500 whale wallets monitored 24/7 across BTC, ETH, SOL, and all EVM chains</li>
+        <li>Exchange inflow/outflow alerts — know when whales are about to dump or accumulate</li>
+        <li>OTC desk intelligence and dark pool activity signals</li>
+        <li>Dormant wallet activation alerts — when sleeping giants wake up</li>
+        <li>Smart money wallet following — copy the wallets with 10x track records</li>
+        <li>$900M+ in whale volume tracked and documented monthly</li>
+      </ul>
+      <h3>Alert Types</h3>
+      <ul class="modal-list">
+        <li>🐋 <strong>Mega Move</strong> — $10M+ single transaction</li>
+        <li>📥 <strong>Exchange Inflow</strong> — Large deposits signalling potential sell pressure</li>
+        <li>📤 <strong>Exchange Outflow</strong> — Whales pulling coins off — bullish signal</li>
+        <li>💤 <strong>Dormant Wake</strong> — Old wallets suddenly active</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('whales');openModal('join')">Access Whale Alerts</button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">Live Feed on Telegram</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PUMP MODAL -->
+<div class="modal-overlay" id="modal-pump" onclick="closeOnOverlay(event,'pump')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Memecoin Intelligence</div><div class="modal-title">Pump.fun Trenchers</div></div>
+      <button class="modal-close" onclick="closeModal('pump')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>We live in the pump.fun trenches. Our dedicated team of memecoin specialists monitor new launches around the clock, filtering out the noise and calling the setups with real upside — before the masses catch on.</p>
+      <h3>What Sets Us Apart</h3>
+      <ul class="modal-list">
+        <li>Live launch monitoring — first alerts within seconds of deployment</li>
+        <li>Bundler and sniper detection — know if the dev is already sniping their own launch</li>
+        <li>Dev wallet analysis — check the deployer's track record instantly</li>
+        <li>Early momentum calls — timed for maximum alpha window</li>
+        <li>Rugged project database — cross-reference any new CA against known bad actors</li>
+        <li>Community volume coordination intelligence — spot organic vs manufactured moves</li>
+      </ul>
+      <h3>Our Trenchers</h3>
+      <ul class="modal-list">
+        <li>PumpDaddy — 6-figure month calling memecoins, lives in the launch feed 18h a day</li>
+        <li>LaunchPad — ex-Solana dev who knows every trick in the deployer handbook</li>
+        <li>The Bundler — specialises entirely in detecting bundled launches and insider sniping</li>
+      </ul>
+      <div class="modal-divider"></div>
+      <p style="font-size:0.78rem;color:var(--dim)">⚠️ Memecoin trading is extremely high risk. These are entertainment and educational alerts only. Never invest more than you can afford to lose.</p>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('pump');openModal('join')">Get Launch Alerts</button>
+        <button class="btn btn-outline" onclick="closeModal('pump');openModal('work')">Become a Trencher</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCAMS MODAL -->
+<div class="modal-overlay" id="modal-scams" onclick="closeOnOverlay(event,'scams')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Consumer Protection</div><div class="modal-title">Scam & Rug Pull Alerts</div></div>
+      <button class="modal-close" onclick="closeModal('scams')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Crypto is a predator's playground. Signal Strike is the watchdog. We name names, expose mechanisms, publish proof, and give the community the tools to avoid the traps that have cost retail investors billions.</p>
+      <h3>What We Expose</h3>
+      <ul class="modal-list">
+        <li>Rug pulls — documented with transaction proof, timestamps, and developer wallet history</li>
+        <li>Honeypot contracts — tokens you can buy but never sell, flagged before launch</li>
+        <li>Ponzi and yield scams — sustainability analysis on any high-yield protocol</li>
+        <li>Fake influencer rings — coordinated shilling networks exposed with evidence</li>
+        <li>Phishing domains and fake project clones — real-time domain watch alerts</li>
+        <li>Exchange insolvency signals — early warning indicators before the next FTX</li>
+      </ul>
+      <h3>Our Database</h3>
+      <ul class="modal-list">
+        <li>2,100+ scam projects documented and publicly searchable</li>
+        <li>Live scam alert feed updated within minutes of confirmation</li>
+        <li>Community submission portal — report a scam, get paid if verified</li>
+        <li>Monthly Scam Report published in the community magazine</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('scams');openModal('join')">Access Scam Alerts</button>
+        <button class="btn btn-strike" onclick="closeModal('scams');openModal('submit')">Submit a Scam Lead →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAGAZINE MODAL -->
+<div class="modal-overlay" id="modal-magazine" onclick="closeOnOverlay(event,'magazine')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Open Source Publication</div><div class="modal-title">Signal Strike Magazine</div></div>
+      <button class="modal-close" onclick="closeModal('magazine')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Signal Strike Magazine is a fully community-run, open-source crypto publication. No venture capital, no corporate overlords, no editorial censorship. Every article is written by members, reviewed by members, and published for the benefit of members.</p>
+      <h3>How It Works</h3>
+      <ul class="modal-list">
+        <li>Any verified member can submit articles for consideration</li>
+        <li>Community editorial board of 12 elected members reviews all submissions</li>
+        <li>Published articles are attributed to your pseud/handle and permanently archived</li>
+        <li>Writers get paid — see our contributor rates in Work With Us</li>
+        <li>340+ issues shipped, zero paywalls, 100% open access</li>
+      </ul>
+      <h3>Content Categories</h3>
+      <ul class="modal-list">
+        <li>📡 Signal & market analysis</li>
+        <li>🔍 Investigations and chain forensics</li>
+        <li>🐋 Whale and smart money reports</li>
+        <li>🚨 Scam exposés and rug pull documentation</li>
+        <li>🚀 Pump.fun and memecoin culture</li>
+        <li>💡 Opinion, ecosystem commentary, and interviews</li>
+      </ul>
+      <h3>Submissions</h3>
+      <ul class="modal-list">
+        <li>Minimum 800 words, well-sourced with on-chain evidence where applicable</li>
+        <li>Submissions reviewed within 72 hours</li>
+        <li>Accepted pieces get a professional editorial pass before publication</li>
+        <li>Payment within 5 business days of publishing</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('magazine');openModal('join')">Join & Start Writing</button>
+        <button class="btn btn-outline" onclick="closeModal('magazine');openModal('work')">Contributor Rates →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORK WITH US MODAL -->
+<div class="modal-overlay" id="modal-work" onclick="closeOnOverlay(event,'work')">
+  <div class="modal" style="max-width:740px">
+    <div class="modal-header">
+      <div><div class="modal-tag">Join Our Contributor Network</div><div class="modal-title">Work With Signal Strike</div></div>
+      <button class="modal-close" onclick="closeModal('work')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Signal Strike pays contributors for real, verified intelligence. We're looking for people who are genuinely in the market — not aspirational keyboard warriors. If you're at the level of James Wynn, GCR, or any top on-chain analyst, we want you on the team.</p>
+
+      <h3>Roles We're Hiring</h3>
+      <ul class="modal-list">
+        <li><strong>Signal Analysts</strong> — Verified trade signals with documented accuracy track record</li>
+        <li><strong>Chain Sleuths / Crypto Detectives</strong> — On-chain investigation, wallet tracing, exploit documentation</li>
+        <li><strong>Whale Watchers</strong> — Dedicated large wallet monitoring and alert generation</li>
+        <li><strong>Pump.fun Trenchers</strong> — Active daily traders and callers in the memecoin ecosystem</li>
+        <li><strong>Magazine Writers</strong> — Original journalism, analysis, and investigative reporting</li>
+        <li><strong>Scam Investigators</strong> — Rug pull and honeypot research specialists</li>
+        <li><strong>Developers</strong> — On-chain tools, dashboards, and alert infrastructure</li>
+      </ul>
+
+      <h3>💰 Payment Structure</h3>
+      <div class="payout-tiers" style="margin:0.75rem 0 1rem">
+        <div class="tier"><div><div class="tier-name">Signal Analyst</div><div class="tier-desc">Per verified signal — paid daily</div></div><div><div class="tier-pay">$50–200</div></div></div>
+        <div class="tier"><div><div class="tier-name">Chain Sleuth Report</div><div class="tier-desc">Per accepted investigation</div></div><div><div class="tier-pay">$100–500</div></div></div>
+        <div class="tier"><div><div class="tier-name">Whale Intel Alert</div><div class="tier-desc">Per verified large move alert — daily</div></div><div><div class="tier-pay">$25–150</div></div></div>
+        <div class="tier"><div><div class="tier-name">Magazine Article</div><div class="tier-desc">Per published article</div></div><div><div class="tier-pay">$75–300</div></div></div>
+        <div class="tier"><div><div class="tier-name">Pump.fun Call</div><div class="tier-desc">Per verified early call with outcome</div></div><div><div class="tier-pay">$20–100</div></div></div>
+        <div class="tier"><div><div class="tier-name">Scam Lead</div><div class="tier-desc">Per confirmed and documented scam</div></div><div><div class="tier-pay">$50–250</div></div></div>
+      </div>
+
+      <h3>Benefits</h3>
+      <ul class="modal-list">
+        <li>Daily or weekly payouts — your choice, paid in USDC, BTC, or bank transfer</li>
+        <li>Build a public track record and reputation within a 48K+ community</li>
+        <li>Access to Signal Strike's full intelligence stack and analyst network</li>
+        <li>Editorial support and bylines in our open-source magazine</li>
+        <li>Performance bonuses for exceptional leads and viral investigations</li>
+        <li>Fully pseudonymous — your real identity never required</li>
+        <li>Completely flexible — work when you want, as much as you want</li>
+      </ul>
+
+      <h3>Requirements</h3>
+      <ul class="modal-list">
+        <li>All leads, signals, and articles must be original and verifiable before payment is released</li>
+        <li>You must be an active participant in the market — we verify track records</li>
+        <li>Community conduct standards apply — we protect our reputation fiercely</li>
+      </ul>
+
+      <div class="modal-divider"></div>
+      <p style="font-size:0.82rem;color:var(--text)"><strong style="color:var(--acid)">Ready to start immediately?</strong> Sign up below and a team member will reach out within 24 hours to verify your background and get you onboarded.</p>
+
+      <div class="modal-actions">
+        <button class="btn btn-gold" onclick="closeModal('work');openModal('apply')" style="font-size:0.82rem;padding:0.75rem 2rem">
+          Apply Now — Start Earning
+        </button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.502c-.147.66-.537.82-1.088.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.216-3.053 5.56-5.023c.242-.215-.054-.335-.373-.12L7.092 14.56l-2.965-.924c-.645-.2-.658-.645.134-.955l11.57-4.46c.537-.196 1.006.13.731.027z"/></svg>
+          Join Telegram First
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APPLY MODAL -->
+<div class="modal-overlay" id="modal-apply" onclick="closeOnOverlay(event,'apply')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Contributor Application</div><div class="modal-title">Apply To Join</div></div>
+      <button class="modal-close" onclick="closeModal('apply')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Complete the form below. A Signal Strike team member will review your submission and reach out within 24 hours. All applications are pseudonymous — no real identity required.</p>
+      <div class="form-group">
+        <label class="form-label">Handle / Pseudonym *</label>
+        <input class="form-input" type="text" placeholder="e.g. GhostChain, WhaleBuster_X" id="apply-handle">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telegram Username *</label>
+        <input class="form-input" type="text" placeholder="@yourusername" id="apply-tg">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Primary Role *</label>
+        <select class="form-select" id="apply-role">
+          <option value="">Select your speciality...</option>
+          <option>Signal Analyst</option>
+          <option>Chain Sleuth / Crypto Detective</option>
+          <option>Whale Watcher</option>
+          <option>Pump.fun Trencher</option>
+          <option>Magazine Writer</option>
+          <option>Scam Investigator</option>
+          <option>Developer</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Experience & Track Record</label>
+        <textarea class="form-input" rows="3" placeholder="Tell us about your background, notable calls, investigations, or work. Links to previous work very welcome." id="apply-exp" style="resize:vertical;min-height:80px"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Preference</label>
+        <select class="form-select" id="apply-pay">
+          <option value="">Select preference...</option>
+          <option>USDC (Daily)</option>
+          <option>USDC (Weekly)</option>
+          <option>Bitcoin (Weekly)</option>
+          <option>Bank Transfer (Weekly)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-gold" onclick="submitApplication()" style="padding:0.75rem 2rem">Submit Application →</button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">Go To Telegram</a>
+      </div>
+      <div id="apply-success" style="display:none;margin-top:1rem;padding:1rem;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);border-radius:4px;color:var(--acid);font-family:'Space Mono',monospace;font-size:0.78rem">
+        ✓ Application submitted! Check your Telegram — our team will reach out within 24h.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JOIN MODAL -->
+<div class="modal-overlay" id="modal-join" onclick="closeOnOverlay(event,'join')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Free Access</div><div class="modal-title">Join Signal Strike</div></div>
+      <button class="modal-close" onclick="closeModal('join')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Immediate access to the Signal Strike network. No waiting list. No gatekeeping. Join 48,000+ community members getting real-time intelligence — right now.</p>
+      <h3>What You Get On Joining</h3>
+      <ul class="modal-list">
+        <li>Live trading signals channel — 24/7 analyst coverage</li>
+        <li>Whale alert feed — instant notifications of major moves</li>
+        <li>Scam & rug pull database access — 2,100+ documented cases</li>
+        <li>Chain Sleuth investigation archive — every report ever published</li>
+        <li>Community magazine — 340+ issues, all open access</li>
+        <li>pump.fun trencher calls — early launch intelligence</li>
+        <li>Private member Telegram with direct analyst access</li>
+        <li>Ability to submit leads and get paid for valid intelligence</li>
+      </ul>
+      <div class="form-group mt-3">
+        <label class="form-label">Your Handle / Username *</label>
+        <input class="form-input" type="text" placeholder="Choose a pseudonym" id="join-handle">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telegram Username *</label>
+        <input class="form-input" type="text" placeholder="@yourtelegram" id="join-tg">
+      </div>
+      <div class="form-group">
+        <label class="form-label">How Did You Find Us?</label>
+        <select class="form-select" id="join-source">
+          <option value="">Select...</option>
+          <option>Twitter / X</option>
+          <option>Telegram</option>
+          <option>Referred by a member</option>
+          <option>Reddit</option>
+          <option>Discord</option>
+          <option>Search Engine</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="submitJoin()" style="padding:0.75rem 2rem;font-size:0.82rem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Sign Up & Get Access
+        </button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.502c-.147.66-.537.82-1.088.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.216-3.053 5.56-5.023c.242-.215-.054-.335-.373-.12L7.092 14.56l-2.965-.924c-.645-.2-.658-.645.134-.955l11.57-4.46c.537-.196 1.006.13.731.027z"/></svg>
+          Join on Telegram
+        </a>
+      </div>
+      <div id="join-success" style="display:none;margin-top:1rem;padding:1rem;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);border-radius:4px;color:var(--acid);font-family:'Space Mono',monospace;font-size:0.78rem">
+        ✓ Welcome to Signal Strike! Check Telegram — your invite is waiting.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT LEAD MODAL -->
+<div class="modal-overlay" id="modal-submit" onclick="closeOnOverlay(event,'submit')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Get Paid</div><div class="modal-title">Submit a Lead</div></div>
+      <button class="modal-close" onclick="closeModal('submit')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Found a scam, spotted a whale move, got an early call? Submit your lead. If it's verified and published, you get paid — within 24 hours of confirmation. No Signal Strike membership required to submit.</p>
+      <div class="form-group">
+        <label class="form-label">Lead Type *</label>
+        <select class="form-select" id="lead-type">
+          <option value="">Select type...</option>
+          <option>Scam / Rug Pull</option>
+          <option>Trading Signal</option>
+          <option>Whale Move</option>
+          <option>Pump.fun Early Call</option>
+          <option>On-Chain Investigation</option>
+          <option>Exchange / Protocol Risk</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lead Details *</label>
+        <textarea class="form-input" rows="4" id="lead-details" placeholder="Describe the lead with as much evidence as possible. Include wallet addresses, contract addresses, transaction hashes, screenshots, etc." style="resize:vertical;min-height:100px"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your Telegram (for payment) *</label>
+        <input class="form-input" type="text" placeholder="@yourtelegram" id="lead-tg">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <select class="form-select" id="lead-pay">
+          <option value="">Select...</option>
+          <option>USDC</option>
+          <option>Bitcoin</option>
+          <option>ETH</option>
+          <option>SOL</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-strike" onclick="submitLead()" style="padding:0.75rem 2rem">Submit Lead →</button>
+      </div>
+      <div id="lead-success" style="display:none;margin-top:1rem;padding:1rem;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);border-radius:4px;color:var(--acid);font-family:'Space Mono',monospace;font-size:0.78rem">
+        ✓ Lead received! Our team will verify and reach out within 24h.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT MODAL -->
+<div class="modal-overlay" id="modal-about" onclick="closeOnOverlay(event,'about')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Who We Are</div><div class="modal-title">About Signal Strike</div></div>
+      <button class="modal-close" onclick="closeModal('about')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Signal Strike was founded by a group of battle-hardened crypto traders, on-chain investigators, and community builders who were tired of fake signals, coordinated shilling, and zero accountability in the information space.</p>
+      <p>We set out to build something different: a fully community-run intelligence network where everything is transparent, attributable, and held to a real standard. No VC funding. No agenda. No corporate editorial board.</p>
+      <h3>Our Mission</h3>
+      <ul class="modal-list">
+        <li>Radical transparency in crypto intelligence — every signal tracked publicly</li>
+        <li>Community ownership of the publication and editorial direction</li>
+        <li>Paying contributors fairly for real, verified work</li>
+        <li>Protecting retail investors from the predators who prey on them</li>
+        <li>Building the world's most credible open-source crypto intelligence magazine</li>
+      </ul>
+      <h3>By The Numbers</h3>
+      <ul class="modal-list">
+        <li>48,000+ community members across Telegram and the network</li>
+        <li>340+ magazine issues published with zero editorial censorship</li>
+        <li>2,100+ scams documented and publicly exposed</li>
+        <li>94% tracked signal accuracy rate, audited by the community</li>
+        <li>$900M+ in whale volume documented and analysed monthly</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('about');openModal('join')">Join the Community</button>
+        <button class="btn btn-outline" onclick="closeModal('about');openModal('work')">Work With Us</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLE MODALS (shared template) -->
+<div class="modal-overlay" id="modal-article-1" onclick="closeOnOverlay(event,'article-1')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">🚨 Scam Alert — Signal Strike Magazine</div><div class="modal-title">MOONX Rug Pull</div></div>
+      <button class="modal-close" onclick="closeModal('article-1')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap">
+        <span style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">by GhostChain</span>
+        <span style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">14 March 2026</span>
+        <span style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">8 min read</span>
+      </div>
+      <p>The MOONX token launched on 9 March 2026 with aggressive influencer marketing across Twitter and Telegram. Within 72 hours it had accumulated $12M in TVL. By the morning of the 12th, the liquidity was gone.</p>
+      <p>Our chain sleuth GhostChain began tracking the deployer wallet 48 hours before the rug. The wallet had prior history with two other failed launches under different contract addresses — a pattern our database flagged immediately.</p>
+      <h3>The Mechanism</h3>
+      <ul class="modal-list">
+        <li>Developer wallet was pre-loaded with 18% of supply via 7 proxy wallets</li>
+        <li>Liquidity pool was never locked — a one-line contract check reveals this</li>
+        <li>Exit funds routed through a Tornado Cash-adjacent mixer on Arbitrum</li>
+        <li>Influencers were paid $4,000–$12,000 per post — 3 have since deleted their accounts</li>
+        <li>Final destination wallet traced to a known OTC desk in Southeast Asia</li>
+      </ul>
+      <div class="modal-divider"></div>
+      <p style="font-size:0.82rem;color:var(--dim)">This investigation has been submitted to relevant authorities. The full wallet trace is available in our public investigation archive.</p>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('article-1');openModal('join')">Join To Access Full Archive</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM MODALS -->
+<div class="modal-overlay" id="modal-team-ghost" onclick="closeOnOverlay(event,'team-ghost')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Signal Strike Team</div><div class="modal-title">GhostChain</div></div>
+      <button class="modal-close" onclick="closeModal('team-ghost')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+        <div style="width:72px;height:72px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--dark);flex-shrink:0">🎯</div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-weight:700;color:#fff">GhostChain</div>
+          <div style="color:var(--acid);font-size:0.8rem;margin-top:0.2rem">Lead Chain Sleuth & Crypto Detective</div>
+          <div style="color:var(--dim);font-size:0.75rem;margin-top:0.2rem;font-family:'Space Mono',monospace">3 years on-chain | $200M+ traced</div>
+        </div>
+      </div>
+      <p>GhostChain is a former DeFi protocol developer who pivoted to full-time on-chain investigation after witnessing the devastation of retail investors during the 2022 bear market. Armed with deep protocol-level knowledge, they've become one of the most feared names in crypto forensics.</p>
+      <h3>Notable Work</h3>
+      <ul class="modal-list">
+        <li>MOONX Rug Pull — $12M traced within 6 hours, full investigation published</li>
+        <li>Bridge Protocol Exploit — cross-chain fund flow mapped across 3 networks in real-time</li>
+        <li>Fake Influencer Ring — linked 47 accounts to a single coordinated operator</li>
+        <li>Major CEX Wash Trading Report — published in Signal Strike Magazine Issue #287</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('team-ghost');openModal('join')">Join To Follow GhostChain's Work</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-team-wynn" onclick="closeOnOverlay(event,'team-wynn')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Signal Strike Team</div><div class="modal-title">WynnStyle</div></div>
+      <button class="modal-close" onclick="closeModal('team-wynn')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+        <div style="width:72px;height:72px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--dark);flex-shrink:0">🐋</div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-weight:700;color:#fff">WynnStyle</div>
+          <div style="color:var(--gold);font-size:0.8rem;margin-top:0.2rem">Whale Strategist & Market Analyst</div>
+          <div style="color:var(--dim);font-size:0.75rem;margin-top:0.2rem;font-family:'Space Mono',monospace">Top 500 wallets monitored daily</div>
+        </div>
+      </div>
+      <p>WynnStyle operates in the same tier as the biggest names in crypto trading. Their market reads, whale tracking, and perpetual futures calls have made Signal Strike one of the most accurate signal networks in the space. Inspired by the trading style and conviction of James Wynn.</p>
+      <h3>Track Record</h3>
+      <ul class="modal-list">
+        <li>94% accuracy on directional calls over the last 6 months — publicly audited</li>
+        <li>Called the February 2026 BTC dormant wallet reactivation 2 hours before mainstream coverage</li>
+        <li>Manages the daily whale exchange inflow/outflow report for the community</li>
+        <li>Runs the monthly Smart Money Portfolio Review in Signal Strike Magazine</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('team-wynn');openModal('join')">Access WynnStyle's Signals</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-team-pump" onclick="closeOnOverlay(event,'team-pump')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Signal Strike Team</div><div class="modal-title">PumpDaddy</div></div>
+      <button class="modal-close" onclick="closeModal('team-pump')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+        <div style="width:72px;height:72px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--dark);flex-shrink:0">🚀</div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-weight:700;color:#fff">PumpDaddy</div>
+          <div style="color:#fb923c;font-size:0.8rem;margin-top:0.2rem">pump.fun Trencher & Memecoin Specialist</div>
+          <div style="color:var(--dim);font-size:0.75rem;margin-top:0.2rem;font-family:'Space Mono',monospace">6-figure month | 18h/day in the trenches</div>
+        </div>
+      </div>
+      <p>PumpDaddy is the definition of full-time trenching. Living in the pump.fun launch feed, they've developed an almost instinctive ability to spot setups with real organic momentum before the snipers pile in. Known for brutal honesty about risks alongside the calls.</p>
+      <h3>Specialities</h3>
+      <ul class="modal-list">
+        <li>Early launch detection — usually calling within 30 seconds of deployment</li>
+        <li>Bundler identification — spots coordinated insider sniping before it kills the launch</li>
+        <li>Dev wallet history cross-referencing — knows every recurring bad actor by address</li>
+        <li>Momentum psychology — reads community sentiment and coordinated buying patterns</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('team-pump');openModal('join')">Get PumpDaddy's Live Calls</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-team-editor" onclick="closeOnOverlay(event,'team-editor')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Signal Strike Team</div><div class="modal-title">The Archivist</div></div>
+      <button class="modal-close" onclick="closeModal('team-editor')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+        <div style="width:72px;height:72px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--dark);flex-shrink:0">📰</div>
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-weight:700;color:#fff">The Archivist</div>
+          <div style="color:#a78bfa;font-size:0.8rem;margin-top:0.2rem">Magazine Editor & Community Curator</div>
+          <div style="color:var(--dim);font-size:0.75rem;margin-top:0.2rem;font-family:'Space Mono',monospace">340+ issues | 4 years at Signal Strike</div>
+        </div>
+      </div>
+      <p>The Archivist has been the editorial backbone of Signal Strike Magazine since nearly the beginning. An ex-financial journalist who went pseudonymous after discovering crypto in 2020, they bring both journalistic rigour and deep market understanding to every issue.</p>
+      <h3>Magazine Under Their Watch</h3>
+      <ul class="modal-list">
+        <li>340+ issues shipped with zero missed deadlines</li>
+        <li>12-member community editorial board established and managed</li>
+        <li>Zero instances of editorial censorship — total community independence maintained</li>
+        <li>Writer onboarding system that has brought in 200+ contributors</li>
+        <li>Monthly Scam Report — the most comprehensive public rug pull record in the space</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-acid" onclick="closeModal('team-editor');openModal('magazine')">Read the Magazine</button>
+        <button class="btn btn-outline" onclick="closeModal('team-editor');openModal('work')">Become a Writer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="modal-contact" onclick="closeOnOverlay(event,'contact')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-tag">Get In Touch</div><div class="modal-title">Contact Us</div></div>
+      <button class="modal-close" onclick="closeModal('contact')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>The fastest way to reach Signal Strike is always via Telegram. Our team is active 24/7 in the community channels.</p>
+      <h3>Contact Channels</h3>
+      <ul class="modal-list">
+        <li>🔵 <strong>Telegram Community</strong> — fastest response, real-time: @signalstrike</li>
+        <li>📨 <strong>Lead Submissions</strong> — use the Submit a Lead form for intelligence tips</li>
+        <li>💼 <strong>Contributor Applications</strong> — use the Work With Us form for partnership enquiries</li>
+        <li>📰 <strong>Editorial Submissions</strong> — send drafts via Telegram to @SignalStrikeEditor</li>
+      </ul>
+      <div class="modal-actions">
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg" style="padding:0.75rem 2rem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.502c-.147.66-.537.82-1.088.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.216-3.053 5.56-5.023c.242-.215-.054-.335-.373-.12L7.092 14.56l-2.965-.924c-.645-.2-.658-.645.134-.955l11.57-4.46c.537-.196 1.006.13.731.027z"/></svg>
+          Open Telegram
+        </a>
+        <button class="btn btn-outline" onclick="closeModal('contact');openModal('submit')">Submit a Lead</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADDITIONAL ARTICLE MODALS (condensed) -->
+<div class="modal-overlay" id="modal-article-2" onclick="closeOnOverlay(event,'article-2')">
+  <div class="modal"><div class="modal-header"><div><div class="modal-tag">🐋 Whale Watch</div><div class="modal-title">Satoshi-Era Wallet Wake</div></div><button class="modal-close" onclick="closeModal('article-2')">✕</button></div>
+  <div class="modal-body"><p style="margin-bottom:0.75rem;font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">by WynnStyle · 12 March 2026 · 6 min</p><p>A wallet inactive since 2011 moved 1,200 BTC on March 11th — the largest dormant wallet activation event in 18 months. Signal Strike was on this within minutes of the first transaction confirmation. We unpacked what it means for market structure, likely motivations, and whether this signals broader old-holder movement.</p><ul class="modal-list" style="margin-top:1rem"><li>Transaction traced to a single wallet, not a cluster — genuine individual holder</li><li>Destination: split between 3 custodian-flagged wallets, not a direct exchange deposit</li><li>Historical context: similar events in 2023 preceded a 15% BTC correction within 30 days</li><li>Community sentiment analysis: mostly interpreted as preparation for OTC sale</li></ul><div class="modal-actions"><button class="btn btn-acid" onclick="closeModal('article-2');openModal('join')">Join For Full Analysis</button></div></div></div>
+</div>
+
+<div class="modal-overlay" id="modal-article-3" onclick="closeOnOverlay(event,'article-3')">
+  <div class="modal"><div class="modal-header"><div><div class="modal-tag">🚀 Pump.fun Guide</div><div class="modal-title">Spot Bundled Launches</div></div><button class="modal-close" onclick="closeModal('article-3')">✕</button></div>
+  <div class="modal-body"><p style="margin-bottom:0.75rem;font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">by PumpDaddy · 11 March 2026 · 10 min</p><p>Bundled launches are the single biggest predator in the pump.fun ecosystem. In this guide, PumpDaddy breaks down every tell — from RPC-level bundle detection to simple wallet spread checks any trader can run in 30 seconds before buying.</p><ul class="modal-list" style="margin-top:1rem"><li>What bundling is and why it's devastating for early buyers</li><li>5 free tools to check for bundled wallets before you ape in</li><li>The 3 on-chain patterns that always precede a bundled dump</li><li>How to read the dev wallet and know their playbook before launch day</li></ul><div class="modal-actions"><button class="btn btn-acid" onclick="closeModal('article-3');openModal('join')">Access Full Guide</button></div></div></div>
+</div>
+
+<div class="modal-overlay" id="modal-article-4" onclick="closeOnOverlay(event,'article-4')">
+  <div class="modal"><div class="modal-header"><div><div class="modal-tag">🔍 Investigation</div><div class="modal-title">Bridge Exploit Post-Mortem</div></div><button class="modal-close" onclick="closeModal('article-4')">✕</button></div>
+  <div class="modal-body"><p style="margin-bottom:0.75rem;font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">by GhostChain · 9 March 2026 · 12 min</p><p>$4.2M was drained from a cross-chain bridge protocol in under 7 minutes on March 7th. GhostChain's live investigation tracked the attacker's fund flow across Ethereum, Arbitrum, and BSC — in real time — while the protocol's own team was still diagnosing the issue.</p><ul class="modal-list" style="margin-top:1rem"><li>Step-by-step breakdown of the exploit function — readable for non-devs</li><li>Full transaction map: 23 wallet hops across 3 chains documented</li><li>Attacker wallet linked to previous exploit from November 2025</li><li>Recovery outlook: 60% of funds potentially recoverable via CEX KYC flags</li></ul><div class="modal-actions"><button class="btn btn-acid" onclick="closeModal('article-4');openModal('join')">Read Full Investigation</button></div></div></div>
+</div>
+
+<div class="modal-overlay" id="modal-article-5" onclick="closeOnOverlay(event,'article-5')">
+  <div class="modal"><div class="modal-header"><div><div class="modal-tag">⚡ Signal Analysis</div><div class="modal-title">SOL 40% Move Setup</div></div><button class="modal-close" onclick="closeModal('article-5')">✕</button></div>
+  <div class="modal-body"><p style="margin-bottom:0.75rem;font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">by Signal Strike Team · 8 March 2026 · 5 min</p><p>Multiple on-chain and technical indicators converged on Solana in early March — a setup our analysts have historically associated with significant directional moves. This article documents the confluence and the reasoning behind the $192 → $270 target thesis.</p><ul class="modal-list" style="margin-top:1rem"><li>Exchange netflow at 3-month low — accumulation phase confirmed</li><li>Derivatives: funding rate negative despite price stability — coiled spring setup</li><li>DeFi TVL up 23% over 30 days, signalling ecosystem health</li><li>Whale wallet activity: 3 known accumulation wallets added significantly</li></ul><div class="modal-actions"><button class="btn btn-acid" onclick="closeModal('article-5');openModal('join')">Access All Signals</button></div></div></div>
+</div>
+
+<div class="modal-overlay" id="modal-article-6" onclick="closeOnOverlay(event,'article-6')">
+  <div class="modal"><div class="modal-header"><div><div class="modal-tag">🚨 Scam Network</div><div class="modal-title">Fake Influencer Ring</div></div><button class="modal-close" onclick="closeModal('article-6')">✕</button></div>
+  <div class="modal-body"><p style="margin-bottom:0.75rem;font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--dim)">by The Archivist · 6 March 2026 · 9 min</p><p>Signal Strike's investigation revealed 47 coordinated Twitter accounts, all promoting the same project under different personas. The Archivist documents how we linked them, what the payout structure looked like, and how communities can protect themselves from coordinated shilling at scale.</p><ul class="modal-list" style="margin-top:1rem"><li>All 47 accounts share the same DNS fingerprint — traced to a single infrastructure provider</li><li>Payment structure: $500–$3,000 per promotional post, paid in XMR</li><li>14 of the accounts had previously promoted 3 other exit scams — all documented</li><li>Full account list published and reported to platforms — 31 suspended within 48h</li></ul><div class="modal-actions"><button class="btn btn-acid" onclick="closeModal('article-6');openModal('join')">Access Scam Database</button></div></div></div>
+</div>
+
+
+<script>
+// ── MODAL SYSTEM ──────────────────────────────────────
+function openModal(id) {
+  const el = document.getElementById('modal-' + id);
+  if (!el) return;
+  // close any open
+  document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  const el = document.getElementById('modal-' + id);
+  if (!el) return;
+  el.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeOnOverlay(e, id) {
+  if (e.target === e.currentTarget) closeModal(id);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => {
+      m.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  }
+});
+
+// ── FORM SUBMISSIONS ──────────────────────────────────
+function submitApplication() {
+  const handle = document.getElementById('apply-handle').value.trim();
+  const tg = document.getElementById('apply-tg').value.trim();
+  const role = document.getElementById('apply-role').value;
+  if (!handle || !tg || !role) { alert('Please fill in the required fields.'); return; }
+  // Save locally
+  const apps = JSON.parse(localStorage.getItem('ss-applications') || '[]');
+  apps.push({
+    handle, tg, role,
+    exp: document.getElementById('apply-exp').value,
+    pay: document.getElementById('apply-pay').value,
+    ts: new Date().toISOString()
+  });
+  localStorage.setItem('ss-applications', JSON.stringify(apps));
+  document.getElementById('apply-success').style.display = 'block';
+}
+
+function submitJoin() {
+  const handle = document.getElementById('join-handle').value.trim();
+  const tg = document.getElementById('join-tg').value.trim();
+  if (!handle || !tg) { alert('Please fill in your handle and Telegram username.'); return; }
+  const members = JSON.parse(localStorage.getItem('ss-members') || '[]');
+  members.push({ handle, tg, source: document.getElementById('join-source').value, ts: new Date().toISOString() });
+  localStorage.setItem('ss-members', JSON.stringify(members));
+  document.getElementById('join-success').style.display = 'block';
+}
+
+function submitLead() {
+  const type = document.getElementById('lead-type').value;
+  const details = document.getElementById('lead-details').value.trim();
+  const tg = document.getElementById('lead-tg').value.trim();
+  if (!type || !details || !tg) { alert('Please complete all required fields.'); return; }
+  const leads = JSON.parse(localStorage.getItem('ss-leads') || '[]');
+  leads.push({ type, details, tg, pay: document.getElementById('lead-pay').value, ts: new Date().toISOString() });
+  localStorage.setItem('ss-leads', JSON.stringify(leads));
+  document.getElementById('lead-success').style.display = 'block';
+}
+
+// ── SCROLL ANIMATIONS ─────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      entry.target.style.transitionDelay = (i * 0.08) + 's';
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ── LIVE COUNTER ANIMATION ────────────────────────────
+function animateCounter(el, target, duration = 1800) {
+  let start = 0;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target).toLocaleString() + (el.dataset.suffix || '');
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !entry.target.dataset.animated) {
+      entry.target.dataset.animated = '1';
+      const val = parseInt(entry.target.dataset.target);
+      animateCounter(entry.target, val);
+    }
+  });
+}, { threshold: 0.5 });
+
+// Animate orb center
+const orbVal = document.querySelector('.orb-stat-value');
+if (orbVal) {
+  orbVal.dataset.target = '847';
+  counterObserver.observe(orbVal);
+}
+</script>
+</body>
+</html>
