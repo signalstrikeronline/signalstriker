@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Strike — Made for Traders Like You</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0b0f14;
+  --surface: #111720;
+  --card: #161d27;
+  --border: #1f2d3d;
+  --border-lit: #2e4460;
+  --lime: #c8ff57;
+  --lime-dim: #9dcc2e;
+  --sky: #38bdf8;
+  --orange: #ff7849;
+  --text: #d4e4f0;
+  --muted: #5a7a94;
+  --white: #f0f8ff;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  overflow-x:hidden;
+}
+::selection{background:var(--lime);color:#000}
+
+/* ── MESH BACKGROUND ── */
+.mesh-bg{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(200,255,87,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(56,189,248,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 50% 50%, rgba(255,120,73,0.02) 0%, transparent 70%);
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:800;
+  background:rgba(11,15,20,0.9);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 2.5rem;
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:900;font-size:1.5rem;
+  color:var(--white);letter-spacing:0.04em;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:0.5rem;
+  text-decoration:none;
+}
+.logo-bolt{
+  width:28px;height:28px;
+  background:var(--lime);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-bolt svg{color:#000}
+.nav-right{display:flex;align-items:center;gap:0.75rem}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  padding:0.55rem 1.25rem;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:0.92rem;letter-spacing:0.06em;
+  text-transform:uppercase;
+  border-radius:8px;cursor:pointer;
+  transition:all 0.18s ease;border:none;
+  text-decoration:none;white-space:nowrap;
+}
+.btn-lime{background:var(--lime);color:#000}
+.btn-lime:hover{background:#d8ff77;transform:translateY(-1px);box-shadow:0 6px 24px rgba(200,255,87,0.3)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border-lit);color:var(--white)}
+.btn-sky{background:var(--sky);color:#000}
+.btn-sky:hover{background:#60cbf8;transform:translateY(-1px);box-shadow:0 6px 20px rgba(56,189,248,0.3)}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-orange:hover{background:#ff9060;transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,120,73,0.3)}
+.btn-tg{background:#229ED9;color:#fff}
+.btn-tg:hover{background:#3db5f0;transform:translateY(-1px)}
+.btn-dark{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.btn-dark:hover{border-color:var(--lime);color:var(--lime)}
+.btn-lg{padding:0.75rem 2rem;font-size:1.05rem;border-radius:10px}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:6rem 2rem 4rem;
+  position:relative;z-index:1;
+}
+.hero-chip{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(200,255,87,0.08);
+  border:1px solid rgba(200,255,87,0.2);
+  color:var(--lime);
+  font-family:'Fira Code',monospace;
+  font-size:0.7rem;letter-spacing:0.08em;
+  padding:0.35rem 0.9rem;border-radius:100px;
+  margin-bottom:2rem;
+}
+.live-dot{width:6px;height:6px;background:var(--lime);border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.hero h1{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(3.2rem,8vw,7.5rem);
+  line-height:0.97;letter-spacing:-0.01em;
+  color:var(--white);margin-bottom:1.5rem;
+  max-width:900px;
+  text-transform:uppercase;
+}
+.hero h1 .hl{
+  color:var(--lime);
+  position:relative;display:inline-block;
+}
+.hero h1 .hl::after{
+  content:'';position:absolute;
+  bottom:-4px;left:0;right:0;height:3px;
+  background:var(--lime);border-radius:2px;
+  animation:underline-grow 0.8s 0.6s ease forwards;
+  transform:scaleX(0);transform-origin:left;
+}
+@keyframes underline-grow{to{transform:scaleX(1)}}
+
+.hero-sub{
+  font-size:clamp(1rem,2vw,1.2rem);
+  color:var(--muted);line-height:1.7;
+  max-width:600px;margin:0 auto 2.5rem;
+  font-weight:400;
+}
+.hero-sub strong{color:var(--text);font-weight:600}
+
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+
+/* SOCIAL PROOF BAR */
+.proof-bar{
+  display:flex;align-items:center;gap:2rem;
+  flex-wrap:wrap;justify-content:center;
+}
+.proof-avatars{display:flex}
+.proof-avatar{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--ink);
+  background:var(--card);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;margin-left:-8px;
+}
+.proof-avatar:first-child{margin-left:0}
+.proof-text{font-size:0.82rem;color:var(--muted)}
+.proof-text strong{color:var(--text)}
+.proof-div{width:1px;height:24px;background:var(--border)}
+
+/* ── SCROLL MARQUEE ── */
+.marquee-wrap{
+  overflow:hidden;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  padding:0.85rem 0;
+  position:relative;z-index:1;
+}
+.marquee{
+  display:flex;gap:0;white-space:nowrap;
+  animation:marquee 35s linear infinite;
+  font-family:'Fira Code',monospace;
+  font-size:0.78rem;color:var(--muted);
+}
+.marquee span{padding:0 2.5rem;display:inline-flex;align-items:center;gap:0.5rem}
+.marquee .up{color:var(--lime)}
+.marquee .dn{color:var(--orange)}
+.marquee .sep{color:var(--border-lit)}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:1;padding:5rem 2.5rem}
+.section-max{max-width:1200px;margin:0 auto}
+
+.eyebrow{
+  font-family:'Fira Code',monospace;
+  font-size:0.68rem;color:var(--lime);
+  letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:0.75rem;
+  display:flex;align-items:center;gap:0.5rem;
+}
+.eyebrow::before{content:'//'}
+
+.section-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(2.4rem,4.5vw,3.8rem);
+  letter-spacing:-0.005em;color:var(--white);
+  line-height:1.0;margin-bottom:1rem;
+  text-transform:uppercase;
+}
+.section-sub{font-size:1rem;color:var(--muted);line-height:1.75;max-width:520px}
+
+/* ── FOR YOU SECTION ── */
+.for-you-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1.25rem;
+  margin-top:3rem;
+}
+.persona-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:2rem;
+  transition:all 0.25s ease;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.persona-card::after{
+  content:'';position:absolute;
+  inset:0;border-radius:16px;
+  background:linear-gradient(135deg,rgba(200,255,87,0.04) 0%,transparent 60%);
+  opacity:0;transition:opacity 0.25s;
+}
+.persona-card:hover{border-color:var(--lime);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.3)}
+.persona-card:hover::after{opacity:1}
+
+.persona-emoji{font-size:2.5rem;margin-bottom:1.25rem;display:block}
+.persona-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;
+  font-size:1.25rem;color:var(--white);margin-bottom:0.5rem;
+  text-transform:uppercase;letter-spacing:0.02em;
+}
+.persona-desc{font-size:0.85rem;color:var(--muted);line-height:1.65}
+.persona-tag{
+  display:inline-block;margin-top:1rem;
+  font-family:'Fira Code',monospace;font-size:0.65rem;
+  color:var(--lime);letter-spacing:0.08em;
+}
+
+/* ── FEATURES ── */
+.features-layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  align-items:center;
+  margin-top:3rem;
+}
+.feature-list{display:flex;flex-direction:column;gap:1.5rem}
+.feature-item{
+  display:flex;gap:1.25rem;
+  padding:1.5rem;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  transition:border-color 0.2s;
+  cursor:pointer;
+}
+.feature-item:hover{border-color:var(--border-lit)}
+.feature-icon{
+  width:44px;height:44px;flex-shrink:0;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+}
+.fi-lime{background:rgba(200,255,87,0.1)}
+.fi-sky{background:rgba(56,189,248,0.1)}
+.fi-orange{background:rgba(255,120,73,0.1)}
+.fi-purple{background:rgba(167,139,250,0.1)}
+.feature-content{}
+.feature-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;color:var(--white);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.03em}
+.feature-desc{font-size:0.82rem;color:var(--muted);line-height:1.6}
+
+/* VISUAL PANEL */
+.visual-panel{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+}
+.panel-header{
+  padding:1rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-dots{display:flex;gap:6px}
+.panel-dot{width:10px;height:10px;border-radius:50%}
+.panel-title-sm{font-family:'Fira Code',monospace;font-size:0.72rem;color:var(--muted)}
+.panel-body{padding:1.5rem}
+
+.signal-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.85rem 1rem;
+  border-radius:8px;margin-bottom:0.5rem;
+  background:rgba(255,255,255,0.02);
+  border:1px solid transparent;
+  transition:border-color 0.2s;
+}
+.signal-row:hover{border-color:var(--border)}
+.signal-coin{display:flex;align-items:center;gap:0.75rem}
+.coin-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;font-family:'Fira Code',monospace}
+.ci-btc{background:rgba(247,147,26,0.15);color:#f7931a}
+.ci-eth{background:rgba(98,126,234,0.15);color:#627eea}
+.ci-sol{background:rgba(153,69,255,0.15);color:#9945ff}
+.ci-avax{background:rgba(232,65,66,0.15);color:#e84142}
+.ci-bnb{background:rgba(243,186,47,0.15);color:#f3ba2f}
+.coin-name{font-family:'Fira Code',monospace;font-size:0.78rem;color:var(--white);font-weight:500}
+.coin-pair{font-size:0.68rem;color:var(--muted);display:block}
+.signal-badge{
+  font-family:'Fira Code',monospace;font-size:0.62rem;font-weight:700;
+  padding:0.2rem 0.5rem;border-radius:4px;letter-spacing:0.05em;
+}
+.sb-buy{background:rgba(200,255,87,0.12);color:var(--lime)}
+.sb-watch{background:rgba(56,189,248,0.12);color:var(--sky)}
+.sb-exit{background:rgba(255,120,73,0.12);color:var(--orange)}
+.signal-pct{font-family:'Fira Code',monospace;font-size:0.8rem;font-weight:700}
+.up-pct{color:var(--lime)}
+.dn-pct{color:var(--orange)}
+
+/* ── AFFILIATE ── */
+.affiliate-section{
+  background:linear-gradient(135deg,#0e1a12 0%,var(--ink) 40%,#0d141e 100%);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.affiliate-hero{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5rem;align-items:center;
+}
+.big-number{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(4.5rem,9vw,8rem);
+  color:var(--lime);line-height:0.9;
+  letter-spacing:-0.01em;margin:1rem 0;
+  text-transform:uppercase;
+}
+.big-label{font-size:0.82rem;color:var(--muted);font-family:'Fira Code',monospace;letter-spacing:0.08em}
+
+.how-it-works{
+  display:flex;flex-direction:column;gap:0;
+  position:relative;
+}
+.how-it-works::before{
+  content:'';position:absolute;
+  left:19px;top:48px;bottom:48px;
+  width:1px;background:var(--border);
+}
+.how-step{
+  display:flex;gap:1.25rem;
+  padding:1.25rem;
+  border-radius:12px;
+  transition:background 0.2s;
+}
+.how-step:hover{background:rgba(255,255,255,0.02)}
+.step-num{
+  width:38px;height:38px;flex-shrink:0;
+  border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fira Code',monospace;font-weight:700;
+  font-size:0.82rem;color:var(--lime);position:relative;z-index:1;
+}
+.step-content{}
+.step-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--white);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.03em}
+.step-desc{font-size:0.82rem;color:var(--muted);line-height:1.6}
+
+/* EARNING CALCULATOR */
+.calculator{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:2rem;
+  margin-top:2rem;
+}
+.calc-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--white);margin-bottom:1.5rem}
+.calc-slider-wrap{margin-bottom:1.5rem}
+.calc-label{display:flex;justify-content:space-between;margin-bottom:0.6rem}
+.calc-label-text{font-size:0.78rem;color:var(--muted);font-family:'Fira Code',monospace}
+.calc-label-val{font-family:'Fira Code',monospace;font-size:0.78rem;color:var(--lime);font-weight:700}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:4px;border-radius:2px;
+  background:var(--border);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--lime);cursor:pointer;
+  border:2px solid var(--ink);
+  transition:transform 0.1s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.calc-result{
+  background:rgba(200,255,87,0.06);
+  border:1px solid rgba(200,255,87,0.15);
+  border-radius:12px;padding:1.25rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+}
+.calc-metric{}
+.calc-metric-val{
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;
+  font-size:1.8rem;color:var(--lime);line-height:1;
+}
+.calc-metric-label{font-size:0.72rem;color:var(--muted);font-family:'Fira Code',monospace;margin-top:0.3rem}
+
+/* ── PLANS ── */
+.plans-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1.25rem;
+  margin-top:3rem;
+}
+.plan-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:2rem;
+  position:relative;
+  transition:all 0.25s;
+}
+.plan-card.featured{
+  border-color:var(--lime);
+  background:linear-gradient(135deg,rgba(200,255,87,0.05) 0%,var(--card) 100%);
+}
+.plan-card:hover:not(.featured){border-color:var(--border-lit);transform:translateY(-2px)}
+.plan-card.featured:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(200,255,87,0.1)}
+.plan-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--lime);color:#000;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.68rem;
+  padding:0.25rem 0.8rem;border-radius:100px;white-space:nowrap;
+}
+.plan-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.2rem;color:var(--white);margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:0.04em}
+.plan-tagline{font-size:0.78rem;color:var(--muted);margin-bottom:1.5rem}
+.plan-price{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:2.8rem;color:var(--white);line-height:1;
+  margin-bottom:0.25rem;letter-spacing:-0.01em;
+}
+.plan-price sub{font-size:1rem;font-weight:500;color:var(--muted)}
+.plan-price span{font-size:0.78rem;font-weight:400;color:var(--muted);font-family:'DM Sans',sans-serif}
+.plan-affiliate-earn{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.6rem 0.9rem;
+  background:rgba(200,255,87,0.06);
+  border:1px solid rgba(200,255,87,0.15);
+  border-radius:8px;margin:1.25rem 0;
+  font-family:'Fira Code',monospace;font-size:0.72rem;color:var(--lime);
+}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.75rem}
+.plan-features li{display:flex;align-items:flex-start;gap:0.6rem;font-size:0.82rem;color:var(--muted);line-height:1.5}
+.plan-features li::before{content:'✓';color:var(--lime);font-weight:700;flex-shrink:0;margin-top:1px}
+.plan-features li.muted::before{content:'–';color:var(--border-lit)}
+.plan-features li.muted{color:var(--border-lit)}
+
+/* ── TESTIMONIALS ── */
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1.25rem;
+  margin-top:3rem;
+}
+.testimonial{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.75rem;
+  transition:border-color 0.2s;
+}
+.testimonial:hover{border-color:var(--border-lit)}
+.testimonial-stars{color:var(--lime);font-size:0.82rem;margin-bottom:1rem;letter-spacing:2px}
+.testimonial-text{font-size:0.85rem;color:var(--text);line-height:1.7;margin-bottom:1.25rem;font-style:italic}
+.testimonial-author{display:flex;align-items:center;gap:0.75rem}
+.author-avatar{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.author-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.95rem;color:var(--white);letter-spacing:0.03em}
+.author-handle{font-family:'Fira Code',monospace;font-size:0.65rem;color:var(--muted)}
+
+/* ── AFFILIATE SIGNUP ── */
+.signup-section{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+}
+.signup-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;align-items:start;
+}
+.signup-form-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:2.5rem;
+}
+.form-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;color:var(--white);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.01em}
+.form-sub{font-size:0.82rem;color:var(--muted);margin-bottom:2rem;line-height:1.6}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-family:'Fira Code',monospace;font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--white);
+  padding:0.65rem 0.9rem;
+  border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:0.88rem;
+  outline:none;transition:border-color 0.2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--lime)}
+.field input::placeholder{color:var(--muted)}
+
+.role-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.4rem}
+.role-chip{
+  padding:0.35rem 0.8rem;border-radius:100px;
+  background:var(--surface);border:1px solid var(--border);
+  font-family:'Fira Code',monospace;font-size:0.65rem;
+  color:var(--muted);cursor:pointer;transition:all 0.15s;
+  user-select:none;
+}
+.role-chip.active,.role-chip:hover{border-color:var(--lime);color:var(--lime);background:rgba(200,255,87,0.07)}
+
+.form-submit-wrap{margin-top:1.5rem}
+.form-note{font-size:0.72rem;color:var(--muted);margin-top:0.75rem;line-height:1.6;text-align:center}
+.success-msg{
+  display:none;
+  text-align:center;padding:2rem;
+  background:rgba(200,255,87,0.06);
+  border:1px solid rgba(200,255,87,0.2);
+  border-radius:12px;margin-top:1rem;
+}
+.success-msg .success-icon{font-size:2.5rem;margin-bottom:0.75rem}
+.success-msg h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--lime);margin-bottom:0.4rem}
+.success-msg p{font-size:0.82rem;color:var(--muted);line-height:1.6}
+
+/* SIDEBAR BENEFITS */
+.benefit-list{display:flex;flex-direction:column;gap:1.25rem;margin-top:1rem}
+.benefit-item{display:flex;gap:1rem;align-items:flex-start}
+.benefit-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.benefit-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.05rem;color:var(--white);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.03em}
+.benefit-desc{font-size:0.8rem;color:var(--muted);line-height:1.55}
+
+/* ── JOIN STRIP ── */
+.join-strip{
+  background:var(--lime);
+  padding:2rem 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:2rem;flex-wrap:wrap;
+}
+.join-strip-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.9rem;color:#000;line-height:1.05;letter-spacing:0.01em;text-transform:uppercase}
+.join-strip-sub{font-size:0.85rem;color:rgba(0,0,0,0.6);margin-top:0.25rem}
+.join-strip-actions{display:flex;gap:0.75rem;flex-wrap:wrap}
+.btn-black{background:#000;color:var(--lime)}
+.btn-black:hover{background:#111;transform:translateY(-1px)}
+.btn-black-plain{background:#000;color:#fff}
+.btn-black-plain:hover{background:#111;transform:translateY(-1px)}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:3rem 2.5rem 1.5rem;
+}
+.footer-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:3rem;margin-bottom:2.5rem;
+}
+.footer-brand-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.2rem;color:var(--white);display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem}
+.footer-desc{font-size:0.8rem;color:var(--muted);line-height:1.7;max-width:240px}
+.footer-col-label{font-family:'Fira Code',monospace;font-size:0.62rem;color:var(--lime);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1rem}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:0.55rem}
+.footer-links a{font-size:0.82rem;color:var(--muted);text-decoration:none;transition:color 0.15s;cursor:pointer}
+.footer-links a:hover{color:var(--white)}
+.footer-bottom{
+  border-top:1px solid var(--border);padding-top:1.5rem;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+  font-family:'Fira Code',monospace;font-size:0.65rem;color:var(--muted);
+  max-width:1200px;margin:0 auto;
+}
+
+/* ── MODAL ── */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);
+  z-index:9000;display:flex;align-items:center;justify-content:center;padding:2rem;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;max-width:680px;width:100%;
+  max-height:88vh;overflow-y:auto;
+  transform:translateY(24px) scale(0.97);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-head{
+  padding:1.75rem 2rem 1.25rem;
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:flex-start;
+  position:sticky;top:0;background:var(--card);border-radius:20px 20px 0 0;z-index:1;
+}
+.modal-eyebrow{font-family:'Fira Code',monospace;font-size:0.62rem;color:var(--lime);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.9rem;color:var(--white);letter-spacing:0.01em;text-transform:uppercase}
+.modal-x{
+  background:none;border:1px solid var(--border);
+  color:var(--muted);width:32px;height:32px;border-radius:8px;
+  cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;flex-shrink:0;
+}
+.modal-x:hover{border-color:var(--orange);color:var(--orange)}
+.modal-body{padding:2rem}
+.modal-body p{font-size:0.88rem;color:var(--muted);line-height:1.75;margin-bottom:0.9rem}
+.modal-body h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.88rem;color:var(--white);margin:1.5rem 0 0.6rem;letter-spacing:-0.01em}
+.modal-list{list-style:none;display:flex;flex-direction:column;gap:0.55rem;margin-bottom:1rem}
+.modal-list li{display:flex;align-items:flex-start;gap:0.65rem;font-size:0.84rem;color:var(--text);line-height:1.55}
+.modal-list li::before{content:'→';color:var(--lime);flex-shrink:0;margin-top:1px}
+.modal-divider{height:1px;background:var(--border);margin:1.5rem 0}
+.modal-actions{display:flex;gap:0.75rem;margin-top:1.75rem;flex-wrap:wrap}
+
+/* ── ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.65s ease,transform 0.65s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .for-you-grid,.plans-grid,.testimonials-grid,.features-layout{grid-template-columns:1fr 1fr}
+  .affiliate-hero,.signup-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr 1fr}
+  .hero-right-visual{display:none}
+  section{padding:3.5rem 1.5rem}
+}
+@media(max-width:600px){
+  .for-you-grid,.plans-grid,.testimonials-grid,.features-layout,.field-row{grid-template-columns:1fr}
+  nav{padding:0 1rem}
+  section{padding:3rem 1rem}
+  .join-strip{flex-direction:column;text-align:center}
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ── TICKER IN SIGNUP ── */
+.affiliate-ticker{
+  display:flex;gap:1.5rem;overflow:hidden;
+  padding:1rem 1.5rem;
+  background:rgba(200,255,87,0.04);
+  border:1px solid rgba(200,255,87,0.1);
+  border-radius:10px;margin-bottom:2rem;
+}
+.at-item{white-space:nowrap;font-family:'Fira Code',monospace;font-size:0.72rem;color:var(--muted)}
+.at-item strong{color:var(--lime)}
+</style>
+</head>
+<body>
+
+<div class="mesh-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <span class="logo-bolt">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    </span>
+    Signal Strike
+  </a>
+  <div class="nav-right">
+    <button class="btn btn-ghost" onclick="openModal('how-affiliate')">How It Works</button>
+    <button class="btn btn-ghost" onclick="openModal('plans-modal')">Pricing</button>
+    <button class="btn btn-lime" onclick="scrollToSignup()">
+      Join Free + Earn →
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-chip"><span class="live-dot"></span> 48,234 traders already earning</div>
+  <h1>
+    Crypto signals for<br>
+    <span class="hl">real traders.</span><br>
+    Get paid to share.
+  </h1>
+  <p class="hero-sub">
+    Signal Strike gives <strong>everyday traders and investors</strong> access to real-time signals, whale alerts, scam warnings, and a community that actually helps you win — then pays you for every person you bring in.
+  </p>
+  <div class="hero-actions">
+    <button class="btn btn-lime btn-lg" onclick="scrollToSignup()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Start Free — Earn Instantly
+    </button>
+    <a href="https://t.me/signalstrike" target="_blank" class="btn btn-ghost btn-lg">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.502c-.147.66-.537.82-1.088.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.216-3.053 5.56-5.023c.242-.215-.054-.335-.373-.12L7.092 14.56l-2.965-.924c-.645-.2-.658-.645.134-.955l11.57-4.46c.537-.196 1.006.13.731.027z"/></svg>
+      Join Telegram
+    </a>
+  </div>
+  <div class="proof-bar">
+    <div style="display:flex;align-items:center;gap:0.75rem">
+      <div class="proof-avatars">
+        <div class="proof-avatar">🦁</div>
+        <div class="proof-avatar">🦊</div>
+        <div class="proof-avatar">🐺</div>
+        <div class="proof-avatar">🐯</div>
+        <div class="proof-avatar">🦅</div>
+      </div>
+      <div class="proof-text"><strong>48,000+</strong> active members</div>
+    </div>
+    <div class="proof-div"></div>
+    <div class="proof-text">⚡ <strong>94%</strong> signal accuracy</div>
+    <div class="proof-div"></div>
+    <div class="proof-text">💸 Affiliates earn <strong>up to $50</strong> per referral</div>
+    <div class="proof-div"></div>
+    <div class="proof-text">🛡️ <strong>2,100+</strong> scams exposed</div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span>BTC <span class="up">▲ $97,842</span> <span class="sep">|</span></span>
+    <span>ETH <span class="up">▲ $3,521</span> <span class="sep">|</span></span>
+    <span>SOL <span class="up">▲ $192</span> <span class="sep">|</span></span>
+    <span>🐋 Whale Alert: 2,400 BTC moved <span class="sep">|</span></span>
+    <span>⚠️ Scam flagged: $MOONX rug pull <span class="sep">|</span></span>
+    <span>BNB <span class="dn">▼ $612</span> <span class="sep">|</span></span>
+    <span>AVAX <span class="dn">▼ $38.90</span> <span class="sep">|</span></span>
+    <span>⚡ New signal: SOL LONG — entry $189 <span class="sep">|</span></span>
+    <span>DOGE <span class="up">▲ $0.18</span> <span class="sep">|</span></span>
+    <span>ARB <span class="up">▲ $1.14</span> <span class="sep">|</span></span>
+    <span>💰 @crypto_daily just earned $340 in referrals <span class="sep">|</span></span>
+    <!-- dupe -->
+    <span>BTC <span class="up">▲ $97,842</span> <span class="sep">|</span></span>
+    <span>ETH <span class="up">▲ $3,521</span> <span class="sep">|</span></span>
+    <span>SOL <span class="up">▲ $192</span> <span class="sep">|</span></span>
+    <span>🐋 Whale Alert: 2,400 BTC moved <span class="sep">|</span></span>
+    <span>⚠️ Scam flagged: $MOONX rug pull <span class="sep">|</span></span>
+    <span>BNB <span class="dn">▼ $612</span> <span class="sep">|</span></span>
+    <span>AVAX <span class="dn">▼ $38.90</span> <span class="sep">|</span></span>
+    <span>⚡ New signal: SOL LONG — entry $189 <span class="sep">|</span></span>
+    <span>DOGE <span class="up">▲ $0.18</span> <span class="sep">|</span></span>
+    <span>ARB <span class="up">▲ $1.14</span> <span class="sep">|</span></span>
+    <span>💰 @crypto_daily just earned $340 in referrals <span class="sep">|</span></span>
+  </div>
+</div>
+
+<!-- WHO IT'S FOR -->
+<section>
+  <div class="section-max">
+    <div class="reveal">
+      <div class="eyebrow">Who it's for</div>
+      <h2 class="section-title">Built for people<br>who actually trade</h2>
+      <p class="section-sub">Not for institutions. Not for hedge funds. Signal Strike is built for the everyday trader, crypto curious beginner, and hustle-minded affiliate who wants to turn their network into income.</p>
+    </div>
+    <div class="for-you-grid">
+      <div class="persona-card reveal" onclick="openModal('persona-beginner')">
+        <span class="persona-emoji">🌱</span>
+        <div class="persona-title">The Beginner</div>
+        <div class="persona-desc">New to crypto and don't know where to start? We break it down simply — signals, alerts, and community support that teaches as it earns.</div>
+        <div class="persona-tag">Learn & earn →</div>
+      </div>
+      <div class="persona-card reveal" onclick="openModal('persona-trader')">
+        <span class="persona-emoji">📈</span>
+        <div class="persona-title">The Active Trader</div>
+        <div class="persona-desc">Already in the market and want sharper entries, better timing, and whale intel before the rest of Twitter sees it? This is your edge.</div>
+        <div class="persona-tag">Get the edge →</div>
+      </div>
+      <div class="persona-card reveal" onclick="openModal('persona-affiliate')">
+        <span class="persona-emoji">💸</span>
+        <div class="persona-title">The Affiliate Earner</div>
+        <div class="persona-desc">Have a following? Run a Telegram group? Active on Twitter? Turn every person you refer into recurring income — paid daily or weekly.</div>
+        <div class="persona-tag">Start earning →</div>
+      </div>
+      <div class="persona-card reveal" onclick="openModal('persona-holder')">
+        <span class="persona-emoji">💎</span>
+        <div class="persona-title">The Long-Term Holder</div>
+        <div class="persona-desc">DCA'ing and holding? Know which projects are safe and which ones are scams before you invest a single dollar with our scam database.</div>
+        <div class="persona-tag">Stay protected →</div>
+      </div>
+      <div class="persona-card reveal" onclick="openModal('persona-defi')">
+        <span class="persona-emoji">🔮</span>
+        <div class="persona-title">The DeFi Explorer</div>
+        <div class="persona-desc">Yield farming, liquidity pools, new protocols — get ahead of the curve with on-chain intelligence from people who actually build in DeFi.</div>
+        <div class="persona-tag">Explore DeFi →</div>
+      </div>
+      <div class="persona-card reveal" onclick="openModal('persona-creator')">
+        <span class="persona-emoji">🎙️</span>
+        <div class="persona-title">The Crypto Creator</div>
+        <div class="persona-desc">Run a YouTube, newsletter, or podcast? Our affiliate program is the perfect passive revenue layer — premium rates for creators with audiences.</div>
+        <div class="persona-tag">Creator rates →</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="section-max">
+    <div class="features-layout">
+      <div class="reveal">
+        <div class="eyebrow">What you get</div>
+        <h2 class="section-title">Everything a<br>trader needs,<br>in one place</h2>
+        <p class="section-sub" style="margin-bottom:2rem">No fluff. No filler. Just the intelligence and community that actually moves the needle for your portfolio.</p>
+        <button class="btn btn-lime" onclick="scrollToSignup()">Join for free →</button>
+      </div>
+      <div class="feature-list reveal">
+        <div class="feature-item" onclick="openModal('feature-signals')">
+          <div class="feature-icon fi-lime">⚡</div>
+          <div class="feature-content">
+            <div class="feature-name">Real-Time Trading Signals</div>
+            <div class="feature-desc">Buy/sell alerts with clear entry points, targets, and stop-losses — from analysts with a publicly tracked 94% accuracy rate.</div>
+          </div>
+        </div>
+        <div class="feature-item" onclick="openModal('feature-whale')">
+          <div class="feature-icon fi-sky">🐋</div>
+          <div class="feature-content">
+            <div class="feature-name">Whale & Smart Money Alerts</div>
+            <div class="feature-desc">Get notified when large wallets make major moves. Know what the smart money is doing before the price reacts.</div>
+          </div>
+        </div>
+        <div class="feature-item" onclick="openModal('feature-scam')">
+          <div class="feature-icon fi-orange">🛡️</div>
+          <div class="feature-content">
+            <div class="feature-name">Scam & Rug Pull Protection</div>
+            <div class="feature-desc">Access our database of 2,100+ documented scams. Search any contract address before you invest.</div>
+          </div>
+        </div>
+        <div class="feature-item" onclick="openModal('feature-community')">
+          <div class="feature-icon fi-purple">👥</div>
+          <div class="feature-content">
+            <div class="feature-name">48K+ Active Community</div>
+            <div class="feature-desc">A Telegram community of real traders, analysts, and investigators sharing alpha in real time — not bots, not shills.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE SIGNALS PANEL -->
+    <div class="reveal" style="margin-top:3rem">
+      <div class="visual-panel">
+        <div class="panel-header">
+          <div class="panel-dots">
+            <div class="panel-dot" style="background:#ff5f57"></div>
+            <div class="panel-dot" style="background:#febc2e"></div>
+            <div class="panel-dot" style="background:#28c840"></div>
+          </div>
+          <div class="panel-title-sm">Signal Strike // Live Feed</div>
+          <div style="font-family:'Fira Code',monospace;font-size:0.62rem;color:var(--lime);display:flex;align-items:center;gap:0.4rem"><span class="live-dot"></span> LIVE</div>
+        </div>
+        <div class="panel-body">
+          <div class="signal-row">
+            <div class="signal-coin">
+              <div class="coin-icon ci-btc">₿</div>
+              <div><div class="coin-name">Bitcoin</div><span class="coin-pair">BTC/USDT</span></div>
+            </div>
+            <span class="signal-badge sb-buy">STRONG BUY</span>
+            <div class="signal-pct up-pct">+8.4% ↑</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">
+              <div class="coin-icon ci-sol">◎</div>
+              <div><div class="coin-name">Solana</div><span class="coin-pair">SOL/USDT</span></div>
+            </div>
+            <span class="signal-badge sb-buy">LONG</span>
+            <div class="signal-pct up-pct">+12.1% ↑</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">
+              <div class="coin-icon ci-eth">Ξ</div>
+              <div><div class="coin-name">Ethereum</div><span class="coin-pair">ETH/USDT</span></div>
+            </div>
+            <span class="signal-badge sb-watch">WATCH ZONE</span>
+            <div class="signal-pct" style="color:var(--sky)">Setup forming</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">
+              <div class="coin-icon ci-avax">A</div>
+              <div><div class="coin-name">Avalanche</div><span class="coin-pair">AVAX/USDT</span></div>
+            </div>
+            <span class="signal-badge sb-exit">TAKE PROFIT</span>
+            <div class="signal-pct up-pct">+34.2% ✓</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">
+              <div class="coin-icon ci-bnb">B</div>
+              <div><div class="coin-name">BNB</div><span class="coin-pair">BNB/USDT</span></div>
+            </div>
+            <span class="signal-badge sb-watch">ACCUMULATE</span>
+            <div class="signal-pct" style="color:var(--sky)">DCA zone</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AFFILIATE PROGRAM -->
+<section class="affiliate-section" id="affiliate">
+  <div class="section-max">
+    <div class="affiliate-hero">
+      <div class="reveal">
+        <div class="eyebrow">Affiliate Program</div>
+        <h2 class="section-title">Share Signal Strike.<br>Get paid. Every time.</h2>
+        <p class="section-sub" style="margin-bottom:1.5rem">Our affiliate program is dead simple. Share your unique link. Every person who subscribes through it puts money in your pocket — paid daily or weekly, in crypto or fiat.</p>
+        <div class="big-number" id="aff-display">$50</div>
+        <div class="big-label">Per subscriber you refer (Premium plan)</div>
+        <div style="display:flex;gap:0.75rem;margin-top:2rem;flex-wrap:wrap">
+          <button class="btn btn-lime btn-lg" onclick="scrollToSignup()">Join as Affiliate</button>
+          <button class="btn btn-ghost btn-lg" onclick="openModal('affiliate-modal')">Learn more →</button>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="how-it-works">
+          <div class="how-step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Sign up — it's free</div>
+              <div class="step-desc">Create your Signal Strike account in under 2 minutes. No credit card needed. Instant access to the community and your affiliate dashboard.</div>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Get your referral link</div>
+              <div class="step-desc">You'll receive a unique referral link immediately on joining. Share it anywhere — Telegram, Twitter, YouTube, Discord, WhatsApp, your group chat.</div>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Someone subscribes through your link</div>
+              <div class="step-desc">When anyone clicks your link and subscribes to any Signal Strike plan, your commission is tracked automatically and locked in.</div>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">Get paid — daily or weekly</div>
+              <div class="step-desc">Choose daily or weekly payouts. Receive in USDC, BTC, ETH, or bank transfer. No minimums. No delays. Your money, your schedule.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CALCULATOR -->
+        <div class="calculator reveal">
+          <div class="calc-title">💰 Earnings Calculator</div>
+          <div class="calc-slider-wrap">
+            <div class="calc-label">
+              <span class="calc-label-text">Referrals per month</span>
+              <span class="calc-label-val" id="ref-count-label">10</span>
+            </div>
+            <input type="range" min="1" max="200" value="10" id="ref-slider" oninput="updateCalc()">
+          </div>
+          <div class="calc-slider-wrap">
+            <div class="calc-label">
+              <span class="calc-label-text">Mix of plans referred</span>
+              <span class="calc-label-val" id="plan-label">Mostly Premium</span>
+            </div>
+            <input type="range" min="1" max="3" value="2" id="plan-slider" oninput="updateCalc()">
+          </div>
+          <div class="calc-result">
+            <div class="calc-metric">
+              <div class="calc-metric-val" id="monthly-earn">$380</div>
+              <div class="calc-metric-label">Monthly earnings</div>
+            </div>
+            <div class="calc-metric">
+              <div class="calc-metric-val" id="yearly-earn">$4,560</div>
+              <div class="calc-metric-label">Yearly (if consistent)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="plans">
+  <div class="section-max">
+    <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto 0">
+      <div class="eyebrow" style="justify-content:center">Plans & Affiliate Rates</div>
+      <h2 class="section-title">Join free.<br>Upgrade when ready.</h2>
+      <p class="section-sub" style="max-width:480px;margin:0 auto">Every plan includes a referral link. The higher the plan your referral subscribes to, the more you earn.</p>
+    </div>
+    <div class="plans-grid">
+      <!-- FREE -->
+      <div class="plan-card reveal">
+        <div class="plan-name">Community</div>
+        <div class="plan-tagline">For beginners getting started</div>
+        <div class="plan-price"><sub>$</sub>0 <span>/ forever free</span></div>
+        <div class="plan-affiliate-earn">
+          💸 You earn <strong style="margin-left:auto">$10 per referral</strong>
+        </div>
+        <ul class="plan-features">
+          <li>Daily summary signals (delayed 2h)</li>
+          <li>Scam alert database access</li>
+          <li>Community Telegram access</li>
+          <li>Open-source magazine</li>
+          <li>Your own referral link</li>
+          <li class="muted">Real-time signals</li>
+          <li class="muted">Whale alerts</li>
+          <li class="muted">pump.fun live calls</li>
+        </ul>
+        <button class="btn btn-dark" style="width:100%" onclick="scrollToSignup()">Get started free</button>
+      </div>
+
+      <!-- PRO -->
+      <div class="plan-card featured reveal">
+        <div class="plan-badge">Most Popular</div>
+        <div class="plan-name">Pro Trader</div>
+        <div class="plan-tagline">For serious everyday traders</div>
+        <div class="plan-price"><sub>$</sub>29 <span>/ month</span></div>
+        <div class="plan-affiliate-earn">
+          💸 You earn <strong style="margin-left:auto">$29 per referral</strong>
+        </div>
+        <ul class="plan-features">
+          <li>Real-time trading signals</li>
+          <li>Whale & smart money alerts</li>
+          <li>Scam database + contract checker</li>
+          <li>Full Telegram community access</li>
+          <li>pump.fun trencher calls</li>
+          <li>Weekly analyst reports</li>
+          <li>Priority support</li>
+          <li>Affiliate dashboard + link</li>
+        </ul>
+        <button class="btn btn-lime" style="width:100%" onclick="scrollToSignup()">Join Pro Trader</button>
+      </div>
+
+      <!-- PREMIUM -->
+      <div class="plan-card reveal">
+        <div class="plan-name">Premium</div>
+        <div class="plan-tagline">For power traders & affiliates</div>
+        <div class="plan-price"><sub>$</sub>79 <span>/ month</span></div>
+        <div class="plan-affiliate-earn">
+          💸 You earn <strong style="margin-left:auto">$50 per referral</strong>
+        </div>
+        <ul class="plan-features">
+          <li>Everything in Pro</li>
+          <li>Direct analyst access (DMs open)</li>
+          <li>Chain sleuth investigation previews</li>
+          <li>Private whale wallet watchlist</li>
+          <li>1-on-1 onboarding session</li>
+          <li>Creator affiliate rates (boosted)</li>
+          <li>Monthly portfolio review</li>
+          <li>Earliest signal delivery</li>
+        </ul>
+        <button class="btn btn-dark" style="width:100%" onclick="scrollToSignup()">Go Premium</button>
+      </div>
+    </div>
+
+    <div class="reveal" style="text-align:center;margin-top:2rem">
+      <p style="font-size:0.8rem;color:var(--muted)">All plans include your affiliate link from day one. Payouts processed daily or weekly. <button onclick="openModal('affiliate-modal')" style="background:none;border:none;color:var(--lime);cursor:pointer;font-size:0.8rem;text-decoration:underline">See full affiliate terms →</button></p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--surface);border-top:1px solid var(--border)">
+  <div class="section-max">
+    <div class="reveal" style="text-align:center;max-width:500px;margin:0 auto 0">
+      <div class="eyebrow" style="justify-content:center">Real Members</div>
+      <h2 class="section-title">Traders talk.</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"I've tried every signal group out there. Signal Strike is the only one that actually tracks its accuracy publicly and doesn't delete the bad calls. That honesty alone made me stay."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">🦁</div>
+          <div><div class="author-name">Marcus T.</div><div class="author-handle">@marcus_trades · Pro Member</div></div>
+        </div>
+      </div>
+      <div class="testimonial reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"Made $340 in referral income last month just by sharing in my Telegram groups. Didn't expect it to add up that fast but the product sells itself — my people love it."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">🦊</div>
+          <div><div class="author-name">Priya K.</div><div class="author-handle">@cryptopriya · Affiliate Member</div></div>
+        </div>
+      </div>
+      <div class="testimonial reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"The whale alerts alone are worth it. I got out of AVAX 4 hours before the dump because Signal Strike flagged a massive exchange inflow. That saved me thousands."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">🐺</div>
+          <div><div class="author-name">Jake R.</div><div class="author-handle">@jakeonchain · Pro Member</div></div>
+        </div>
+      </div>
+      <div class="testimonial reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"As a beginner I had no idea what I was doing. The community literally walked me through my first trades. No judgment, just help. I've learned more in 2 months here than a year on YouTube."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">🌱</div>
+          <div><div class="author-name">Sophie M.</div><div class="author-handle">@sophieincrypto · Free Member</div></div>
+        </div>
+      </div>
+      <div class="testimonial reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"I run a crypto YouTube channel with 12K subs. The affiliate commissions here beat every other program I've promoted. $50 per Premium referral adds up fast when your audience trusts you."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">🎙️</div>
+          <div><div class="author-name">Dan V.</div><div class="author-handle">@danvcrypto · Premium + Affiliate</div></div>
+        </div>
+      </div>
+      <div class="testimonial reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <div class="testimonial-text">"The scam alert database is something I check before every investment. It's already saved me from two projects that rugged within weeks of me checking them. This service pays for itself."</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">💎</div>
+          <div><div class="author-name">Ahmed S.</div><div class="author-handle">@ahmeddca · Pro Member</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNUP / JOIN FORM -->
+<section class="signup-section" id="signup">
+  <div class="section-max">
+    <div class="signup-grid">
+      <!-- LEFT BENEFITS -->
+      <div class="reveal">
+        <div class="eyebrow">Get Started Today</div>
+        <h2 class="section-title">Join free.<br>Earn from<br><span style="color:var(--lime)">day one.</span></h2>
+        <p class="section-sub" style="margin-bottom:2rem">Sign up in 60 seconds. Get your affiliate link immediately. Start earning for every person you bring in — no waiting, no approval process.</p>
+
+        <div class="benefit-list">
+          <div class="benefit-item">
+            <div class="benefit-icon">⚡</div>
+            <div>
+              <div class="benefit-title">Instant access, no credit card</div>
+              <div class="benefit-desc">Free membership includes your referral link, community access, and daily signal summaries from the moment you join.</div>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">💸</div>
+            <div>
+              <div class="benefit-title">Get paid for every referral</div>
+              <div class="benefit-desc">Earn $10–$50 per subscriber depending on the plan they choose. Daily or weekly payouts, in crypto or fiat — your choice.</div>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">🛡️</div>
+            <div>
+              <div class="benefit-title">Protect your portfolio instantly</div>
+              <div class="benefit-desc">Immediate access to the scam database, rug pull alerts, and community intelligence that saves traders from losing money.</div>
+            </div>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">📊</div>
+            <div>
+              <div class="benefit-title">Track everything in your dashboard</div>
+              <div class="benefit-desc">See your referrals, earnings, payout history, and signal performance all in one place — real-time, always accurate.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="affiliate-ticker" style="margin-top:2rem">
+          <div class="at-item">💰 <strong>@dan_v</strong> earned $200 today</div>
+          <div class="at-item">⚡ <strong>@priya_k</strong> referred 7 this week</div>
+          <div class="at-item">🎯 <strong>@marcus_t</strong> is top earner this month</div>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM -->
+      <div class="reveal">
+        <div class="signup-form-card">
+          <div class="form-title">Create your free account</div>
+          <div class="form-sub">Join the network. Get your affiliate link. Start earning today.</div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>First Name</label>
+              <input type="text" id="f-fname" placeholder="Alex">
+            </div>
+            <div class="field">
+              <label>Last Name / Handle</label>
+              <input type="text" id="f-lname" placeholder="or your crypto alias">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="f-email" placeholder="you@example.com">
+          </div>
+
+          <div class="field">
+            <label>Telegram Username</label>
+            <input type="text" id="f-tg" placeholder="@yourusername">
+          </div>
+
+          <div class="field">
+            <label>How would you describe yourself?</label>
+            <div class="role-chips" id="role-chips">
+              <div class="role-chip" onclick="toggleChip(this)">Beginner trader</div>
+              <div class="role-chip" onclick="toggleChip(this)">Active trader</div>
+              <div class="role-chip" onclick="toggleChip(this)">Long-term holder</div>
+              <div class="role-chip" onclick="toggleChip(this)">DeFi user</div>
+              <div class="role-chip" onclick="toggleChip(this)">Affiliate / creator</div>
+              <div class="role-chip" onclick="toggleChip(this)">Just curious</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>How did you hear about us?</label>
+            <select id="f-source">
+              <option value="">Select...</option>
+              <option>Telegram</option>
+              <option>Twitter / X</option>
+              <option>Referred by a friend</option>
+              <option>YouTube</option>
+              <option>Reddit</option>
+              <option>Search Engine</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Preferred payout method (affiliate)</label>
+            <select id="f-payout">
+              <option value="">Select (can change later)...</option>
+              <option>USDC — Daily</option>
+              <option>USDC — Weekly</option>
+              <option>Bitcoin — Weekly</option>
+              <option>ETH — Weekly</option>
+              <option>Bank Transfer — Weekly</option>
+            </select>
+          </div>
+
+          <div class="form-submit-wrap">
+            <button class="btn btn-lime btn-lg" style="width:100%;justify-content:center;font-size:0.9rem" onclick="submitSignup()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Create My Account — It's Free
+            </button>
+            <div class="form-note">By joining you agree to our community standards. No spam, ever. Unsubscribe anytime. Affiliate commissions paid on verified referrals.</div>
+          </div>
+
+          <div class="success-msg" id="signup-success">
+            <div class="success-icon">⚡</div>
+            <h3>Welcome to Signal Strike!</h3>
+            <p>Your account is being set up. Check your Telegram — your invite link and referral link are on their way. Time to start earning.</p>
+            <div style="margin-top:1.25rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap">
+              <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">Open Telegram →</a>
+              <button class="btn btn-ghost" onclick="openModal('affiliate-modal')">Affiliate Guide →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA STRIP -->
+<div class="join-strip">
+  <div>
+    <div class="join-strip-title">Already on Telegram?<br>Join 48K traders now.</div>
+    <div class="join-strip-sub">Get live signals, alerts, and community intel — right in your Telegram app.</div>
+  </div>
+  <div class="join-strip-actions">
+    <a href="https://t.me/signalstrike" target="_blank" class="btn btn-black btn-lg">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.018 9.502c-.147.66-.537.82-1.088.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.216-3.053 5.56-5.023c.242-.215-.054-.335-.373-.12L7.092 14.56l-2.965-.924c-.645-.2-.658-.645.134-.955l11.57-4.46c.537-.196 1.006.13.731.027z"/></svg>
+      Join on Telegram
+    </a>
+    <button class="btn btn-black-plain btn-lg" onclick="scrollToSignup()">Create Account →</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">
+        <span class="logo-bolt" style="width:22px;height:22px;border-radius:5px">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </span>
+        Signal Strike
+      </div>
+      <p class="footer-desc">Real signals, real community, real income. Built for everyday traders by people who actually trade.</p>
+    </div>
+    <div>
+      <div class="footer-col-label">For Traders</div>
+      <ul class="footer-links">
+        <li><a onclick="openModal('feature-signals')">Trading Signals</a></li>
+        <li><a onclick="openModal('feature-whale')">Whale Alerts</a></li>
+        <li><a onclick="openModal('feature-scam')">Scam Protection</a></li>
+        <li><a onclick="openModal('feature-community')">Community</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-label">Earn & Join</div>
+      <ul class="footer-links">
+        <li><a onclick="openModal('affiliate-modal')">Affiliate Program</a></li>
+        <li><a onclick="openModal('plans-modal')">Pricing & Plans</a></li>
+        <li><a onclick="scrollToSignup()">Join Free</a></li>
+        <li><a href="https://t.me/signalstrike" target="_blank">Telegram</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-label">Company</div>
+      <ul class="footer-links">
+        <li><a onclick="openModal('about-modal')">About Us</a></li>
+        <li><a onclick="openModal('faq-modal')">FAQ</a></li>
+        <li><a onclick="openModal('contact-modal')">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Signal Strike. Community-run intelligence. Not financial advice.</span>
+    <span>DYOR — Do Your Own Research.</span>
+  </div>
+</footer>
+
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- AFFILIATE DEEP-DIVE -->
+<div class="overlay" id="modal-affiliate-modal" onclick="closeOverlay('affiliate-modal',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Affiliate Program</div><div class="modal-title">How You Earn</div></div>
+      <button class="modal-x" onclick="closeModal('affiliate-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Signal Strike's affiliate program is one of the most generous in crypto. Share your link anywhere — Telegram, Twitter, Discord, YouTube, WhatsApp — and earn a commission every time someone subscribes.</p>
+      <h3>Commission Structure</h3>
+      <ul class="modal-list">
+        <li>Community (Free) plan referral: <strong style="color:var(--lime)">$10</strong> when they upgrade to any paid plan</li>
+        <li>Pro Trader plan referral: <strong style="color:var(--lime)">$29 per subscriber</strong></li>
+        <li>Premium plan referral: <strong style="color:var(--lime)">$50 per subscriber</strong></li>
+        <li>Recurring monthly: earn a percentage every month they stay subscribed</li>
+      </ul>
+      <h3>Payout Options</h3>
+      <ul class="modal-list">
+        <li>USDC — daily or weekly</li>
+        <li>Bitcoin — weekly</li>
+        <li>Ethereum — weekly</li>
+        <li>Bank transfer — weekly (select regions)</li>
+        <li>No minimum payout threshold</li>
+      </ul>
+      <h3>Terms & Conditions</h3>
+      <ul class="modal-list">
+        <li>Commissions are paid on verified, non-refunded subscriptions</li>
+        <li>Self-referrals are not permitted and will be removed</li>
+        <li>Cookie tracking: 30-day attribution window</li>
+        <li>No cap on how many referrals you can make</li>
+        <li>Performance bonuses available for top affiliates each month</li>
+      </ul>
+      <div class="modal-divider"></div>
+      <p style="font-size:0.8rem">Questions about the affiliate program? Reach us via Telegram @SignalStrikeSupport or use the Contact page.</p>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('affiliate-modal');scrollToSignup()">Sign Up & Get My Link</button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">Ask on Telegram</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANS MODAL -->
+<div class="overlay" id="modal-plans-modal" onclick="closeOverlay('plans-modal',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Plans</div><div class="modal-title">Pricing Overview</div></div>
+      <button class="modal-x" onclick="closeModal('plans-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>All plans include your personal affiliate referral link from day one. The free Community plan is yours forever — no expiry, no bait-and-switch.</p>
+      <h3>Community — Free</h3>
+      <ul class="modal-list">
+        <li>Daily signal summaries (2h delayed) — full signal rationale included</li>
+        <li>Scam & rug pull database — search any contract address</li>
+        <li>Community Telegram group access</li>
+        <li>Open-source magazine — all 340+ issues</li>
+        <li>Your referral link — earn $10 for every free member who upgrades</li>
+      </ul>
+      <h3>Pro Trader — $29/month</h3>
+      <ul class="modal-list">
+        <li>Everything in Community, plus:</li>
+        <li>Real-time trading signals as they're published — no delay</li>
+        <li>Whale and smart money alerts — exchange inflows, large wallet moves</li>
+        <li>pump.fun live trencher calls</li>
+        <li>Weekly analyst deep-dive reports</li>
+        <li>Priority Telegram support channel</li>
+        <li>Affiliate earnings: $29 per Pro Trader referral</li>
+      </ul>
+      <h3>Premium — $79/month</h3>
+      <ul class="modal-list">
+        <li>Everything in Pro Trader, plus:</li>
+        <li>Direct DM access to analysts — ask questions, get reads</li>
+        <li>Chain sleuth investigation previews before public release</li>
+        <li>Private curated whale wallet watchlist</li>
+        <li>1-on-1 onboarding session to get you set up right</li>
+        <li>Monthly personal portfolio review with a senior analyst</li>
+        <li>Boosted creator affiliate rates — negotiated case by case</li>
+        <li>Affiliate earnings: $50 per Premium referral</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('plans-modal');scrollToSignup()">Join Free Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS MODAL -->
+<div class="overlay" id="modal-how-affiliate" onclick="closeOverlay('how-affiliate',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Step by Step</div><div class="modal-title">How It Works</div></div>
+      <button class="modal-x" onclick="closeModal('how-affiliate')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Signal Strike is built around one idea: when you win, we win. That extends to our affiliate program — your growth is our growth, so we make it as easy and rewarding as possible.</p>
+      <h3>Step 1 — Join (Free, 60 seconds)</h3>
+      <ul class="modal-list">
+        <li>No credit card needed. No approval process. Instant access to the community.</li>
+        <li>You'll be added to the Signal Strike Telegram immediately on joining.</li>
+      </ul>
+      <h3>Step 2 — Get Your Link</h3>
+      <ul class="modal-list">
+        <li>Your unique referral URL is generated immediately upon account creation.</li>
+        <li>Share it anywhere — post it, DM it, put it in your bio, mention it in your videos.</li>
+        <li>30-day cookie tracking ensures you get credit even if they don't subscribe right away.</li>
+      </ul>
+      <h3>Step 3 — They Subscribe</h3>
+      <ul class="modal-list">
+        <li>Every time someone clicks your link and subscribes to any paid plan, it's tracked.</li>
+        <li>Your earnings accumulate in your dashboard in real time — no black box.</li>
+      </ul>
+      <h3>Step 4 — Get Paid</h3>
+      <ul class="modal-list">
+        <li>Daily payouts: commissions from the previous day processed every morning.</li>
+        <li>Weekly payouts: every Monday for the previous week's earnings.</li>
+        <li>Payment in USDC, BTC, ETH, or bank transfer — you choose per payout.</li>
+        <li>No minimum balance required to withdraw.</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('how-affiliate');scrollToSignup()">Sign Up Free & Start</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PERSONA MODALS -->
+<div class="overlay" id="modal-persona-beginner" onclick="closeOverlay('persona-beginner',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">For You</div><div class="modal-title">The Beginner 🌱</div></div>
+      <button class="modal-x" onclick="closeModal('persona-beginner')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Starting out in crypto is overwhelming. Too much noise, too many scams, too many people pretending to be experts. Signal Strike is the place beginners actually thrive — because our community genuinely helps.</p>
+      <h3>What beginners get from Signal Strike</h3>
+      <ul class="modal-list">
+        <li>Clear, plain-English signal explanations — no jargon, every call explained</li>
+        <li>The scam database to check any token or project before you invest</li>
+        <li>A Telegram community of 48K+ traders who answer beginner questions without judgment</li>
+        <li>Daily summaries of what happened in the market and why it matters</li>
+        <li>Your own affiliate link — so you can start earning while you're learning</li>
+      </ul>
+      <h3>Common beginner wins</h3>
+      <ul class="modal-list">
+        <li>"Checked the scam database — saved me from a rug pull on my first week"</li>
+        <li>"The community explained liquidity pools to me in 10 minutes. YouTube took 10 hours."</li>
+        <li>"Made $60 in referrals just sharing in my group chat before I even made a trade"</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('persona-beginner');scrollToSignup()">Join Free — Start Today</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-persona-trader" onclick="closeOverlay('persona-trader',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">For You</div><div class="modal-title">The Active Trader 📈</div></div>
+      <button class="modal-x" onclick="closeModal('persona-trader')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>If you're already trading, you know the difference between a good signal and noise. Signal Strike's 94% accuracy rate is tracked publicly — every call published, every outcome logged. No cherry-picking.</p>
+      <h3>What active traders get</h3>
+      <ul class="modal-list">
+        <li>Real-time signals with clear entries, targets, and stop-losses</li>
+        <li>Whale exchange inflow/outflow alerts — know before the price moves</li>
+        <li>Smart money wallet tracking — follow wallets with verified 10x track records</li>
+        <li>pump.fun early launch calls from dedicated full-time trenchers</li>
+        <li>Multi-timeframe confluence analysis, not just single-indicator guesses</li>
+        <li>A community of serious traders sharing alpha in real time</li>
+      </ul>
+      <h3>Real outcomes</h3>
+      <ul class="modal-list">
+        <li>SOL LONG called at $148 — current price $192. Still open.</li>
+        <li>AVAX exit alert saved traders from a 28% drawdown in February</li>
+        <li>BTC accumulation zone flagged accurately 3 times in the last quarter</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('persona-trader');scrollToSignup()">Get the Edge</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-persona-affiliate" onclick="closeOverlay('persona-affiliate',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">For You</div><div class="modal-title">The Affiliate Earner 💸</div></div>
+      <button class="modal-x" onclick="closeModal('persona-affiliate')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>You don't need a huge following to make real money from our affiliate program. A Telegram group of 50 people you trust is worth more than a Twitter account with 10K bots.</p>
+      <h3>Why our affiliate program is different</h3>
+      <ul class="modal-list">
+        <li>Up to $50 per referral — some of the highest rates in crypto SaaS</li>
+        <li>Daily payouts mean you don't wait for a monthly cheque</li>
+        <li>30-day cookie window — get credit even if they come back later</li>
+        <li>Real-time dashboard showing your clicks, conversions, and earnings</li>
+        <li>A product people actually want to keep — low churn, recurring commissions</li>
+        <li>No cap on referrals — the more you share, the more you earn</li>
+      </ul>
+      <h3>Who's crushing it</h3>
+      <ul class="modal-list">
+        <li>Telegram group admins sharing daily with their communities</li>
+        <li>Twitter accounts posting signal recaps with their affiliate link in bio</li>
+        <li>YouTubers mentioning Signal Strike in their crypto content</li>
+        <li>Newsletter writers including it as a recommended resource</li>
+        <li>People who just DM it to 5 friends — and 2 of them subscribe</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('persona-affiliate');scrollToSignup()">Get My Affiliate Link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-persona-holder" onclick="closeOverlay('persona-holder',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">For You</div><div class="modal-title">The Long-Term Holder 💎</div></div>
+      <button class="modal-x" onclick="closeModal('persona-holder')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Holding long-term doesn't mean you should ignore what's happening on-chain. The biggest losses in crypto come from holding the wrong thing — Signal Strike helps you hold the right ones.</p>
+      <h3>Why holders need Signal Strike</h3>
+      <ul class="modal-list">
+        <li>Scam database — check any project before you DCA into it</li>
+        <li>Whale wallet tracking — know when smart money is accumulating or distributing</li>
+        <li>Exchange outflow alerts — whales pulling coins off exchanges is historically bullish</li>
+        <li>On-chain health metrics — TVL, active addresses, developer activity tracked weekly</li>
+        <li>Earn affiliate income while you hold — let your network fund your bags</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('persona-holder');scrollToSignup()">Protect My Portfolio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-persona-defi" onclick="closeOverlay('persona-defi',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">For You</div><div class="modal-title">The DeFi Explorer 🔮</div></div>
+      <button class="modal-x" onclick="closeModal('persona-defi')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>DeFi moves fast. Protocols launch and die in weeks. Our chain sleuths audit new protocols before they blow up — and our community shares DeFi alpha in real time.</p>
+      <h3>DeFi intelligence you get</h3>
+      <ul class="modal-list">
+        <li>New protocol risk assessments — is the contract audited? Is the team doxxed?</li>
+        <li>Yield opportunity alerts — when APYs spike on legit protocols, you'll know</li>
+        <li>Bridge security monitoring — know before you send funds cross-chain</li>
+        <li>Smart contract red flag alerts based on our on-chain investigation team</li>
+        <li>Liquidity pool intel — where smart money is providing and withdrawing</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('persona-defi');scrollToSignup()">Join the DeFi Community</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-persona-creator" onclick="closeOverlay('persona-creator',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">For You</div><div class="modal-title">The Crypto Creator 🎙️</div></div>
+      <button class="modal-x" onclick="closeModal('persona-creator')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>If you create crypto content — YouTube, podcasts, newsletters, Twitter threads — Signal Strike should be in your stack. The affiliate commissions are some of the highest in the space, and the product is something your audience will genuinely thank you for.</p>
+      <h3>Creator-specific benefits</h3>
+      <ul class="modal-list">
+        <li>Premium plan affiliate rate: $50 per subscriber you refer</li>
+        <li>Creator affiliate rate negotiation for channels with 5K+ engaged followers</li>
+        <li>Co-promotion opportunities for larger creators in our community</li>
+        <li>Exclusive content access — investigations and scoops for your videos and articles</li>
+        <li>Contributor bylines in the Signal Strike Magazine — builds your credibility</li>
+        <li>Performance bonuses: top affiliate earner each month gets a bonus payout</li>
+      </ul>
+      <h3>What creators say</h3>
+      <ul class="modal-list">
+        <li>"My first mention in a YouTube video brought in 14 referrals. $700 in one video." — @danvcrypto</li>
+        <li>"I put the link in my newsletter footer. 3 months later it's my most consistent revenue." — @priya_k</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('persona-creator');scrollToSignup()">Apply as Creator Affiliate</button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">Talk to Our Team</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE MODALS -->
+<div class="overlay" id="modal-feature-signals" onclick="closeOverlay('feature-signals',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Core Feature</div><div class="modal-title">⚡ Trading Signals</div></div>
+      <button class="modal-x" onclick="closeModal('feature-signals')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Our signals are generated by a network of professional analysts, then peer-reviewed before publication. Every call includes a full rationale — not just "buy this." You understand why.</p>
+      <h3>Signal types</h3>
+      <ul class="modal-list">
+        <li><strong style="color:var(--lime)">Strong Buy</strong> — High conviction, multi-source confirmation, clear targets</li>
+        <li><strong style="color:var(--sky)">Watch Zone</strong> — Setup forming, prepare your entry and alerts</li>
+        <li><strong style="color:var(--orange)">Take Profit / Exit</strong> — Risk management, lock in gains or cut losses</li>
+        <li><strong>Accumulate</strong> — DCA zone identified by on-chain metrics</li>
+      </ul>
+      <h3>What makes them reliable</h3>
+      <ul class="modal-list">
+        <li>94% accuracy rate tracked publicly — community audits every signal outcome</li>
+        <li>No deleted calls — all signals are permanently archived with outcomes</li>
+        <li>Multi-timeframe analysis: on-chain data + technical structure + market sentiment</li>
+        <li>Risk rating on every signal: low / medium / high conviction</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('feature-signals');scrollToSignup()">Access Signals</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-feature-whale" onclick="closeOverlay('feature-whale',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Core Feature</div><div class="modal-title">🐋 Whale Alerts</div></div>
+      <button class="modal-x" onclick="closeModal('feature-whale')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Whale wallets move before prices do. Signal Strike monitors hundreds of high-value wallets and exchange flows in real time — so you know what's coming before the candle forms.</p>
+      <h3>What we track</h3>
+      <ul class="modal-list">
+        <li>Top 500 whale wallets across BTC, ETH, SOL, and all major EVM chains</li>
+        <li>Exchange inflow alerts — large deposits often precede selling pressure</li>
+        <li>Exchange outflow alerts — whales pulling coins off exchanges is historically bullish</li>
+        <li>Dormant wallet activation — when sleeping giants wake up, we tell you first</li>
+        <li>OTC desk and dark pool activity signals</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('feature-whale');scrollToSignup()">Get Whale Alerts</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-feature-scam" onclick="closeOverlay('feature-scam',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Core Feature</div><div class="modal-title">🛡️ Scam Protection</div></div>
+      <button class="modal-x" onclick="closeModal('feature-scam')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Our scam database has saved members from millions in losses. Before you invest in any project, token, or protocol — check it here. Our community and investigation team have documented 2,100+ confirmed scams.</p>
+      <h3>What's in the database</h3>
+      <ul class="modal-list">
+        <li>Rug pulls — documented with on-chain proof and transaction hashes</li>
+        <li>Honeypot contracts — tokens you can buy but never sell</li>
+        <li>Fake influencer promotions — who got paid to shill what</li>
+        <li>Ponzi and yield scams — sustainability analysis on high-APY projects</li>
+        <li>Phishing sites and fake project clones</li>
+      </ul>
+      <h3>How to use it</h3>
+      <ul class="modal-list">
+        <li>Search by token name, contract address, or developer wallet</li>
+        <li>Results include evidence, dates, and links to full investigations</li>
+        <li>Submit suspected scams through the community portal and get paid if confirmed</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('feature-scam');scrollToSignup()">Access Scam Database</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-feature-community" onclick="closeOverlay('feature-community',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Core Feature</div><div class="modal-title">👥 The Community</div></div>
+      <button class="modal-x" onclick="closeModal('feature-community')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>48,000 traders, investigators, holders, and analysts — all in one Telegram community. The energy is unlike anything else in crypto: supportive, direct, and genuinely focused on helping each other win.</p>
+      <h3>What the community looks like</h3>
+      <ul class="modal-list">
+        <li>Real-time trade discussion — entries, exits, and chart reads shared openly</li>
+        <li>Analyst AMAs every week — ask the people who call the signals directly</li>
+        <li>Beginner-friendly channels — no question is too basic</li>
+        <li>Scam reporting thread — community flags suspicious projects 24/7</li>
+        <li>Regional channels — find traders in your timezone and language</li>
+        <li>Zero bots. Zero paid shills. Community standards enforced strictly.</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('feature-community');scrollToSignup()">Join the Community</button>
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg">Preview on Telegram</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="overlay" id="modal-about-modal" onclick="closeOverlay('about-modal',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Our Story</div><div class="modal-title">About Signal Strike</div></div>
+      <button class="modal-x" onclick="closeModal('about-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Signal Strike was built by traders who were sick of the same problems: fake signal groups with deleted calls, scam projects with no accountability, and a media landscape funded by the same projects it was supposed to cover.</p>
+      <p>We built something different. Community-owned. Transparency-first. Where every signal is tracked, every investigation is public, and every member can earn from contributing to the network.</p>
+      <h3>By the numbers</h3>
+      <ul class="modal-list">
+        <li>48,000+ active community members</li>
+        <li>94% tracked signal accuracy — publicly audited</li>
+        <li>2,100+ scams documented and exposed</li>
+        <li>$900M+ in whale volume tracked monthly</li>
+        <li>340+ open-source magazine issues published</li>
+        <li>No venture capital. No corporate backing. No agenda.</li>
+      </ul>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('about-modal');scrollToSignup()">Join the Network</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="overlay" id="modal-faq-modal" onclick="closeOverlay('faq-modal',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Common Questions</div><div class="modal-title">FAQ</div></div>
+      <button class="modal-x" onclick="closeModal('faq-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3>Is the Community plan really free forever?</h3>
+      <p>Yes. No trial, no credit card, no expiry. You get the scam database, delayed signals, community access, and your referral link at no cost — forever.</p>
+      <h3>How quickly do I get my affiliate link?</h3>
+      <p>Immediately on signup. Your unique link is generated as part of account creation — you can start sharing within minutes of joining.</p>
+      <h3>How do I know my referrals are being tracked?</h3>
+      <p>Your affiliate dashboard shows every click, conversion, and pending commission in real time. We use a 30-day cookie attribution window with transparent tracking.</p>
+      <h3>What if someone doesn't subscribe right away?</h3>
+      <p>If they click your link and subscribe within 30 days, you get the commission. No exceptions.</p>
+      <h3>Can I refer friends who already know about Signal Strike?</h3>
+      <p>Yes — if they haven't signed up yet and they use your link to create their account, you receive the commission when they subscribe to a paid plan.</p>
+      <h3>Are the signals financial advice?</h3>
+      <p>No. All signals are for educational and entertainment purposes only. Always do your own research and never invest more than you can afford to lose.</p>
+      <h3>How do I cancel my subscription?</h3>
+      <p>Cancel anytime from your account dashboard or by messaging our Telegram support. No cancellation fees, no questions asked.</p>
+      <div class="modal-actions">
+        <button class="btn btn-lime" onclick="closeModal('faq-modal');scrollToSignup()">Join Free Now</button>
+        <button class="btn btn-ghost" onclick="closeModal('faq-modal');openModal('contact-modal')">More Questions →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="overlay" id="modal-contact-modal" onclick="closeOverlay('contact-modal',event)">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-eyebrow">Get In Touch</div><div class="modal-title">Contact Us</div></div>
+      <button class="modal-x" onclick="closeModal('contact-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>The fastest way to reach us is always Telegram. Our team is active around the clock in the community channels.</p>
+      <h3>Channels</h3>
+      <ul class="modal-list">
+        <li>🔵 General community: <strong>@signalstrike</strong> on Telegram</li>
+        <li>💼 Affiliate enquiries: <strong>@SignalStrikeAff</strong> on Telegram</li>
+        <li>🛡️ Support: <strong>@SignalStrikeSupport</strong> on Telegram</li>
+        <li>✍️ Media & creator partnerships: <strong>@SignalStrikeMedia</strong> on Telegram</li>
+      </ul>
+      <div class="modal-actions">
+        <a href="https://t.me/signalstrike" target="_blank" class="btn btn-tg btn-lg">Open Telegram</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ── MODAL SYSTEM ────────────────────────────────────────────
+function openModal(id) {
+  document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
+  const el = document.getElementById('modal-' + id);
+  if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+function closeModal(id) {
+  const el = document.getElementById('modal-' + id);
+  if (el) { el.classList.remove('open'); document.body.style.overflow = ''; }
+}
+function closeOverlay(id, e) {
+  if (e.target === e.currentTarget) closeModal(id);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.overlay.open').forEach(o => { o.classList.remove('open'); document.body.style.overflow = ''; });
+  }
+});
+
+// ── SCROLL TO SIGNUP ────────────────────────────────────────
+function scrollToSignup() {
+  document.querySelectorAll('.overlay.open').forEach(o => { o.classList.remove('open'); document.body.style.overflow = ''; });
+  document.getElementById('signup').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── ROLE CHIPS ──────────────────────────────────────────────
+function toggleChip(el) { el.classList.toggle('active'); }
+
+// ── CALCULATOR ──────────────────────────────────────────────
+const planLabels = ['Mostly Free→Paid','Mostly Pro','Mostly Premium'];
+const planRates  = [15, 29, 50];
+
+function updateCalc() {
+  const refs = parseInt(document.getElementById('ref-slider').value);
+  const planIdx = parseInt(document.getElementById('plan-slider').value) - 1;
+  const rate = planRates[planIdx];
+  const monthly = refs * rate;
+  const yearly = monthly * 12;
+
+  document.getElementById('ref-count-label').textContent = refs;
+  document.getElementById('plan-label').textContent = planLabels[planIdx];
+  document.getElementById('monthly-earn').textContent = '$' + monthly.toLocaleString();
+  document.getElementById('yearly-earn').textContent = '$' + yearly.toLocaleString();
+}
+updateCalc();
+
+// ── SIGNUP FORM ─────────────────────────────────────────────
+function submitSignup() {
+  const email = document.getElementById('f-email').value.trim();
+  const tg = document.getElementById('f-tg').value.trim();
+  const fname = document.getElementById('f-fname').value.trim();
+  if (!email || !tg || !fname) {
+    alert('Please fill in your name, email, and Telegram username to continue.'); return;
+  }
+  const selectedRoles = [...document.querySelectorAll('.role-chip.active')].map(c => c.textContent);
+  const data = {
+    fname, lname: document.getElementById('f-lname').value.trim(),
+    email, tg,
+    roles: selectedRoles,
+    source: document.getElementById('f-source').value,
+    payout: document.getElementById('f-payout').value,
+    ts: new Date().toISOString()
+  };
+  const existing = JSON.parse(localStorage.getItem('ss-members') || '[]');
+  existing.push(data);
+  localStorage.setItem('ss-members', JSON.stringify(existing));
+
+  document.getElementById('signup-success').style.display = 'block';
+  document.querySelector('.signup-form-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── SCROLL REVEAL ───────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('in'), i * 60);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
