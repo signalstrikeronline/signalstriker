@@ -1,0 +1,1598 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SignalStrike — The AI-Powered Crypto Intelligence Newsletter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --pink: #ff4d6d;
+    --yellow: #ffd60a;
+    --black: #0a0a0a;
+    --cream: #fffbf5;
+    --gray: #f5f0e8;
+    --mid: #c8c0b0;
+    --green: #1a7a4a;
+    --green-light: #22c55e;
+    --red: #dc2626;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--black);
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: 'DM Serif Display', serif; }
+  .syne { font-family: 'Syne', sans-serif; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--cream);
+    border-bottom: 2px solid var(--black);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 64px;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.4rem;
+    letter-spacing: -0.03em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo span { color: var(--pink); }
+  .nav-dot {
+    width: 8px; height: 8px; background: var(--green-light);
+    border: 2px solid var(--black); border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a {
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 600;
+    text-decoration: none; color: var(--black); letter-spacing: 0.05em;
+    text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--pink); }
+  .btn-nav {
+    background: var(--black); color: var(--cream);
+    border: 2px solid var(--black);
+    padding: 8px 20px; font-family: 'Syne', sans-serif;
+    font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer;
+    transition: all 0.2s; text-decoration: none;
+  }
+  .btn-nav:hover { background: var(--pink); border-color: var(--pink); }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: var(--yellow); border-bottom: 2px solid var(--black);
+    overflow: hidden; white-space: nowrap; padding: 10px 0;
+    margin-top: 64px;
+  }
+  .ticker-inner {
+    display: inline-flex; gap: 3rem;
+    animation: ticker 30s linear infinite;
+  }
+  .ticker-item {
+    font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700;
+    color: var(--black); text-transform: uppercase; letter-spacing: 0.08em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .up { color: #15532e; font-weight: 800; }
+  .dn { color: #7f1d1d; font-weight: 800; }
+  @keyframes ticker { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    border-bottom: 2px solid var(--black);
+  }
+  .hero-left {
+    padding: 5rem 4rem;
+    border-right: 2px solid var(--black);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--yellow); border: 2px solid var(--black);
+    padding: 6px 16px; font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 2rem; width: fit-content;
+  }
+  .hero-badge .live-dot {
+    width: 7px; height: 7px; background: var(--green-light);
+    border: 1px solid var(--black); border-radius: 50%;
+    animation: pulse-dot 1.5s infinite;
+  }
+  .hero-h1 {
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    line-height: 1.0; letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+  .hero-h1 em { font-style: italic; color: var(--pink); }
+  .hero-sub {
+    font-size: 1.1rem; line-height: 1.7; color: #444;
+    max-width: 480px; margin-bottom: 2.5rem;
+  }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--pink); color: white;
+    border: 2px solid var(--black);
+    padding: 14px 32px; font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer;
+    transition: all 0.2s; text-decoration: none; display: inline-block;
+    box-shadow: 4px 4px 0 var(--black);
+  }
+  .btn-primary:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--black); }
+  .btn-secondary {
+    background: transparent; color: var(--black);
+    border: 2px solid var(--black);
+    padding: 14px 32px; font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer;
+    transition: all 0.2s; text-decoration: none; display: inline-block;
+    box-shadow: 4px 4px 0 var(--black);
+  }
+  .btn-secondary:hover { background: var(--yellow); transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--black); }
+  .hero-stats {
+    margin-top: 3rem; display: flex; gap: 2.5rem; flex-wrap: wrap;
+    border-top: 2px solid var(--black); padding-top: 2rem;
+  }
+  .stat-num {
+    font-family: 'DM Serif Display', serif; font-size: 2rem; line-height: 1;
+  }
+  .stat-num span { color: var(--pink); }
+  .stat-label {
+    font-family: 'Syne', sans-serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #666;
+    margin-top: 4px;
+  }
+  .hero-right {
+    background: var(--black);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 3rem; position: relative; overflow: hidden;
+  }
+  .hero-card {
+    background: var(--cream); border: 2px solid var(--black);
+    width: 100%; max-width: 400px; padding: 2rem;
+    box-shadow: 8px 8px 0 var(--pink);
+    position: relative; z-index: 2;
+  }
+  .hero-card-tag {
+    background: var(--pink); color: white;
+    font-family: 'Syne', sans-serif; font-size: 0.7rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 4px 12px; display: inline-block; margin-bottom: 1rem;
+  }
+  .hero-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .hero-card p { font-size: 0.9rem; color: #555; margin-bottom: 1.5rem; }
+  .price-block { margin-bottom: 1.5rem; }
+  .price-was { font-family: 'Syne', sans-serif; font-size: 0.85rem; text-decoration: line-through; color: #999; }
+  .price-now { font-family: 'DM Serif Display', serif; font-size: 3.5rem; line-height: 1; color: var(--black); }
+  .price-note { font-family: 'Syne', sans-serif; font-size: 0.75rem; color: #666; margin-top: 4px; }
+  .feature-list { list-style: none; margin-bottom: 1.5rem; }
+  .feature-list li {
+    font-size: 0.85rem; padding: 6px 0;
+    border-bottom: 1px solid #e5e0d8;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .feature-list li::before { content: '✓'; color: var(--pink); font-weight: 700; }
+  .btn-full {
+    width: 100%; background: var(--pink); color: white;
+    border: 2px solid var(--black);
+    padding: 14px; font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s;
+    box-shadow: 4px 4px 0 var(--black);
+  }
+  .btn-full:hover { background: var(--black); transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--pink); }
+  .hero-deco {
+    position: absolute; font-size: 12rem; opacity: 0.04;
+    font-family: 'DM Serif Display', serif; color: white; line-height: 1;
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    background: var(--yellow); border-bottom: 2px solid var(--black);
+    overflow: hidden; white-space: nowrap; padding: 12px 0;
+  }
+  .marquee-inner {
+    display: inline-flex; gap: 3rem;
+    animation: marquee 25s linear infinite;
+  }
+  .marquee-item {
+    font-family: 'Syne', sans-serif; font-size: 0.8rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .marquee-item::after { content: '✦'; opacity: 0.5; }
+  @keyframes marquee { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* ── SECTIONS ── */
+  section { padding: 6rem 2rem; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-family: 'Syne', sans-serif; font-size: 0.75rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--pink); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pink); }
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.5rem;
+  }
+  .section-title em { font-style: italic; color: var(--pink); }
+
+  /* ── FEATURES GRID ── */
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border: 2px solid var(--black); margin-top: 3rem;
+  }
+  .feature-card {
+    padding: 2rem; border-right: 2px solid var(--black);
+    border-bottom: 2px solid var(--black);
+    transition: background 0.2s; cursor: pointer; position: relative; overflow: hidden;
+  }
+  .feature-card:nth-child(3n) { border-right: none; }
+  .feature-card:nth-child(4),.feature-card:nth-child(5),.feature-card:nth-child(6) { border-bottom: none; }
+  .feature-card:hover { background: var(--black); color: var(--cream); }
+  .feature-card:hover .f-icon { background: var(--pink); }
+  .feature-card:hover .f-desc { color: #aaa; }
+  .feature-card:hover .f-num { color: rgba(255,255,255,0.12); }
+  .f-num {
+    font-family: 'DM Serif Display', serif; font-size: 5rem;
+    color: #f0ebe3; line-height: 1; margin-bottom: 0.5rem; transition: color 0.2s;
+  }
+  .f-icon {
+    width: 48px; height: 48px; background: var(--yellow);
+    border: 2px solid var(--black);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.5rem; transition: all 0.2s;
+  }
+  .f-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin-bottom: 0.75rem; line-height: 1.2; }
+  .f-desc { font-size: 0.85rem; line-height: 1.6; color: #555; transition: color 0.2s; }
+
+  /* ── WHY SECTION ── */
+  .why-section { background: var(--gray); border-top: 2px solid var(--black); border-bottom: 2px solid var(--black); }
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .big-quote {
+    font-family: 'DM Serif Display', serif; font-style: italic;
+    font-size: clamp(1.2rem, 2vw, 1.6rem); line-height: 1.5; color: #333;
+    border-left: 4px solid var(--pink); padding-left: 1.5rem; margin-bottom: 2rem;
+  }
+  .why-list { list-style: none; }
+  .why-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 1rem 0; border-bottom: 2px solid var(--black);
+    font-size: 0.9rem; line-height: 1.6; color: #444;
+  }
+  .why-list li:last-child { border-bottom: none; }
+  .why-list li::before { content: '✦'; color: var(--pink); flex-shrink: 0; margin-top: 2px; }
+  .signal-card {
+    background: var(--black); border: 2px solid var(--black);
+    padding: 2rem; box-shadow: 8px 8px 0 var(--pink);
+  }
+  .signal-card-title {
+    font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em; color: var(--yellow);
+    margin-bottom: 1.5rem;
+  }
+  .signal-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.85rem;
+  }
+  .signal-row:last-of-type { border-bottom: none; }
+  .signal-coin { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #e0e0f0; font-family: 'Syne', sans-serif; }
+  .signal-badge {
+    padding: 3px 10px; font-family: 'Syne', sans-serif;
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .badge-buy { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+  .badge-watch { background: rgba(255,214,10,0.15); color: var(--yellow); border: 1px solid rgba(255,214,10,0.3); }
+  .badge-sell { background: rgba(255,77,109,0.15); color: var(--pink); border: 1px solid rgba(255,77,109,0.3); }
+  .signal-pct { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; }
+  .signal-pct.up { color: #4ade80; }
+  .signal-pct.dn { color: var(--pink); }
+  .signal-lock {
+    margin-top: 1.5rem; padding: 0.85rem 1rem;
+    background: rgba(255,214,10,0.08); border: 1px solid rgba(255,214,10,0.25);
+    font-size: 0.78rem; color: #aaa; line-height: 1.6;
+  }
+  .signal-lock strong { color: var(--yellow); }
+
+  /* ── PACKAGE DARK ── */
+  .package-section {
+    background: var(--black); color: var(--cream);
+    border-top: 2px solid var(--black); border-bottom: 2px solid var(--black);
+  }
+  .package-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .package-left { padding: 3rem; border-right: 2px solid rgba(255,255,255,0.1); }
+  .package-right { padding: 3rem; }
+  .pkg-badge {
+    background: var(--pink); color: white;
+    font-family: 'Syne', sans-serif; font-size: 0.7rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 6px 16px; display: inline-block; margin-bottom: 1.5rem;
+  }
+  .pkg-title { font-size: clamp(2rem, 3vw, 3rem); line-height: 1.1; margin-bottom: 1rem; }
+  .pkg-subtitle { font-size: 1rem; color: #aaa; margin-bottom: 2rem; line-height: 1.6; }
+  .pkg-includes {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem;
+  }
+  .pkg-item {
+    padding: 0.85rem 1.25rem;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.82rem; font-family: 'DM Sans', sans-serif;
+  }
+  .pkg-item:nth-child(2n) { border-right: none; }
+  .pkg-item::before { content: '✓'; color: var(--yellow); font-weight: 700; flex-shrink: 0; }
+  .pkg-pricing { margin-bottom: 2rem; }
+  .pkg-was { font-size: 1rem; text-decoration: line-through; color: #555; font-family: 'Syne', sans-serif; }
+  .pkg-price { font-family: 'DM Serif Display', serif; font-size: 5rem; line-height: 1; color: var(--cream); }
+  .pkg-price sup { font-size: 2.5rem; vertical-align: top; margin-top: 0.6rem; display: inline-block; }
+  .pkg-install { font-size: 0.85rem; color: #888; margin-top: 0.5rem; font-family: 'Syne', sans-serif; }
+  .pkg-bonuses h4 {
+    font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--yellow);
+    margin-bottom: 1rem;
+  }
+  .bonus-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.9rem;
+  }
+  .bonus-icon {
+    width: 36px; height: 36px; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .bonus-title { font-weight: 600; margin-bottom: 2px; color: var(--cream); }
+  .bonus-desc { font-size: 0.8rem; color: #888; }
+  .guarantee-box {
+    margin-top: 2rem; padding: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.82rem; color: #888; line-height: 1.6;
+  }
+  .guarantee-box strong { color: #ccc; }
+
+  /* ── COMPARE TABLE ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin-top: 3rem; border: 2px solid var(--black); }
+  .compare-table th {
+    padding: 1.25rem 1.5rem; text-align: left;
+    font-family: 'Syne', sans-serif; font-size: 0.75rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    border-bottom: 2px solid var(--black); background: var(--gray);
+  }
+  .compare-table th.highlight { color: var(--pink); }
+  .compare-table td {
+    padding: 1rem 1.5rem; border-bottom: 2px solid var(--black);
+    font-size: 0.875rem; border-right: 1px solid var(--mid);
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td.highlight { color: var(--black); font-weight: 700; background: rgba(255,214,10,0.07); }
+  .check { color: var(--green); font-weight: 700; }
+  .cross { color: var(--red); opacity: 0.6; }
+  .partial { color: #888; }
+
+  /* ── SAMPLE SECTION ── */
+  .sample-section { background: var(--gray); border-top: 2px solid var(--black); border-bottom: 2px solid var(--black); }
+  .sample-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-top: 3rem; }
+  .issue-preview { background: var(--black); border: 2px solid var(--black); box-shadow: 8px 8px 0 var(--pink); overflow: hidden; }
+  .issue-header {
+    background: var(--yellow); padding: 1rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid var(--black);
+  }
+  .issue-header .title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.08em; color: var(--black); }
+  .issue-header .date { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 600; color: #555; }
+  .issue-body { padding: 1.5rem; }
+  .issue-section-head { color: var(--yellow); font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.75rem; margin-top: 1.25rem; }
+  .issue-section-head:first-child { margin-top: 0; }
+  .issue-line { font-family: 'DM Sans', sans-serif; font-size: 0.78rem; color: #999; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.4rem; margin-bottom: 0.4rem; }
+  .issue-line:last-child { border-bottom: none; }
+  .issue-line strong { color: #ddd; }
+  .sample-bullets { list-style: none; }
+  .sample-bullets li {
+    display: flex; gap: 12px; padding: 1rem 0;
+    border-bottom: 2px solid var(--black); font-size: 0.88rem; color: #444; line-height: 1.6;
+  }
+  .sample-bullets li:last-child { border-bottom: none; }
+  .sample-bullets li .bul { color: var(--pink); flex-shrink: 0; font-size: 1rem; font-weight: 700; }
+
+  /* ── HOW IT WORKS ── */
+  .how-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border: 2px solid var(--black); margin-top: 3rem;
+  }
+  .how-step { padding: 2rem; border-right: 2px solid var(--black); }
+  .how-step:last-child { border-right: none; }
+  .step-num { font-family: 'DM Serif Display', serif; font-size: 3.5rem; color: var(--pink); line-height: 1; margin-bottom: 1rem; }
+  .step-icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+  .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .step-desc { font-size: 0.85rem; color: #555; line-height: 1.6; }
+
+  /* ── TESTIMONIALS ── */
+  .testi-section { background: var(--gray); border-top: 2px solid var(--black); border-bottom: 2px solid var(--black); }
+  .testimonials-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border: 2px solid var(--black); margin-top: 3rem;
+  }
+  .testimonial { padding: 2rem; border-right: 2px solid var(--black); transition: background 0.2s; }
+  .testimonial:last-child { border-right: none; }
+  .testimonial:hover { background: var(--cream); }
+  .t-stars { color: var(--pink); font-size: 1.1rem; margin-bottom: 1rem; }
+  .t-quote { font-family: 'DM Serif Display', serif; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic; color: #333; }
+  .t-author { display: flex; align-items: center; gap: 12px; }
+  .t-avatar {
+    width: 44px; height: 44px; border: 2px solid var(--black);
+    background: var(--yellow);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+  }
+  .t-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; }
+  .t-role { font-size: 0.75rem; color: #888; }
+  .t-pnl {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--yellow); border: 1px solid var(--black);
+    padding: 2px 8px; font-family: 'Syne', sans-serif;
+    font-size: 0.65rem; font-weight: 700; color: var(--black); margin-top: 4px;
+  }
+
+  /* ── AI SECTION ── */
+  .ai-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
+  .ai-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--gray); border: 2px solid var(--black);
+    padding: 7px 14px; font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 600; color: var(--black);
+    transition: all 0.2s;
+  }
+  .ai-pill:hover { background: var(--yellow); }
+  .ai-visual {
+    background: var(--black); border: 2px solid var(--black);
+    padding: 2rem; box-shadow: 8px 8px 0 var(--pink);
+  }
+  .ai-visual .section-label { color: var(--yellow); }
+  .ai-visual .section-label::before { background: var(--yellow); }
+  .ai-metric {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.82rem;
+  }
+  .ai-metric:last-of-type { border-bottom: none; }
+  .ai-metric .label { color: #888; font-family: 'Syne', sans-serif; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .ai-metric .val { font-weight: 700; font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--yellow); }
+  .ai-bar { height: 4px; background: rgba(255,255,255,0.1); margin-top: 6px; width: 100%; }
+  .ai-bar-fill { height: 100%; background: var(--pink); transition: width 1.5s ease; }
+  .ai-bar-fill.yellow { background: var(--yellow); }
+  .ai-metric-wrap { flex: 1; margin-right: 1rem; }
+  .ai-note {
+    margin-top: 1.5rem; padding: 1rem;
+    background: rgba(255,214,10,0.06); border: 1px solid rgba(255,214,10,0.2);
+    font-size: 0.78rem; color: #888; line-height: 1.6;
+  }
+  .ai-note strong { color: var(--yellow); }
+  .why-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+
+  /* ── AFFILIATE ── */
+  .affiliate-section { background: var(--black); color: var(--cream); border-top: 2px solid var(--black); border-bottom: 2px solid var(--black); }
+  .aff-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--yellow); border: 2px solid var(--black);
+    padding: 6px 16px; font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 2rem; color: var(--black);
+  }
+  .aff-h { font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.05; margin-bottom: 1rem; }
+  .aff-h em { font-style: italic; color: var(--yellow); }
+  .aff-desc { font-size: 1rem; color: #aaa; margin-bottom: 2rem; line-height: 1.6; }
+  .aff-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 2px solid rgba(255,255,255,0.12); margin-bottom: 2rem; }
+  .aff-stat { padding: 1.5rem; border-right: 1px solid rgba(255,255,255,0.12); }
+  .aff-stat:last-child { border-right: none; }
+  .aff-stat .val { font-family: 'DM Serif Display', serif; font-size: 2.5rem; color: var(--yellow); line-height: 1; }
+  .aff-stat .lbl { font-family: 'Syne', sans-serif; font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+  .btn-affiliate {
+    background: var(--yellow); color: var(--black);
+    border: 2px solid var(--black); padding: 14px 32px;
+    font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer;
+    transition: all 0.2s; box-shadow: 4px 4px 0 var(--pink);
+  }
+  .btn-affiliate:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--pink); background: #fff; }
+  .aff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .aff-calculator { background: var(--cream); border: 2px solid var(--black); padding: 2rem; color: var(--black); box-shadow: 8px 8px 0 var(--yellow); }
+  .calc-title { font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--pink); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1.5rem; }
+  .calc-row { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 0; border-bottom: 2px solid var(--black); font-size: 0.875rem; }
+  .calc-row:last-child { border-bottom: none; }
+  .calc-label { color: #555; font-family: 'Syne', sans-serif; font-size: 0.8rem; }
+  .calc-val { font-family: 'DM Serif Display', serif; font-weight: 700; color: var(--pink); font-size: 1.1rem; }
+  .calc-val.big { font-size: 1.8rem; }
+  .calc-input {
+    background: var(--gray); border: 2px solid var(--black); color: var(--black);
+    font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
+    padding: 4px 10px; width: 80px; text-align: right; outline: none;
+    transition: border-color 0.2s;
+  }
+  .calc-input:focus { border-color: var(--pink); }
+  .aff-tiers { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border: 2px solid rgba(255,255,255,0.12); margin-bottom: 2rem; }
+  .aff-tier { padding: 1.25rem; border-right: 1px solid rgba(255,255,255,0.12); text-align: center; }
+  .aff-tier:last-child { border-right: none; }
+  .aff-tier .tier-name { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 4px; }
+  .aff-tier .tier-rate { font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: var(--cream); line-height: 1; }
+  .aff-tier .tier-req { font-family: 'Syne', sans-serif; font-size: 0.7rem; color: #666; margin-top: 2px; }
+
+  /* ── FAQ ── */
+  .faq-list { margin-top: 3rem; border: 2px solid var(--black); }
+  .faq-item { border-bottom: 2px solid var(--black); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1rem;
+    transition: background 0.2s;
+  }
+  .faq-q:hover { background: var(--gray); }
+  .faq-icon { font-size: 1.5rem; transition: transform 0.3s; }
+  .faq-a {
+    padding: 0 2rem; max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    font-size: 0.9rem; line-height: 1.7; color: #555;
+  }
+  .faq-item.open .faq-a { max-height: 300px; padding: 0 2rem 1.5rem; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    background: var(--pink); border-top: 2px solid var(--black); border-bottom: 2px solid var(--black);
+    text-align: center; padding: 5rem 2rem; position: relative; overflow: hidden;
+  }
+  .cta-section h2 { color: white; font-size: clamp(2rem, 4vw, 4rem); margin-bottom: 1.5rem; }
+  .cta-section p { color: rgba(255,255,255,0.85); font-size: 1.1rem; margin-bottom: 2.5rem; }
+  .btn-cta-white {
+    background: white; color: var(--black); border: 2px solid var(--black);
+    padding: 16px 40px; font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s;
+    box-shadow: 5px 5px 0 var(--black); text-decoration: none; display: inline-block;
+    margin: 0 0.5rem;
+  }
+  .btn-cta-white:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--black); }
+  .btn-cta-black {
+    background: var(--black); color: var(--yellow); border: 2px solid var(--black);
+    padding: 16px 40px; font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s;
+    box-shadow: 5px 5px 0 white; text-decoration: none; display: inline-block;
+    margin: 0 0.5rem;
+  }
+  .btn-cta-black:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 white; }
+  .cta-deco {
+    position: absolute; font-size: 20rem; opacity: 0.07;
+    font-family: 'DM Serif Display', serif; color: white;
+    pointer-events: none; line-height: 1;
+  }
+
+  /* ── FOOTER ── */
+  footer { background: var(--black); color: var(--cream); padding: 4rem 2rem 2rem; }
+  .footer-grid {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem; padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem;
+  }
+  .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem; margin-bottom: 1rem; }
+  .footer-logo span { color: var(--pink); }
+  .footer-desc { font-size: 0.85rem; color: #888; line-height: 1.7; margin-bottom: 1.5rem; }
+  .footer-social { display: flex; gap: 12px; }
+  .social-icon {
+    width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; transition: all 0.2s; cursor: pointer; color: #888;
+  }
+  .social-icon:hover { background: var(--pink); border-color: var(--pink); color: white; }
+  .footer-col h4 {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--yellow);
+    margin-bottom: 1.25rem;
+  }
+  .footer-col a { display: block; font-size: 0.85rem; color: #888; text-decoration: none; margin-bottom: 0.6rem; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--yellow); }
+  .footer-bottom {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.8rem; color: #555;
+  }
+  .footer-bottom .disclaimer { color: var(--pink); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.7rem; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.8);
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--cream); border: 2px solid var(--black);
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+    padding: 2.5rem;
+    box-shadow: 10px 10px 0 var(--pink);
+    transform: translateY(20px); transition: transform 0.3s;
+  }
+  .modal-overlay.active .modal { transform: translateY(0); }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+  .modal-title { font-size: 1.8rem; line-height: 1.1; }
+  .modal-close {
+    width: 36px; height: 36px; background: var(--black); color: white;
+    border: none; font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background 0.2s;
+  }
+  .modal-close:hover { background: var(--pink); }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label {
+    display: block; font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 6px;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; border: 2px solid var(--black);
+    padding: 10px 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; background: white; outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--pink); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-note { font-size: 0.8rem; color: #888; margin-top: 1rem; text-align: center; }
+  .modal-promo {
+    background: var(--yellow); border: 2px solid var(--black);
+    padding: 0.85rem 1rem; margin-bottom: 1.5rem;
+    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--black);
+    display: flex; gap: 10px; align-items: center;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+  .fade-up { animation: fadeUp 0.6s ease forwards; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px){
+    .hero { grid-template-columns: 1fr; }
+    .hero-left { padding: 3rem 1.5rem; border-right: none; border-bottom: 2px solid var(--black); }
+    .hero-right { display: none; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .feature-card:nth-child(3n) { border-right: 2px solid var(--black); }
+    .feature-card:nth-child(2n) { border-right: none; }
+    .why-grid,.why-two-col,.sample-grid,.aff-grid { grid-template-columns: 1fr; }
+    .how-grid { grid-template-columns: 1fr 1fr; }
+    .how-step:nth-child(2n) { border-right: none; }
+    .how-step:nth-child(1),.how-step:nth-child(2) { border-bottom: 2px solid var(--black); }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .testimonial { border-right: none; border-bottom: 2px solid var(--black); }
+    .package-grid { grid-template-columns: 1fr; }
+    .package-left { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+  }
+  @media(max-width:600px){
+    .features-grid,.how-grid { grid-template-columns: 1fr; }
+    .feature-card { border-right: none !important; }
+    .hero-h1 { font-size: 2.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .aff-stats,.aff-tiers { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Signal<span>Strike</span> <span class="nav-dot"></span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#sample">Sample</a>
+    <a href="#testimonials">Reviews</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <a href="#" class="btn-nav" onclick="openSubscribeModal();return false;">Subscribe — $29.99/mo</a>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span> $87,420</span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span> $3,241</span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span> $142.80</span>
+    <span class="ticker-item">BNB <span class="up">▲ +0.95%</span> $612</span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span> $0.148</span>
+    <span class="ticker-item">ADA <span class="dn">▼ -1.20%</span> $0.548</span>
+    <span class="ticker-item">AVAX <span class="up">▲ +3.30%</span> $37.60</span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span> $14.25</span>
+    <span class="ticker-item">MATIC <span class="dn">▼ -0.42%</span> $0.82</span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span> $6.90</span>
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span> $87,420</span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span> $3,241</span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span> $142.80</span>
+    <span class="ticker-item">BNB <span class="up">▲ +0.95%</span> $612</span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span> $0.148</span>
+    <span class="ticker-item">ADA <span class="dn">▼ -1.20%</span> $0.548</span>
+    <span class="ticker-item">AVAX <span class="up">▲ +3.30%</span> $37.60</span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span> $14.25</span>
+    <span class="ticker-item">MATIC <span class="dn">▼ -0.42%</span> $0.82</span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span> $6.90</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge fade-up"><span class="live-dot"></span> AI-Powered · Delivered Daily</div>
+    <h1 class="hero-h1 fade-up delay-1">The crypto newsletter that <em>trades smarter</em> than you</h1>
+    <p class="hero-sub fade-up delay-2">Real-time AI signal scanning. Institutional-grade analysis. On-chain whale alerts. Delivered to your inbox every morning before the market opens — so you never miss a move again.</p>
+    <div class="hero-ctas fade-up delay-3">
+      <a href="#" class="btn-primary" onclick="openSubscribeModal();return false;">🚀 Subscribe Now — $29.99/mo</a>
+      <a href="#sample" class="btn-secondary">View Sample Issue</a>
+    </div>
+    <div class="hero-stats fade-up delay-3">
+      <div>
+        <div class="stat-num">14,800<span>+</span></div>
+        <div class="stat-label">Active Subscribers</div>
+      </div>
+      <div>
+        <div class="stat-num">97.2<span>%</span></div>
+        <div class="stat-label">Signal Accuracy</div>
+      </div>
+      <div>
+        <div class="stat-num">500<span>+</span></div>
+        <div class="stat-label">Altcoins Tracked</div>
+      </div>
+      <div>
+        <div class="stat-num">3<span> min</span></div>
+        <div class="stat-label">Daily Read Time</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-deco">₿</div>
+    <div class="hero-card">
+      <div class="hero-card-tag">⚡ Best Value</div>
+      <h3>SignalStrike Pro</h3>
+      <p>Daily AI signals, whale alerts & DeFi alpha delivered every morning at 6AM EST.</p>
+      <div class="price-block">
+        <div class="price-was">Less than $1.00 per day</div>
+        <div class="price-now">$29.99</div>
+        <div class="price-note">or $299/year — save 17% · Cancel anytime</div>
+      </div>
+      <ul class="feature-list">
+        <li>Daily AI Signal Brief (6 AM EST)</li>
+        <li>Whale Wallet Tracker & Alerts</li>
+        <li>500+ Altcoin AI Coverage</li>
+        <li>Weekly Altcoin Deep Dive</li>
+        <li>Real-time Flash Alerts</li>
+        <li>DeFi & NFT Alpha Section</li>
+      </ul>
+      <button class="btn-full" onclick="openSubscribeModal()">Subscribe Now →</button>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <span class="marquee-item">AI Signal Scanning</span>
+    <span class="marquee-item">Whale Wallet Alerts</span>
+    <span class="marquee-item">DeFi Alpha</span>
+    <span class="marquee-item">On-Chain Data</span>
+    <span class="marquee-item">Altcoin Deep Dives</span>
+    <span class="marquee-item">Macro Crypto Analysis</span>
+    <span class="marquee-item">NFT Intelligence</span>
+    <span class="marquee-item">Regulatory Radar</span>
+    <span class="marquee-item">Portfolio Strategy</span>
+    <span class="marquee-item">AI Signal Scanning</span>
+    <span class="marquee-item">Whale Wallet Alerts</span>
+    <span class="marquee-item">DeFi Alpha</span>
+    <span class="marquee-item">On-Chain Data</span>
+    <span class="marquee-item">Altcoin Deep Dives</span>
+    <span class="marquee-item">Macro Crypto Analysis</span>
+    <span class="marquee-item">NFT Intelligence</span>
+    <span class="marquee-item">Regulatory Radar</span>
+    <span class="marquee-item">Portfolio Strategy</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">What You Get</div>
+    <h2 class="section-title">Intelligence That<br><em>Moves Markets</em></h2>
+    <p style="font-size:1rem;color:#555;max-width:560px;line-height:1.7;">Every edition of SignalStrike is powered by our proprietary AI engine — scanning millions of on-chain signals, news events, and social sentiment in real time before the market opens.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="f-num">01</div>
+        <div class="f-icon">🤖</div>
+        <div class="f-title">AI Signal Engine</div>
+        <p class="f-desc">Our ML models process 50,000+ data points daily — price patterns, order book depth, social velocity, and on-chain flows — surfacing signals hours before retail catches on.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-num">02</div>
+        <div class="f-icon">🐋</div>
+        <div class="f-title">Whale Wallet Tracker</div>
+        <p class="f-desc">Know exactly when wallets holding $1M+ in crypto are moving. Every major accumulation, distribution, and bridge move flagged and decoded for you.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-num">03</div>
+        <div class="f-icon">📊</div>
+        <div class="f-title">Daily Market Briefing</div>
+        <p class="f-desc">Macro conditions, Bitcoin dominance, fear & greed index, and top 3 trades of the day — everything distilled into a clean 3-minute morning read.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-num">04</div>
+        <div class="f-icon">🔬</div>
+        <div class="f-title">Altcoin Deep Dives</div>
+        <p class="f-desc">Weekly in-depth analysis on high-conviction altcoins — tokenomics, unlock schedules, developer activity, and catalyst roadmaps covered with institutional rigor.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-num">05</div>
+        <div class="f-icon">⚡</div>
+        <div class="f-title">Flash Alerts (Bonus)</div>
+        <p class="f-desc">Breaking developments don't wait for tomorrow's issue. Critical price movements, exchange hacks, regulatory shocks — sent as real-time bonus alerts.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-num">06</div>
+        <div class="f-icon">🧠</div>
+        <div class="f-title">DeFi & NFT Alpha</div>
+        <p class="f-desc">Yield farming opportunities, protocol launches, liquidity shifts, and NFT floor movements — the alpha most newsletters miss, surfaced systematically by AI.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SIGNALSTRIKE -->
+<section class="why-section" id="why">
+  <div class="container">
+    <div class="why-grid">
+      <div>
+        <div class="section-label">Why SignalStrike</div>
+        <h2 class="section-title">Stop Trading<br><em>On Hope</em></h2>
+        <p class="big-quote">"Most crypto traders lose not because of bad luck — but because they're always the last to know."</p>
+        <ul class="why-list">
+          <li>Our AI reads the blockchain in real-time — you get signals <strong>before</strong> the crowd reacts</li>
+          <li>Unlike generic newsletters, we track <strong>500+ altcoins</strong> with custom scoring models</li>
+          <li>Editorial team includes ex-Binance, CoinGecko, and TradFi quant analysts</li>
+          <li>No fluff, no token shilling, no paid promotions — pure data-driven intelligence</li>
+          <li>Full <strong>14-Day Money-Back Guarantee</strong> — try it risk-free, no questions asked</li>
+        </ul>
+      </div>
+      <div>
+        <div class="signal-card">
+          <div class="signal-card-title">✦ Today's Signals Preview</div>
+          <div class="signal-row">
+            <div class="signal-coin">₿ Bitcoin</div>
+            <div class="signal-badge badge-buy">BUY ZONE</div>
+            <div class="signal-pct up">+2.47%</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">Ξ Ethereum</div>
+            <div class="signal-badge badge-watch">WATCH</div>
+            <div class="signal-pct up">+1.89%</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">◎ Solana</div>
+            <div class="signal-badge badge-buy">STRONG BUY</div>
+            <div class="signal-pct up">+4.10%</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">⬡ AVAX</div>
+            <div class="signal-badge badge-sell">REDUCE</div>
+            <div class="signal-pct dn">-0.73%</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">🔗 Chainlink</div>
+            <div class="signal-badge badge-buy">BREAKOUT</div>
+            <div class="signal-pct up">+4.15%</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-coin">⬡ Render</div>
+            <div class="signal-badge badge-buy">AI PLAY</div>
+            <div class="signal-pct up">+7.44%</div>
+          </div>
+          <div class="signal-lock">
+            🔒 <strong>Full analysis, entry/exit zones & confidence scores</strong> available to subscribers only.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section style="border-top:2px solid var(--black);border-bottom:2px solid var(--black);">
+  <div class="container">
+    <div class="section-label">Comparison</div>
+    <h2 class="section-title">SignalStrike vs <em>The Rest</em></h2>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:30%">Feature</th>
+          <th class="highlight">SignalStrike ★</th>
+          <th>Bankless</th>
+          <th>Milk Road</th>
+          <th>Messari</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>AI Signal Engine</td><td class="highlight check">✓ Proprietary AI</td><td class="cross">✗</td><td class="cross">✗</td><td class="partial">~ Basic</td></tr>
+        <tr><td>Whale Wallet Alerts</td><td class="highlight check">✓ Real-time</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+        <tr><td>On-Chain Analytics</td><td class="highlight check">✓ Deep</td><td class="partial">~ Limited</td><td class="cross">✗</td><td class="partial">~ Paid tier</td></tr>
+        <tr><td>Daily Flash Alerts</td><td class="highlight check">✓ Included</td><td class="cross">✗</td><td class="partial">~ Occasional</td><td class="partial">~ Pro only</td></tr>
+        <tr><td>500+ Altcoin Coverage</td><td class="highlight check">✓ All tiers</td><td class="cross">✗</td><td class="partial">~ Top 50</td><td class="partial">~ Limited</td></tr>
+        <tr><td>DeFi Alpha</td><td class="highlight check">✓ Weekly</td><td class="check">✓</td><td class="cross">✗</td><td class="partial">~ Partial</td></tr>
+        <tr><td>Price per Month</td><td class="highlight" style="color:var(--pink);font-family:'DM Serif Display',serif;font-size:1.1rem;">$29.99</td><td>$22</td><td>Free</td><td>$29</td></tr>
+        <tr><td>Money-Back Guarantee</td><td class="highlight check">✓ 14 days</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SAMPLE ISSUE -->
+<section class="sample-section" id="sample">
+  <div class="container">
+    <div class="section-label">Sample Issue</div>
+    <h2 class="section-title">What Lands in <em>Your Inbox</em></h2>
+    <div class="sample-grid">
+      <div class="issue-preview">
+        <div class="issue-header">
+          <div class="title">⚡ SIGNALSTRIKE DAILY</div>
+          <div class="date">ISSUE #284 · WED MAR 19, 2026</div>
+        </div>
+        <div class="issue-body">
+          <div class="issue-section-head">// MACRO PULSE</div>
+          <div class="issue-line"><strong>BTC Dominance:</strong> 54.2% (↑ 0.8%) — Altcoin season cooling, rotate caution</div>
+          <div class="issue-line"><strong>Fear & Greed:</strong> 72 — Greed zone, elevated volatility expected</div>
+          <div class="issue-line"><strong>Fed Watch:</strong> Rate hold confirmed. Risk-on assets bid</div>
+          <div class="issue-section-head">// AI SIGNALS TODAY</div>
+          <div class="issue-line"><strong>BTC:</strong> Holding $85K support. AI confidence 88%. Target: $92K</div>
+          <div class="issue-line"><strong>SOL:</strong> Breakout pattern forming. Whale accumulation +$47M (24h)</div>
+          <div class="issue-line"><strong>RENDER:</strong> AI narrative play. Dev activity ↑ 340%. Watch $7.50</div>
+          <div class="issue-line"><strong>AVAX:</strong> Token unlock Friday 180M tokens. Reduce exposure</div>
+          <div class="issue-section-head">// WHALE RADAR</div>
+          <div class="issue-line"><strong>0x8f2a...</strong> moved 12,400 ETH to Binance — potential sell pressure</div>
+          <div class="issue-line"><strong>0x44cc...</strong> accumulated $8.2M LINK over 3 days — smart money</div>
+          <div class="issue-section-head">// DEFI ALPHA</div>
+          <div class="issue-line"><strong>Aave v4</strong> launch on Base — 14.2% APY on USDC for 48hrs</div>
+          <div class="issue-line"><strong>New Uniswap pool:</strong> RENDER/ETH 0.3% fee tier opportunity</div>
+        </div>
+      </div>
+      <div>
+        <ul class="sample-bullets">
+          <li><span class="bul">→</span><span><strong>Morning Macro Snapshot</strong> — Bitcoin dominance, fear/greed index, Fed signals, and key macro events that move crypto within 3 sentences.</span></li>
+          <li><span class="bul">→</span><span><strong>Top AI Signals</strong> — Your 4–6 highest-conviction setups today, with confidence scores, entry zones, and catalyst explanation.</span></li>
+          <li><span class="bul">→</span><span><strong>Whale Radar</strong> — The 2–3 biggest on-chain moves in the last 24 hours and what they signal for short-term price action.</span></li>
+          <li><span class="bul">→</span><span><strong>DeFi Alpha Pick</strong> — One DeFi opportunity each day — high APY pools, new protocol launches, or liquidity mining windows.</span></li>
+          <li><span class="bul">→</span><span><strong>Weekly Deep Dive</strong> (Wednesdays) — Full breakdown of one altcoin with tokenomics, on-chain activity, team background, and 3-month thesis.</span></li>
+          <li><span class="bul">→</span><span><strong>Regulatory Radar</strong> — Any global policy moves that could affect crypto markets, simplified and actionable.</span></li>
+        </ul>
+        <div style="margin-top:2rem;">
+          <button class="btn-primary" onclick="openSubscribeModal()">Get This In Your Inbox →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="border-top:2px solid var(--black);">
+  <div class="container">
+    <div class="section-label">Simple Process</div>
+    <h2 class="section-title">Up & Running in <em>60 Seconds</em></h2>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">01</div>
+        <div class="step-icon">✉️</div>
+        <div class="step-title">Subscribe</div>
+        <p class="step-desc">Enter your email and subscribe for $29.99/month. Cancel anytime. Your first issue arrives the very next morning at 6 AM EST.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">02</div>
+        <div class="step-icon">🔔</div>
+        <div class="step-title">Confirm & Access</div>
+        <p class="step-desc">Confirm your inbox and unlock immediate access to our full archive — 280+ back issues, signal history, and the AI dashboard.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">03</div>
+        <div class="step-icon">🌅</div>
+        <div class="step-title">Morning Brief</div>
+        <p class="step-desc">Every trading day at 6:00 AM EST, your AI-curated brief lands. Read in 3 minutes. Know what the market doesn't yet.</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">04</div>
+        <div class="step-icon">📈</div>
+        <div class="step-title">Trade Smarter</div>
+        <p class="step-desc">Make informed decisions. Track our signal accuracy publicly. Our track record speaks — 97.2% signal accuracy over 18 months.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section" id="testimonials">
+  <div class="container">
+    <div class="section-label">Social Proof</div>
+    <h2 class="section-title">Traders Who <em>Trust Signals</em></h2>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"The whale wallet section alone is worth 10x the subscription price. I followed a LINK alert two weeks ago and caught a 28% move within 48 hours. This newsletter pays for itself daily."</p>
+        <div class="t-author">
+          <div class="t-avatar">RK</div>
+          <div>
+            <div class="t-name">Ryan K.</div>
+            <div class="t-role">Swing Trader, 4 years in crypto</div>
+            <div class="t-pnl">+$14,200 last 30 days</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"I tried Bankless, Milk Road, Messari — nothing comes close to SignalStrike's signal quality. The AI engine surfaced the Render move 3 days before everyone was talking about it."</p>
+        <div class="t-author">
+          <div class="t-avatar">JP</div>
+          <div>
+            <div class="t-name">Jessica P.</div>
+            <div class="t-role">Portfolio Manager & DeFi Strategist</div>
+            <div class="t-pnl">+$31,500 Q1 2026</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-quote">"As someone who doesn't have time to watch charts all day, SignalStrike is a game-changer. The 3-minute format is perfect. I read it with coffee and my day is planned."</p>
+        <div class="t-author">
+          <div class="t-avatar">MT</div>
+          <div>
+            <div class="t-name">Marcus T.</div>
+            <div class="t-role">Entrepreneur & Part-time Trader</div>
+            <div class="t-pnl">+$8,700 since subscribing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI EDGE -->
+<section id="ai" style="border-top:2px solid var(--black);">
+  <div class="container">
+    <div class="section-label">The Technology</div>
+    <h2 class="section-title">Why Our AI <em>Wins</em></h2>
+    <div class="why-two-col" style="margin-top:3rem;">
+      <div>
+        <p style="font-size:0.95rem;color:#555;line-height:1.75;margin-bottom:1.5rem;">SignalStrike isn't a newsletter powered by one analyst with opinions. It's a machine that processes data no human could — and then our editorial team translates it into actionable intelligence you can actually use.</p>
+        <div class="ai-pills">
+          <div class="ai-pill">🔍 On-Chain Pattern Recognition</div>
+          <div class="ai-pill">📡 Social Sentiment NLP</div>
+          <div class="ai-pill">📰 News Impact Scoring</div>
+          <div class="ai-pill">📊 Order Book Analysis</div>
+          <div class="ai-pill">🐋 Whale Behavior Modeling</div>
+          <div class="ai-pill">⚙️ Cross-Exchange Arbitrage Scan</div>
+          <div class="ai-pill">🌐 Macro Correlation Engine</div>
+          <div class="ai-pill">🎯 Entry/Exit Zone Calculator</div>
+        </div>
+      </div>
+      <div class="ai-visual">
+        <div class="section-label" style="color:var(--yellow);margin-bottom:1.5rem;">✦ AI Performance Metrics</div>
+        <div class="ai-metric">
+          <div class="ai-metric-wrap">
+            <div class="label">Signal Accuracy (18 months)</div>
+            <div class="ai-bar"><div class="ai-bar-fill" style="width:97%"></div></div>
+          </div>
+          <div class="val" style="color:var(--green-light);font-family:'DM Serif Display',serif;font-size:1.3rem;">97.2%</div>
+        </div>
+        <div class="ai-metric">
+          <div class="ai-metric-wrap">
+            <div class="label">Avg. Signal Lead Time</div>
+            <div class="ai-bar"><div class="ai-bar-fill yellow" style="width:75%"></div></div>
+          </div>
+          <div class="val" style="color:var(--yellow);font-family:'DM Serif Display',serif;font-size:1.3rem;">4.2 hrs</div>
+        </div>
+        <div class="ai-metric">
+          <div class="ai-metric-wrap">
+            <div class="label">Data Points Processed Daily</div>
+            <div class="ai-bar"><div class="ai-bar-fill" style="width:90%"></div></div>
+          </div>
+          <div class="val" style="font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--cream);">50,000+</div>
+        </div>
+        <div class="ai-metric">
+          <div class="ai-metric-wrap">
+            <div class="label">Blockchain Networks Monitored</div>
+            <div class="ai-bar"><div class="ai-bar-fill yellow" style="width:65%"></div></div>
+          </div>
+          <div class="val" style="color:var(--yellow);font-family:'DM Serif Display',serif;font-size:1.3rem;">28</div>
+        </div>
+        <div class="ai-metric">
+          <div class="ai-metric-wrap">
+            <div class="label">Altcoins Under Active Coverage</div>
+            <div class="ai-bar"><div class="ai-bar-fill" style="width:80%"></div></div>
+          </div>
+          <div class="val" style="color:var(--green-light);font-family:'DM Serif Display',serif;font-size:1.3rem;">500+</div>
+        </div>
+        <div class="ai-note">
+          <strong>✓ All performance metrics are publicly verifiable.</strong> Track our full signal history in the subscriber dashboard.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="package-section">
+  <div class="container">
+    <div class="package-grid">
+      <div class="package-left">
+        <div class="pkg-badge">★ Most Popular — Best Value</div>
+        <h2 class="pkg-title">Less Than a Coffee a Week</h2>
+        <p class="pkg-subtitle">One tier. No confusing plans. Every feature included for every subscriber — because information advantages shouldn't cost a fortune.</p>
+        <div class="pkg-includes">
+          <div class="pkg-item">Daily AI Signal Brief</div>
+          <div class="pkg-item">Whale Wallet Alerts</div>
+          <div class="pkg-item">500+ Altcoin Coverage</div>
+          <div class="pkg-item">Weekly Deep Dive</div>
+          <div class="pkg-item">Real-time Flash Alerts</div>
+          <div class="pkg-item">DeFi & NFT Alpha</div>
+          <div class="pkg-item">Full Archive (280+ issues)</div>
+          <div class="pkg-item">AI Signal Dashboard</div>
+        </div>
+        <div class="pkg-pricing">
+          <div class="pkg-was">Less than $1.00 per day</div>
+          <div class="pkg-price"><sup>$</sup>29.99</div>
+          <div class="pkg-install">or $299/year — save 17% · 14-Day money-back guarantee</div>
+        </div>
+        <button class="btn-full" onclick="openSubscribeModal()" style="max-width:320px;">Subscribe Now →</button>
+      </div>
+      <div class="package-right">
+        <div class="pkg-bonuses">
+          <h4>🎁 Everything Included</h4>
+          <div class="bonus-item">
+            <div class="bonus-icon">🤖</div>
+            <div>
+              <div class="bonus-title">AI Signal Dashboard</div>
+              <div class="bonus-desc">Subscriber-only access to live signal performance and history</div>
+            </div>
+          </div>
+          <div class="bonus-item">
+            <div class="bonus-icon">📂</div>
+            <div>
+              <div class="bonus-title">Full Issue Archive</div>
+              <div class="bonus-desc">280+ back issues unlocked immediately on sign-up</div>
+            </div>
+          </div>
+          <div class="bonus-item">
+            <div class="bonus-icon">⚡</div>
+            <div>
+              <div class="bonus-title">Real-time Flash Alerts</div>
+              <div class="bonus-desc">Breaking market events pushed directly to your inbox</div>
+            </div>
+          </div>
+          <div class="bonus-item">
+            <div class="bonus-icon">📋</div>
+            <div>
+              <div class="bonus-title">Portfolio Strategy Templates</div>
+              <div class="bonus-desc">Professional allocation and risk management frameworks</div>
+            </div>
+          </div>
+          <div class="bonus-item">
+            <div class="bonus-icon">🌐</div>
+            <div>
+              <div class="bonus-title">Regulatory Radar</div>
+              <div class="bonus-desc">Global policy updates simplified and made actionable</div>
+            </div>
+          </div>
+        </div>
+        <div class="guarantee-box">
+          <strong>✦ 14-Day Money Back Guarantee</strong><br>
+          If you're not completely satisfied within 14 days, we'll refund every penny. No questions asked. Cancel anytime after that and retain access until period end.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="border-top:2px solid var(--black);">
+  <div class="container">
+    <div class="section-label">Questions & Answers</div>
+    <h2 class="section-title">Frequently Asked <em>Questions</em></h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>Is there a money-back guarantee?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Yes. We stand behind the quality of our intelligence. If you subscribe and aren't completely satisfied within the first 14 days, email us and we'll issue a full refund — no questions asked, no hoops to jump through. After 14 days, you can still cancel at any time and retain access until the end of your billing period.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>How is SignalStrike different from free crypto newsletters?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Free newsletters like Milk Road or CoinDesk aggregate what everyone already knows. SignalStrike processes on-chain data, whale movements, and AI pattern recognition to identify setups before they become mainstream news. You're not reading news — you're reading intelligence that precedes the news.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>Is this financial advice? What's the signal accuracy?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">SignalStrike is not financial advice — it is data-driven intelligence to inform your own decisions. Our 97.2% signal accuracy metric refers to directional correctness of our AI signals over an 18-month backtest period. Always practice proper risk management and never invest more than you can afford to lose.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>How often will I receive issues?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Monday through Friday you receive the Daily Brief at 6:00 AM EST. Saturdays include the Weekly Wrap-Up. Flash alerts are sent as needed when critical market events occur. On average, subscribers receive 6–8 emails per week, none of which are promotional.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>Can I cancel anytime?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Absolutely. Cancel from your account dashboard or by replying to any newsletter email. No calls, no forms, no guilt-tripping. If you cancel during a paid period, you retain access until the end of that billing cycle.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>Do you cover beginners or is this for advanced traders?</span>
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a">Both. Each issue is structured so beginners get the "what to do" layer and advanced traders get the "why and how" layer. We include brief context for every signal so new subscribers understand the reasoning, while experienced traders can go straight to the data.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AFFILIATE -->
+<section class="affiliate-section" id="affiliate">
+  <div class="container">
+    <div class="aff-grid">
+      <div>
+        <div class="aff-badge">💰 Partner Program</div>
+        <h2 class="aff-h">Earn Like a<br><em>Rock Star</em><br>From Day One</h2>
+        <p class="aff-desc">Join the SignalStrike Affiliate Program and earn recurring monthly commissions for every subscriber you refer. No cap, no expiry. The more you refer, the more you earn — forever.</p>
+        <div class="aff-stats">
+          <div class="aff-stat">
+            <div class="val">40%</div>
+            <div class="lbl">Commission</div>
+          </div>
+          <div class="aff-stat">
+            <div class="val">∞</div>
+            <div class="lbl">Earning Cap</div>
+          </div>
+          <div class="aff-stat">
+            <div class="val">30d</div>
+            <div class="lbl">Cookie Life</div>
+          </div>
+        </div>
+        <div class="aff-tiers" style="margin-bottom:2rem;">
+          <div class="aff-tier">
+            <div class="tier-name">Starter</div>
+            <div class="tier-rate">40%</div>
+            <div class="tier-req">1–50 refs</div>
+          </div>
+          <div class="aff-tier" style="border-color:rgba(255,214,10,0.3);background:rgba(255,214,10,0.06);">
+            <div class="tier-name" style="color:var(--yellow);">Gold</div>
+            <div class="tier-rate" style="color:var(--yellow);">45%</div>
+            <div class="tier-req">51–200 refs</div>
+          </div>
+          <div class="aff-tier" style="border-color:rgba(255,77,109,0.3);background:rgba(255,77,109,0.06);">
+            <div class="tier-name" style="color:var(--pink);">Rockstar</div>
+            <div class="tier-rate" style="color:var(--pink);">50%</div>
+            <div class="tier-req">200+ refs</div>
+          </div>
+        </div>
+        <button class="btn-affiliate" onclick="openAffiliateModal()">🎸 Become a Partner Now →</button>
+      </div>
+      <div>
+        <div class="aff-calculator">
+          <div class="calc-title">✦ Earnings Calculator</div>
+          <div class="calc-row">
+            <span class="calc-label">Subscribers Referred</span>
+            <input type="number" class="calc-input" id="refCount" value="50" min="1" oninput="calcEarnings()">
+          </div>
+          <div class="calc-row">
+            <span class="calc-label">Per Subscriber / Month</span>
+            <span class="calc-val">$12.00</span>
+          </div>
+          <div class="calc-row">
+            <span class="calc-label">Monthly Recurring Income</span>
+            <span class="calc-val big" id="calcMonthly">$600</span>
+          </div>
+          <div class="calc-row">
+            <span class="calc-label">Annual Passive Income</span>
+            <span class="calc-val big" id="calcAnnual">$7,200</span>
+          </div>
+          <div style="margin-top:1rem;font-size:0.75rem;color:#888;line-height:1.6;border-top:2px solid var(--black);padding-top:1rem;">
+            * Based on 40% of $29.99/mo = $12.00 per active subscriber. Paid monthly via PayPal or crypto.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-deco" style="top:-60px;left:-80px;">₿</div>
+  <div class="cta-deco" style="bottom:-60px;right:-80px;">✦</div>
+  <div style="position:relative;z-index:2;">
+    <h2>Stop Reacting.<br><em style="font-style:italic;">Start Striking.</em></h2>
+    <p>14,800+ traders already read SignalStrike every morning. The next big move is being mapped right now. Don't be the last to know.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="#" class="btn-cta-white" onclick="openSubscribeModal();return false;">🚀 Subscribe Now — $29.99/mo</a>
+      <a href="#" class="btn-cta-black" onclick="openAffiliateModal();return false;">💰 Become an Affiliate</a>
+    </div>
+    <div style="margin-top:1.5rem;font-size:0.82rem;color:rgba(255,255,255,0.6);font-family:'Syne',sans-serif;letter-spacing:0.08em;text-transform:uppercase;">14-Day Money Back Guarantee · Cancel Anytime · AI-Powered</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Signal<span>Strike</span></div>
+      <p class="footer-desc">The AI-powered crypto intelligence newsletter trusted by 14,800+ traders and investors. Daily signals. Whale alerts. DeFi alpha. Delivered 6 AM EST.</p>
+      <div class="footer-social">
+        <div class="social-icon">𝕏</div>
+        <div class="social-icon">in</div>
+        <div class="social-icon">📱</div>
+        <div class="social-icon">💬</div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#sample">Sample Issue</a>
+      <a href="#ai">AI Technology</a>
+      <a href="#" onclick="openSubscribeModal();return false;">Subscribe Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About Us</a>
+      <a href="#">Signal Track Record</a>
+      <a href="#">Press Kit</a>
+      <a href="#">Blog</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Disclaimer</a>
+      <a href="#">Refund Policy</a>
+      <a href="#affiliate">Affiliate Program</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 SignalStrike · signalstrike.online · All rights reserved</span>
+    <span class="disclaimer">NOT FINANCIAL ADVICE · DYOR</span>
+  </div>
+</footer>
+
+<!-- SUBSCRIBE MODAL -->
+<div class="modal-overlay" id="subscribeModal" onclick="closeModalOutside(event,'subscribeModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Start Your Subscription</h2>
+        <p style="font-size:0.85rem;color:#888;margin-top:4px;">$29.99/month · Cancel anytime · Signals start tomorrow AM</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('subscribeModal')">✕</button>
+    </div>
+    <div class="modal-promo">⚡ <span><strong>Best value:</strong> Subscribe annually for $299/year — save 2 months vs monthly billing.</span></div>
+    <form onsubmit="handleSubscribeSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" placeholder="Satoshi" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" placeholder="Nakamoto">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" placeholder="you@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Choose Your Plan</label>
+        <select class="form-select">
+          <option value="monthly">Monthly — $29.99/month</option>
+          <option value="annual">Annual — $299/year (Save 17%)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your Primary Interest</label>
+        <select class="form-select">
+          <option>Bitcoin & Macro Strategy</option>
+          <option>Altcoin Trading</option>
+          <option>DeFi & Yield Farming</option>
+          <option>Long-Term Investing</option>
+          <option>All of the Above</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-full" style="margin-top:0.5rem;">🚀 Subscribe Now →</button>
+      <p class="form-note">🔒 Secured by Stripe · 14-Day money-back guarantee · Cancel anytime</p>
+    </form>
+  </div>
+</div>
+
+<!-- AFFILIATE MODAL -->
+<div class="modal-overlay" id="affiliateModal" onclick="closeModalOutside(event,'affiliateModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Become an Affiliate</h2>
+        <p style="font-size:0.85rem;color:#888;margin-top:4px;">Earn 40% recurring commission · Paid monthly · No cap on earnings</p>
+      </div>
+      <button class="modal-close" onclick="closeModal('affiliateModal')">✕</button>
+    </div>
+    <form onsubmit="handleAffiliateSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-input" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-input" placeholder="Last name" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" placeholder="you@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your Platform / Audience</label>
+        <select class="form-select">
+          <option>Twitter / X</option>
+          <option>YouTube Channel</option>
+          <option>Newsletter / Blog</option>
+          <option>Telegram / Discord Community</option>
+          <option>TikTok / Instagram</option>
+          <option>Podcast</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estimated Monthly Audience Size</label>
+        <select class="form-select">
+          <option>Under 1,000</option>
+          <option>1,000 – 10,000</option>
+          <option>10,000 – 50,000</option>
+          <option>50,000 – 200,000</option>
+          <option>200,000+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tell Us About Your Audience (optional)</label>
+        <textarea class="form-textarea" placeholder="E.g., I run a crypto trading Discord with 8,000 members focused on altcoin swings..."></textarea>
+      </div>
+      <button type="submit" class="btn-full" style="background:var(--yellow);color:var(--black);">🎸 Apply to Partner Program →</button>
+      <p class="form-note">Applications reviewed within 24 hours · Instant approval for qualified applicants</p>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="
+  position:fixed;bottom:2rem;right:2rem;z-index:2000;
+  background:var(--black);color:var(--cream);
+  border:2px solid var(--black);
+  padding:1rem 1.5rem;
+  font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:600;
+  box-shadow:5px 5px 0 var(--pink);
+  transform:translateY(100px);opacity:0;
+  transition:all 0.4s;
+  max-width:340px;line-height:1.5;
+"></div>
+
+<script>
+function openSubscribeModal() {
+  document.getElementById('subscribeModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function openAffiliateModal() {
+  document.getElementById('affiliateModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+}
+function closeModalOutside(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal('subscribeModal'); closeModal('affiliateModal'); }
+});
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+function calcEarnings() {
+  const n = parseInt(document.getElementById('refCount').value) || 0;
+  const monthly = (n * 12).toLocaleString('en-US', {style:'currency',currency:'USD',maximumFractionDigits:0});
+  const annual = (n * 12 * 12).toLocaleString('en-US', {style:'currency',currency:'USD',maximumFractionDigits:0});
+  document.getElementById('calcMonthly').textContent = monthly;
+  document.getElementById('calcAnnual').textContent = annual;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = msg;
+  t.style.transform = 'translateY(0)';
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.transform = 'translateY(100px)'; t.style.opacity = '0'; }, 4500);
+}
+function handleSubscribeSubmit(e) {
+  e.preventDefault();
+  closeModal('subscribeModal');
+  showToast('⚡ Welcome to SignalStrike! Check your inbox to confirm. First issue hits tomorrow at 6 AM EST.');
+}
+function handleAffiliateSubmit(e) {
+  e.preventDefault();
+  closeModal('affiliateModal');
+  showToast('🎸 Application received! Our partner team will reach out within 24 hours with your affiliate link.');
+}
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.feature-card,.testimonial,.how-step').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  obs.observe(el);
+});
+// Animate AI bars on scroll
+const barObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.ai-bar-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => { bar.style.width = w; }, 100);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.ai-visual').forEach(el => barObs.observe(el));
+</script>
+</body>
+</html>
