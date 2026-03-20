@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — SignalStrike Members</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff4d6d;
+    --yellow: #ffd60a;
+    --black: #080810;
+    --cream: #f0eeea;
+    --gray: #f5f0e8;
+    --mid: #c8c0b0;
+    --green-light: #22c55e;
+    --surface: #0f0f18;
+    --surface2: #14141f;
+    --surface3: #1a1a28;
+    --border: rgba(255,255,255,0.07);
+
+    /* Gradient palette */
+    --grad-gold: linear-gradient(135deg, #ffd60a 0%, #ffaa00 50%, #ff8c00 100%);
+    --grad-pink: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+    --grad-blue: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --grad-silver: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 50%, #cbd5e1 100%);
+    --grad-header: linear-gradient(90deg, #ffd60a 0%, #ffaa00 40%, #ff8c00 80%, #ff4d6d 100%);
+    --grad-nav-text: linear-gradient(90deg, #ffd60a, #ff8c00);
+    --grad-green: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    --metal-sheen: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 60%);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--black);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* Metallic dot pattern */
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.065) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-attachment: fixed;
+  }
+
+  /* Subtle metallic surface overlay on sections */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255,214,10,0.03) 0%, transparent 30%),
+      linear-gradient(135deg, rgba(255,255,255,0.015) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── LOADING SCREEN ── */
+  #loadingScreen {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--black);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1.5rem;
+    transition: opacity 0.5s ease;
+  }
+  #loadingScreen.hide { opacity: 0; pointer-events: none; }
+  .load-logo {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 2rem;
+    letter-spacing: -0.04em;
+    background: var(--grad-header);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .load-bar {
+    width: 200px; height: 2px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  .load-fill {
+    height: 100%;
+    background: var(--grad-header);
+    width: 0%; animation: loadIn 1.2s ease forwards;
+  }
+  @keyframes loadIn { to { width: 100%; } }
+
+  /* ── TOP NAV ── */
+  .topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,8,16,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,214,10,0.15);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 64px;
+    box-shadow: 0 1px 0 rgba(255,214,10,0.08), 0 4px 24px rgba(0,0,0,0.4);
+  }
+  /* Metallic sheen on nav */
+  .topnav::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--metal-sheen);
+    pointer-events: none;
+  }
+  .nav-logo {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.4rem;
+    letter-spacing: -0.04em; display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+    background: var(--grad-header);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-dot {
+    width: 8px; height: 8px; background: var(--green-light);
+    border: 2px solid var(--black); border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+    flex-shrink: 0;
+    -webkit-text-fill-color: initial;
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .nav-center {
+    display: flex; align-items: center; gap: 0.25rem;
+  }
+  .nav-tab {
+    font-family: 'Manrope', sans-serif; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #555; padding: 6px 16px; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.2s;
+    background: none; text-decoration: none;
+    border-radius: 4px;
+  }
+  .nav-tab:hover { color: var(--cream); background: rgba(255,255,255,0.04); }
+  .nav-tab.active {
+    background: rgba(255,214,10,0.08);
+    border-color: rgba(255,214,10,0.2);
+    background-image: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+  .nav-member-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,214,10,0.08);
+    border: 1px solid rgba(255,214,10,0.25);
+    padding: 5px 14px;
+    font-family: 'Manrope', sans-serif; font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    background-image: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-avatar {
+    width: 34px; height: 34px;
+    background: var(--grad-gold);
+    border: 2px solid rgba(255,214,10,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.85rem;
+    color: var(--black); cursor: pointer; overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 0 12px rgba(255,214,10,0.2);
+  }
+  .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .btn-logout {
+    background: none; border: 1px solid rgba(255,255,255,0.1);
+    color: #555; font-family: 'Manrope', sans-serif; font-size: 0.7rem;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 6px 14px; cursor: pointer; transition: all 0.2s; border-radius: 4px;
+  }
+  .btn-logout:hover { border-color: rgba(255,77,109,0.4); color: var(--pink); }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: linear-gradient(90deg, #1a1200 0%, #1f1600 50%, #1a1200 100%);
+    border-bottom: 1px solid rgba(255,214,10,0.2);
+    overflow: hidden; white-space: nowrap; padding: 8px 0;
+    position: relative; z-index: 1;
+  }
+  .ticker-inner {
+    display: inline-flex; gap: 3rem;
+    animation: ticker 30s linear infinite;
+  }
+  .ticker-item {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500;
+    color: rgba(255,214,10,0.7); text-transform: uppercase; letter-spacing: 0.06em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .up { color: #4ade80; font-weight: 600; }
+  .dn { color: var(--pink); font-weight: 600; }
+  @keyframes ticker { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* ── MAIN LAYOUT ── */
+  .dash-wrap {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 64px - 34px);
+    position: relative; z-index: 1;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    border-right: 1px solid rgba(255,214,10,0.08);
+    padding: 2rem 0;
+    position: sticky; top: 98px;
+    height: calc(100vh - 98px);
+    overflow-y: auto;
+    background: rgba(8,8,16,0.6);
+  }
+  .sidebar-section {
+    padding: 0 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .sidebar-label {
+    font-family: 'Manrope', sans-serif; font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.2em; color: #3a3a50;
+    margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; margin-bottom: 2px;
+    font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500;
+    color: #4a4a60; cursor: pointer; transition: all 0.15s;
+    border: 1px solid transparent; text-decoration: none; border-radius: 6px;
+  }
+  .sidebar-link:hover { color: var(--cream); background: var(--surface3); }
+  .sidebar-link.active {
+    color: var(--cream); background: rgba(255,214,10,0.06);
+    border-color: rgba(255,214,10,0.15);
+  }
+  .sidebar-link.active .sl-icon { filter: none; }
+  .sl-icon { font-size: 0.9rem; flex-shrink: 0; opacity: 0.7; }
+  .sidebar-link.active .sl-icon { opacity: 1; }
+  .sl-badge {
+    margin-left: auto;
+    background: rgba(255,77,109,0.15); color: #ff7a94;
+    border: 1px solid rgba(255,77,109,0.2);
+    font-size: 0.58rem; font-weight: 700; padding: 2px 7px;
+    border-radius: 3px; font-family: 'Manrope', sans-serif;
+  }
+  .sl-badge.new {
+    background: rgba(255,214,10,0.15); color: var(--yellow);
+    border-color: rgba(255,214,10,0.25);
+  }
+
+  /* Member card in sidebar */
+  .sidebar-member-card {
+    margin: 0 1.5rem 2rem;
+    background: var(--surface2);
+    border: 1px solid rgba(255,214,10,0.1);
+    padding: 1.25rem; border-radius: 8px;
+    position: relative; overflow: hidden;
+  }
+  .sidebar-member-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--grad-header);
+  }
+  .smc-avatar {
+    width: 42px; height: 42px; background: var(--grad-gold);
+    border: 2px solid rgba(255,214,10,0.2); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1rem;
+    color: var(--black); margin-bottom: 0.75rem; overflow: hidden;
+    box-shadow: 0 0 16px rgba(255,214,10,0.15);
+  }
+  .smc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .smc-name {
+    font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 0.85rem;
+    color: var(--cream); margin-bottom: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .smc-email { font-size: 0.72rem; color: #3a3a55; margin-bottom: 0.75rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .smc-since {
+    font-family: 'Manrope', sans-serif; font-size: 0.6rem; color: #3a3a50;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .smc-dot { width: 6px; height: 6px; background: var(--green-light); border-radius: 50%; }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 2.5rem;
+    max-width: 960px;
+  }
+
+  /* ── SECTION LABELS ── */
+  .dash-section { margin-bottom: 2.5rem; animation: fadeUp 0.5s ease forwards; }
+  .dash-section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.25rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .dash-section-title {
+    font-family: 'Manrope', sans-serif; font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    background: var(--grad-header);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dash-section-title::before {
+    content: '◆';
+    font-size: 0.5rem;
+    background: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .dash-section-link {
+    font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 500;
+    color: #3a3a55; text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+  .dash-section-link:hover { color: var(--yellow); }
+
+  /* ── WELCOME BANNER ── */
+  .welcome-banner {
+    background: var(--surface2);
+    border: 1px solid rgba(255,214,10,0.12);
+    padding: 2rem 2.5rem;
+    margin-bottom: 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 2rem; flex-wrap: wrap;
+    position: relative; overflow: hidden;
+    animation: fadeUp 0.5s ease forwards;
+    border-radius: 10px;
+  }
+  /* Metallic top stripe */
+  .welcome-banner::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--grad-header);
+  }
+  /* Dot grid inlay */
+  .welcome-banner::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,214,10,0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+  }
+  .wb-deco {
+    position: absolute; right: 2rem; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Manrope', sans-serif;
+    font-size: 8rem; font-weight: 800;
+    background: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.04;
+    line-height: 1; pointer-events: none; user-select: none;
+  }
+  .wb-tag {
+    background: rgba(255,214,10,0.08);
+    border: 1px solid rgba(255,214,10,0.2);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 3px 12px; display: inline-block; margin-bottom: 0.75rem;
+    border-radius: 3px;
+    background-image: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative; z-index: 1;
+  }
+  .wb-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1.4rem, 2.5vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1.1; margin-bottom: 0.5rem;
+    letter-spacing: -0.03em;
+    position: relative; z-index: 1;
+  }
+  .wb-title em {
+    font-style: italic;
+    background: var(--grad-header);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .wb-sub { font-size: 0.83rem; color: #555570; line-height: 1.6; position: relative; z-index: 1; font-weight: 400; }
+  .wb-stats { display: flex; gap: 2rem; flex-shrink: 0; position: relative; z-index: 1; }
+  .wb-stat .num {
+    font-family: 'Manrope', sans-serif; font-size: 1.8rem; font-weight: 800;
+    line-height: 1;
+    background: var(--grad-header);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .wb-stat .num span { -webkit-text-fill-color: transparent; }
+  .wb-stat .lbl {
+    font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.12em; color: #3a3a55; margin-top: 3px;
+  }
+
+  /* ── LATEST ISSUE CARD ── */
+  .issue-card {
+    background: var(--surface2); border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden; margin-bottom: 1rem;
+    transition: border-color 0.2s; border-radius: 8px;
+  }
+  .issue-card:hover { border-color: rgba(255,214,10,0.2); }
+  .issue-card-header {
+    background: linear-gradient(90deg, #161612 0%, #1a1810 100%);
+    border-bottom: 1px solid rgba(255,214,10,0.12);
+    padding: 0.85rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative;
+  }
+  .issue-card-header::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--grad-header);
+  }
+  .ich-title {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    background: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .ich-date { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 400; color: #3a3a50; }
+  .issue-card-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .icb-section {}
+  .icb-label {
+    background: var(--grad-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.6rem;
+  }
+  .icb-line { font-family: 'Inter', sans-serif; font-size: 0.79rem; color: #444458; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 0.35rem; margin-bottom: 0.35rem; }
+  .icb-line:last-child { border-bottom: none; }
+  .icb-line strong { color: #888898; font-weight: 500; }
+  .issue-card-footer {
+    padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.04);
+    display: flex; gap: 0.75rem; align-items: center;
+  }
+  .btn-read {
+    background: var(--grad-pink);
+    color: white; border: none;
+    padding: 8px 22px; font-family: 'Manrope', sans-serif; font-size: 0.73rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+    border-radius: 5px; box-shadow: 0 2px 12px rgba(255,77,109,0.25);
+  }
+  .btn-read:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,77,109,0.35); }
+  .btn-archive {
+    background: transparent; color: #444460; border: 1px solid rgba(255,255,255,0.08);
+    padding: 8px 20px; font-family: 'Manrope', sans-serif; font-size: 0.73rem;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    cursor: pointer; transition: all 0.2s; text-decoration: none; border-radius: 5px;
+  }
+  .btn-archive:hover { color: var(--cream); border-color: rgba(255,255,255,0.2); }
+
+  /* ── SIGNAL GRID ── */
+  .signal-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; overflow: hidden;
+  }
+  .signal-cell {
+    padding: 1.25rem; border-right: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.15s;
+    background: var(--surface2);
+  }
+  .signal-cell:nth-child(3n) { border-right: none; }
+  .signal-cell:nth-last-child(-n+3) { border-bottom: none; }
+  .signal-cell:hover { background: var(--surface3); }
+  .sc-coin {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+  .sc-name {
+    font-family: 'Manrope', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--cream);
+  }
+  .sc-badge {
+    padding: 2px 8px; font-family: 'Manrope', sans-serif;
+    font-size: 0.56rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    border-radius: 3px;
+  }
+  .badge-buy { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+  .badge-watch { background: rgba(255,214,10,0.1); color: var(--yellow); border: 1px solid rgba(255,214,10,0.2); }
+  .badge-reduce { background: rgba(255,77,109,0.1); color: var(--pink); border: 1px solid rgba(255,77,109,0.2); }
+  .sc-pct {
+    font-family: 'Manrope', sans-serif; font-size: 1.6rem; font-weight: 800;
+    line-height: 1; margin-bottom: 0.4rem; letter-spacing: -0.03em;
+  }
+  .sc-pct.up {
+    background: var(--grad-green);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sc-pct.dn { color: var(--pink); }
+  .sc-meta { font-size: 0.7rem; color: #3a3a55; line-height: 1.4; font-weight: 400; }
+  .sc-conf {
+    margin-top: 0.5rem; display: flex; align-items: center; gap: 6px;
+  }
+  .conf-bar { flex: 1; height: 2px; background: rgba(255,255,255,0.06); border-radius: 1px; }
+  .conf-fill { height: 100%; background: var(--grad-gold); border-radius: 1px; }
+  .conf-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: #3a3a55; white-space: nowrap; }
+
+  /* ── WHALE ALERT ROWS ── */
+  .whale-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface2); border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 0.5rem; transition: border-color 0.2s; border-radius: 7px;
+  }
+  .whale-row:hover { border-color: rgba(255,214,10,0.15); }
+  .whale-icon {
+    width: 36px; height: 36px; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .whale-main { flex: 1; }
+  .whale-addr {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500;
+    color: #888898; margin-bottom: 2px;
+  }
+  .whale-action { font-size: 0.77rem; color: #444458; font-weight: 400; }
+  .whale-action strong { color: #888898; font-weight: 500; }
+  .whale-amount {
+    font-family: 'Manrope', sans-serif; font-size: 1.05rem; font-weight: 700;
+    text-align: right; flex-shrink: 0; letter-spacing: -0.02em;
+  }
+  .whale-amount.sell { color: var(--pink); }
+  .whale-amount.buy { color: #4ade80; }
+  .whale-time { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: #2e2e45; margin-top: 2px; text-align: right; }
+
+  /* ── AI METRICS ── */
+  .metrics-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; overflow: hidden;
+  }
+  .metric-cell {
+    padding: 1.5rem; border-right: 1px solid rgba(255,255,255,0.05);
+    text-align: center; background: var(--surface2);
+    position: relative;
+  }
+  .metric-cell::before {
+    content: '';
+    position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+    background: var(--grad-header);
+    opacity: 0.4;
+  }
+  .metric-cell:last-child { border-right: none; }
+  .mc-val {
+    font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 800;
+    line-height: 1; margin-bottom: 0.4rem; letter-spacing: -0.04em;
+  }
+  .mc-label {
+    font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.12em; color: #3a3a55;
+  }
+
+  /* ── ARCHIVE ROWS ── */
+  .archive-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid rgba(255,255,255,0.05); margin-bottom: 0.4rem;
+    transition: all 0.15s; cursor: pointer; text-decoration: none; color: inherit;
+    border-radius: 6px; background: var(--surface2);
+  }
+  .archive-row:hover { background: var(--surface3); border-color: rgba(255,255,255,0.1); }
+  .ar-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 500;
+    color: #2e2e45; flex-shrink: 0; width: 60px;
+  }
+  .ar-title { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--cream); flex: 1; }
+  .ar-date { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #3a3a55; flex-shrink: 0; }
+  .ar-tag {
+    padding: 2px 8px; font-family: 'Manrope', sans-serif;
+    font-size: 0.56rem; font-weight: 700; text-transform: uppercase;
+    background: rgba(255,214,10,0.08); color: rgba(255,214,10,0.7);
+    border: 1px solid rgba(255,214,10,0.15); flex-shrink: 0; border-radius: 3px;
+  }
+
+  /* ── DEFI CARDS ── */
+  .defi-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0; border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; overflow: hidden;
+  }
+  .defi-card {
+    padding: 1.5rem; border-right: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: var(--surface2);
+    transition: background 0.15s;
+  }
+  .defi-card:hover { background: var(--surface3); }
+  .defi-card:nth-child(2n) { border-right: none; }
+  .defi-card:nth-last-child(-n+2) { border-bottom: none; }
+  .dc-protocol {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500;
+    color: #3a3a55; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.4rem;
+  }
+  .dc-title {
+    font-family: 'Manrope', sans-serif; font-size: 1rem; font-weight: 700;
+    color: var(--cream); margin-bottom: 0.5rem; line-height: 1.2; letter-spacing: -0.02em;
+  }
+  .dc-apy {
+    font-family: 'Manrope', sans-serif; font-size: 2rem; font-weight: 800;
+    line-height: 1; margin-bottom: 0.4rem; letter-spacing: -0.04em;
+    background: var(--grad-green);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .dc-desc { font-size: 0.76rem; color: #3a3a55; line-height: 1.55; font-weight: 400; }
+  .dc-tag {
+    display: inline-block; margin-top: 0.75rem;
+    background: rgba(34,197,94,0.08); color: #4ade80;
+    border: 1px solid rgba(34,197,94,0.15);
+    font-family: 'Manrope', sans-serif; font-size: 0.58rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  /* ── REWARDS SECTION ── */
+  @keyframes rewardPulse {
+    0%,100%{ box-shadow: 0 0 0 0 rgba(255,214,10,0); }
+    50%{ box-shadow: 0 0 0 6px rgba(255,214,10,0.12); }
+  }
+  @keyframes shimmer {
+    0%{ background-position: -200% center; }
+    100%{ background-position: 200% center; }
+  }
+  @keyframes rewardFloat {
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-3px); }
+  }
+  @keyframes claimPop {
+    0%{ transform: scale(1); }
+    40%{ transform: scale(1.05); }
+    100%{ transform: scale(1); }
+  }
+  @keyframes countDown {
+    from{ width: 100%; }
+    to{ width: 0%; }
+  }
+
+  .rewards-section { }
+  .rewards-unclaimed-badge {
+    background: rgba(255,214,10,0.12); color: var(--yellow);
+    border: 1px solid rgba(255,214,10,0.25);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    padding: 3px 10px; border-radius: 3px; font-weight: 500;
+    animation: rewardPulse 2.5s ease infinite;
+  }
+  .bybit-check-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 1px solid rgba(255,165,0,0.3);
+    color: #ffaa00; font-family: 'Manrope', sans-serif;
+    font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 5px 14px; cursor: pointer; border-radius: 5px;
+    transition: all 0.2s;
+  }
+  .bybit-check-btn:hover { border-color: rgba(255,165,0,0.6); color: #ffcc00; transform: translateY(-1px); }
+  .bybit-icon { font-size: 0.75rem; }
+
+  .bybit-banner {
+    background: linear-gradient(135deg, rgba(255,165,0,0.06), rgba(255,77,109,0.04));
+    border: 1px solid rgba(255,165,0,0.2);
+    border-radius: 8px; padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.5rem; flex-wrap: wrap;
+  }
+  .bybit-banner.verified {
+    background: linear-gradient(135deg, rgba(34,197,94,0.06), rgba(34,197,94,0.03));
+    border-color: rgba(34,197,94,0.2);
+  }
+  .bybit-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .bybit-banner-text { flex: 1; }
+  .bybit-banner-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 0.85rem; color: var(--cream); margin-bottom: 2px; }
+  .bybit-banner-sub { font-size: 0.75rem; color: #4a4a65; line-height: 1.5; }
+  .bybit-verify-btn {
+    background: linear-gradient(135deg, #ff8c00, #ff4d6d);
+    color: white; border: none; padding: 8px 18px;
+    font-family: 'Manrope', sans-serif; font-size: 0.72rem; font-weight: 700;
+    cursor: pointer; border-radius: 5px; white-space: nowrap;
+    transition: all 0.2s; box-shadow: 0 2px 12px rgba(255,140,0,0.25);
+  }
+  .bybit-verify-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,140,0,0.35); }
+
+  .rewards-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .reward-card {
+    position: relative; overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    transition: all 0.25s;
+    animation: rewardFloat 4s ease-in-out infinite;
+  }
+  .reward-card:nth-child(2) { animation-delay: 0.3s; }
+  .reward-card:nth-child(3) { animation-delay: 0.6s; }
+  .reward-card:nth-child(4) { animation-delay: 0.9s; }
+  .reward-card:nth-child(5) { animation-delay: 1.2s; }
+  .reward-card:nth-child(6) { animation-delay: 1.5s; }
+  .reward-card:hover { border-color: rgba(255,214,10,0.2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation-play-state: paused; }
+  .reward-card.is-claimed { opacity: 0.5; animation: none; }
+  .reward-card-inner { padding: 1.1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .reward-icon-wrap {
+    width: 38px; height: 38px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .r-gold { background: rgba(255,214,10,0.12); border: 1px solid rgba(255,214,10,0.2); }
+  .r-silver { background: rgba(200,200,220,0.1); border: 1px solid rgba(200,200,220,0.15); }
+  .r-bybit { background: rgba(255,140,0,0.12); border: 1px solid rgba(255,140,0,0.25);
+    animation: rewardPulse 2s ease infinite; }
+  .r-pink { background: rgba(255,77,109,0.1); border: 1px solid rgba(255,77,109,0.2); }
+  .r-green { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
+
+  .reward-info { flex: 1; }
+  .reward-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 0.8rem; color: var(--cream); margin-bottom: 2px; }
+  .reward-desc { font-size: 0.7rem; color: #3a3a58; line-height: 1.4; margin-bottom: 0.35rem; }
+  .reward-val {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.85rem;
+    background: var(--grad-gold);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .reward-val.bybit-locked {
+    background: none; -webkit-text-fill-color: initial;
+    color: #555570; font-size: 0.72rem; font-weight: 500;
+  }
+  .reward-claim-btn {
+    width: 100%; padding: 7px 0;
+    background: rgba(255,214,10,0.08);
+    border: 1px solid rgba(255,214,10,0.2);
+    color: var(--yellow); font-family: 'Manrope', sans-serif;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; border-radius: 5px;
+    transition: all 0.2s;
+    /* shimmer effect */
+    background-image: linear-gradient(90deg, rgba(255,214,10,0.08) 0%, rgba(255,214,10,0.16) 50%, rgba(255,214,10,0.08) 100%);
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+  }
+  .reward-claim-btn:hover:not(:disabled) {
+    background-color: rgba(255,214,10,0.15);
+    border-color: rgba(255,214,10,0.4);
+    animation: claimPop 0.3s ease forwards, shimmer 1s linear infinite;
+  }
+  .reward-claim-btn.bybit-req {
+    background-image: none; animation: none;
+    background: rgba(80,80,100,0.1);
+    border-color: rgba(80,80,100,0.2);
+    color: #3a3a55; cursor: not-allowed;
+  }
+  .reward-claim-btn.bybit-req.unlocked {
+    background: rgba(255,140,0,0.1); border-color: rgba(255,140,0,0.3);
+    color: #ffaa00; cursor: pointer;
+    background-image: linear-gradient(90deg, rgba(255,140,0,0.08) 0%, rgba(255,140,0,0.2) 50%, rgba(255,140,0,0.08) 100%);
+    background-size: 200% auto;
+    animation: shimmer 2s linear infinite;
+  }
+  .reward-claim-btn.bybit-req.unlocked:disabled { cursor: not-allowed; }
+
+  .reward-claimed-overlay {
+    position: absolute; inset: 0;
+    background: rgba(8,8,16,0.88);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    border-radius: 10px;
+  }
+  .reward-claimed-overlay span {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.95rem;
+    background: var(--grad-green);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.05em;
+  }
+  .reward-card.is-claimed .reward-claimed-overlay { opacity: 1; pointer-events: auto; }
+
+  /* ── BYBIT MODAL ── */
+  .bybit-modal-box {
+    background: var(--surface2);
+    border: 1px solid rgba(255,165,0,0.2);
+    border-radius: 12px; padding: 2rem;
+    max-width: 440px; width: 90%;
+    position: relative;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,165,0,0.1);
+  }
+  .bybit-modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; color: #444;
+    font-size: 1rem; cursor: pointer; padding: 4px 8px;
+    border-radius: 4px; transition: color 0.2s;
+  }
+  .bybit-modal-close:hover { color: var(--cream); }
+  .bybit-modal-logo {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    background: var(--grad-header);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 1.5rem;
+  }
+  .bybit-modal-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .bybit-modal-title { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--cream); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+  .bybit-modal-desc { font-size: 0.82rem; color: #4a4a65; line-height: 1.6; margin-bottom: 1.25rem; }
+  .bybit-modal-desc strong { color: var(--yellow); font-weight: 700; -webkit-text-fill-color: initial; }
+  .bybit-modal-perks {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;
+  }
+  .bybit-perk {
+    background: rgba(255,165,0,0.06); border: 1px solid rgba(255,165,0,0.12);
+    padding: 8px 12px; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 500; color: #888898;
+  }
+  .bybit-modal-actions { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .bybit-modal-yes {
+    background: linear-gradient(135deg, #ffaa00, #ff8c00);
+    color: var(--black); border: none; padding: 12px 0;
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.85rem;
+    cursor: pointer; border-radius: 7px; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(255,165,0,0.3);
+  }
+  .bybit-modal-yes:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,165,0,0.4); }
+  .bybit-modal-no {
+    background: transparent; color: #3a3a55; border: 1px solid rgba(255,255,255,0.08);
+    padding: 10px 0; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 0.82rem;
+    cursor: pointer; border-radius: 7px; transition: all 0.2s;
+  }
+  .bybit-modal-no:hover { color: var(--cream); border-color: rgba(255,255,255,0.2); }
+  .bybit-modal-note { font-size: 0.72rem; color: #333350; text-align: center; }
+  .bybit-modal-note a { color: #ffaa00; text-decoration: none; }
+  .bybit-modal-note a:hover { text-decoration: underline; }
+
+  /* ── PARTNER PROGRAM ── */
+  .partner-hero {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 2rem;
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 2rem; margin-bottom: 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .partner-hero::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--grad-header);
+  }
+  .partner-tag {
+    background: rgba(255,214,10,0.08);
+    border: 1px solid rgba(255,214,10,0.2);
+    display: inline-block; padding: 3px 12px; border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500;
+    background-image: var(--grad-gold);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 0.75rem;
+  }
+  .partner-headline {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.5rem;
+    letter-spacing: -0.03em; color: var(--cream); margin-bottom: 0.6rem; line-height: 1.2;
+  }
+  .partner-headline em {
+    font-style: italic;
+    background: var(--grad-header);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .partner-sub { font-size: 0.82rem; color: #4a4a65; line-height: 1.7; margin-bottom: 1.25rem; max-width: 480px; }
+  .partner-features { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; }
+  .pf-item { font-size: 0.8rem; color: #666678; display: flex; align-items: center; gap: 8px; font-weight: 400; }
+  .pf-check { color: #4ade80; font-size: 0.75rem; }
+  .partner-link-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 7px; padding: 0.85rem 1rem;
+  }
+  .partner-link-label { font-family: 'Manrope', sans-serif; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #3a3a55; margin-bottom: 0.4rem; }
+  .partner-link-row { display: flex; align-items: center; gap: 0.75rem; }
+  .partner-link-url {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #888898;
+    flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .partner-copy-btn {
+    background: rgba(255,214,10,0.1); border: 1px solid rgba(255,214,10,0.2);
+    color: var(--yellow); font-family: 'Manrope', sans-serif;
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; padding: 5px 14px; cursor: pointer;
+    border-radius: 4px; white-space: nowrap; transition: all 0.2s;
+  }
+  .partner-copy-btn:hover { background: rgba(255,214,10,0.18); }
+
+  .partner-stats-mini {
+    display: flex; flex-direction: column; gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px; min-width: 140px;
+  }
+  .psm-item { text-align: center; }
+  .psm-val {
+    font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.4rem;
+    letter-spacing: -0.03em;
+    background: var(--grad-header);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .psm-lbl { font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: #3a3a55; margin-top: 2px; }
+
+  /* Calculator */
+  .calc-section {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem;
+  }
+  .calc-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,214,10,0.03);
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .calc-title { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--cream); }
+  .calc-sub { font-size: 0.73rem; color: #3a3a55; }
+  .calc-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center; }
+  .calc-slider-wrap { display: flex; flex-direction: column; gap: 0.5rem; }
+  .calc-slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #666678; font-weight: 400; }
+  .calc-slider-val { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 0.85rem; color: var(--yellow); }
+  .calc-range {
+    width: 100%; -webkit-appearance: none; appearance: none;
+    height: 3px; border-radius: 2px;
+    background: rgba(255,255,255,0.08); outline: none; cursor: pointer;
+  }
+  .calc-range::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--grad-gold); cursor: pointer; border: 2px solid var(--black);
+    box-shadow: 0 0 8px rgba(255,214,10,0.4);
+  }
+  .calc-slider-ticks { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.56rem; color: #2e2e45; }
+  .calc-results { display: flex; flex-direction: column; gap: 0.5rem; }
+  .calc-result-item { display: flex; justify-content: space-between; align-items: center; }
+  .cr-label { font-size: 0.73rem; color: #444458; font-weight: 400; }
+  .cr-val { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; }
+  .cr-val.green { background: var(--grad-green); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cr-val.gold { background: var(--grad-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cr-val.pink { background: var(--grad-pink); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .calc-result-divider { height: 1px; background: rgba(255,255,255,0.04); }
+  .calc-note { padding: 0.75rem 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: #2e2e45; border-top: 1px solid rgba(255,255,255,0.04); }
+
+  /* Partner tiers table */
+  .partner-tiers { border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; }
+  .tier-row {
+    display: grid; grid-template-columns: 160px 100px 140px 1fr;
+    gap: 0; padding: 0.8rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.78rem; color: #555568; align-items: center;
+    transition: background 0.15s;
+  }
+  .tier-row:last-child { border-bottom: none; }
+  .tier-row:hover:not(.tier-head) { background: var(--surface3); }
+  .tier-head {
+    background: rgba(255,214,10,0.04);
+    font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.12em; color: #3a3a55;
+  }
+  .tier-elite { background: rgba(255,214,10,0.03); }
+  .tier-badge {
+    font-family: 'Manrope', sans-serif; font-size: 0.72rem; font-weight: 700;
+    padding: 2px 10px; border-radius: 3px;
+  }
+  .t-bronze { background: rgba(180,120,60,0.12); color: #c8834a; border: 1px solid rgba(180,120,60,0.2); }
+  .t-silver { background: rgba(160,160,180,0.1); color: #a0a0bc; border: 1px solid rgba(160,160,180,0.2); }
+  .t-gold { background: rgba(255,214,10,0.1); color: var(--yellow); border: 1px solid rgba(255,214,10,0.2); }
+  .t-elite { background: var(--grad-header); color: var(--black); border: none; font-weight: 800; }
+
+  /* ── SUBSCRIBE PROMPT ── */
+  .sub-prompt {
+    background: var(--grad-pink);
+    border: 1px solid rgba(255,77,109,0.3);
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    flex-wrap: wrap; margin-bottom: 2.5rem;
+    border-radius: 8px; box-shadow: 0 4px 24px rgba(255,77,109,0.2);
+  }
+  .sp-text .sp-title { font-family: 'Manrope', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
+  .sp-text .sp-sub { font-size: 0.82rem; color: rgba(255,255,255,0.75); }
+  .btn-subscribe {
+    background: white; color: var(--black); border: none;
+    padding: 10px 24px; font-family: 'Manrope', sans-serif;
+    font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; white-space: nowrap;
+    border-radius: 6px; box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    transition: all 0.2s; text-decoration: none; display: inline-block;
+  }
+  .btn-subscribe:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
+  .delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 2000;
+    background: var(--surface2); color: var(--cream);
+    border: 1px solid rgba(255,214,10,0.2);
+    padding: 1rem 1.5rem; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,214,10,0.1);
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.4s; max-width: 320px; line-height: 1.5;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .dash-wrap { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .signal-grid { grid-template-columns: 1fr 1fr; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .metric-cell:nth-child(2n) { border-right: none; }
+    .metric-cell:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,0.05); }
+    .defi-grid { grid-template-columns: 1fr; }
+    .issue-card-body { grid-template-columns: 1fr; }
+    .rewards-grid { grid-template-columns: 1fr 1fr; }
+    .partner-hero { grid-template-columns: 1fr; }
+    .calc-body { grid-template-columns: 1fr; }
+    .tier-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  }
+  @media (max-width: 600px) {
+    .signal-grid { grid-template-columns: 1fr; }
+    .signal-cell { border-right: none !important; }
+    .topnav { padding: 0 1rem; }
+    .nav-center { display: none; }
+    .content { padding: 1.5rem 1rem; }
+    .wb-stats { display: none; }
+    .rewards-grid { grid-template-columns: 1fr; }
+    .bybit-modal-perks { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <div class="load-logo">SignalStrike</div>
+  <div class="load-bar"><div class="load-fill"></div></div>
+</div>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="index.html" class="nav-logo">SignalStrike <span class="nav-dot"></span></a>
+
+  <div class="nav-center">
+    <span class="nav-tab active">Dashboard</span>
+    <a href="#archive" class="nav-tab">Archive</a>
+    <a href="#signals" class="nav-tab">Signals</a>
+    <a href="#defi" class="nav-tab">DeFi</a>
+  </div>
+
+  <div class="nav-right">
+    <div class="nav-member-badge">⚡ Pro Member</div>
+    <div class="nav-avatar" id="navAvatar"></div>
+    <button class="btn-logout" id="logoutBtn">Sign Out</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span> $84,210</span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span> $3,102</span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span> $142.80</span>
+    <span class="ticker-item">BNB <span class="up">▲ +0.95%</span> $598</span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span> $0.178</span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span> $7.48</span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span> $18.22</span>
+    <span class="ticker-item">AVAX <span class="dn">▼ -0.42%</span> $36.10</span>
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span> $84,210</span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span> $3,102</span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span> $142.80</span>
+    <span class="ticker-item">BNB <span class="up">▲ +0.95%</span> $598</span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span> $0.178</span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span> $7.48</span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span> $18.22</span>
+    <span class="ticker-item">AVAX <span class="dn">▼ -0.42%</span> $36.10</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="dash-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-member-card">
+      <div class="smc-avatar" id="sidebarAvatar"></div>
+      <div class="smc-name" id="sidebarName">Loading…</div>
+      <div class="smc-email" id="sidebarEmail"></div>
+      <div class="smc-since">
+        <span class="smc-dot"></span>
+        <span id="sidebarSince">Member since —</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a href="#rewards" class="sidebar-link rewards-link"><span class="sl-icon">🎁</span> Rewards <span class="sl-badge new rewards-badge-count">12</span></a>
+      <a href="#today" class="sidebar-link active"><span class="sl-icon">📬</span> Today's Brief <span class="sl-badge new">NEW</span></a>
+      <a href="#signals" class="sidebar-link"><span class="sl-icon">📡</span> AI Signals</a>
+      <a href="#whales" class="sidebar-link"><span class="sl-icon">🐋</span> Whale Radar</a>
+      <a href="#defi" class="sidebar-link"><span class="sl-icon">🌾</span> DeFi Alpha</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Content</div>
+      <a href="#archive" class="sidebar-link"><span class="sl-icon">📂</span> Issue Archive <span class="sl-badge">285</span></a>
+      <a href="#deepdive" class="sidebar-link"><span class="sl-icon">🔬</span> Deep Dives</a>
+      <a href="#regulatory" class="sidebar-link"><span class="sl-icon">⚖️</span> Regulatory Radar</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="sidebar-link"><span class="sl-icon">💳</span> Manage Billing</a>
+      <a href="#partner" class="sidebar-link"><span class="sl-icon">💰</span> Partner Program</a>
+      <a href="#" class="sidebar-link" id="sidebarLogout"><span class="sl-icon">🚪</span> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- Welcome banner -->
+    <div class="welcome-banner">
+      <div>
+        <div class="wb-tag">🌅 Good Morning — Friday, Mar 20, 2026</div>
+        <div class="wb-title" id="welcomeTitle">Welcome back, <em>Trader</em></div>
+        <div class="wb-sub" id="welcomeSub">Your daily AI brief is ready. Markets open in 2h 14m. 6 signals flagged overnight.</div>
+      </div>
+      <div class="wb-stats">
+        <div class="wb-stat">
+          <div class="num">97.2<span>%</span></div>
+          <div class="lbl">Signal Accuracy</div>
+        </div>
+        <div class="wb-stat">
+          <div class="num">285<span>+</span></div>
+          <div class="lbl">Issues in Archive</div>
+        </div>
+      </div>
+      <div class="wb-deco">₿</div>
+    </div>
+
+    <!-- Subscribe prompt -->
+    <div class="sub-prompt" id="subPrompt" style="display:none;">
+      <div class="sp-text">
+        <div class="sp-title">You're on a free preview. Unlock full access →</div>
+        <div class="sp-sub">Get all AI signals, whale alerts, deep dives & flash alerts from $29.99/mo.</div>
+      </div>
+      <a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="btn-subscribe">🚀 Subscribe Now</a>
+    </div>
+
+    <!-- REWARDS SECTION -->
+    <div class="dash-section rewards-section" id="rewards">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Member Rewards</div>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span class="rewards-unclaimed-badge">12 unclaimed</span>
+          <button class="bybit-check-btn" id="bybitCheckBtn" onclick="openBybitModal()">
+            <span class="bybit-icon">⚡</span> Verify Bybit Eligibility
+          </button>
+        </div>
+      </div>
+
+      <!-- Bybit verification banner -->
+      <div class="bybit-banner" id="bybitBanner">
+        <div class="bybit-banner-icon">🔒</div>
+        <div class="bybit-banner-text">
+          <div class="bybit-banner-title">Unlock Bybit Trading Rewards</div>
+          <div class="bybit-banner-sub">Some rewards require a verified Bybit account. Confirm eligibility to unlock exclusive trading bonuses.</div>
+        </div>
+        <button class="bybit-verify-btn" onclick="openBybitModal()">Verify Now →</button>
+      </div>
+
+      <!-- Rewards grid -->
+      <div class="rewards-grid" id="rewardsGrid">
+
+        <div class="reward-card" data-id="1" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-gold"><span>🏆</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Welcome Bonus</div>
+              <div class="reward-desc">$10 credit for new Pro members</div>
+              <div class="reward-val">$10.00</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 1)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="2" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-silver"><span>📊</span></div>
+            <div class="reward-info">
+              <div class="reward-title">30-Day Streak Badge</div>
+              <div class="reward-desc">Read 30 consecutive daily briefs</div>
+              <div class="reward-val">Badge + 1 mo. free</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 2)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="3" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>⚡</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Bybit Trading Bonus</div>
+              <div class="reward-desc">$50 trading fee rebate via Bybit</div>
+              <div class="reward-val bybit-locked" id="r3-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r3-btn" onclick="claimReward(this, 3)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="4" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-pink"><span>🎯</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Signal Accuracy Award</div>
+              <div class="reward-desc">First 10 correct calls tracked</div>
+              <div class="reward-val">$5.00 credit</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 4)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="5" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>📈</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Bybit VIP Upgrade</div>
+              <div class="reward-desc">3-month VIP tier upgrade voucher</div>
+              <div class="reward-val bybit-locked" id="r5-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r5-btn" onclick="claimReward(this, 5)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="6" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-green"><span>🐋</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Whale Watcher</div>
+              <div class="reward-desc">Followed 5 whale wallets</div>
+              <div class="reward-val">Exclusive report</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 6)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="7" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-gold"><span>📅</span></div>
+            <div class="reward-info">
+              <div class="reward-title">3-Month Milestone</div>
+              <div class="reward-desc">Active member for 90 days</div>
+              <div class="reward-val">$15.00 credit</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 7)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="8" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>💎</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Bybit Deposit Match</div>
+              <div class="reward-desc">Up to $100 deposit match bonus</div>
+              <div class="reward-val bybit-locked" id="r8-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r8-btn" onclick="claimReward(this, 8)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="9" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-silver"><span>🤝</span></div>
+            <div class="reward-info">
+              <div class="reward-title">First Referral</div>
+              <div class="reward-desc">Referred your first subscriber</div>
+              <div class="reward-val">$14.99 bonus</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 9)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="10" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-pink"><span>🔬</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Deep Dive Completion</div>
+              <div class="reward-desc">Read all 5 deep dive reports</div>
+              <div class="reward-val">Premium report pack</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 10)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="11" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>🚀</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Bybit Futures Bonus</div>
+              <div class="reward-desc">$25 futures trading credit</div>
+              <div class="reward-val bybit-locked" id="r11-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r11-btn" onclick="claimReward(this, 11)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="12" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-gold"><span>👑</span></div>
+            <div class="reward-info">
+              <div class="reward-title">Annual Member Crown</div>
+              <div class="reward-desc">Celebrate your 1-year anniversary</div>
+              <div class="reward-val">1 month free + badge</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 12)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PARTNER PROGRAM -->
+    <div class="dash-section" id="partner">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Partner Program — Earn 50% Recurring</div>
+        <a href="#" class="dash-section-link">Get Your Link →</a>
+      </div>
+
+      <!-- Partner hero card -->
+      <div class="partner-hero">
+        <div class="partner-hero-left">
+          <div class="partner-tag">💰 50% Lifetime Recurring Commission</div>
+          <div class="partner-headline">Turn your audience into <em>passive income</em></div>
+          <div class="partner-sub">Every subscriber you refer pays you 50% of their monthly fee — forever. No caps, no expiry, no catch. Paid monthly to your wallet or bank.</div>
+          <div class="partner-features">
+            <div class="pf-item"><span class="pf-check">✓</span> $14.99 per referral per month</div>
+            <div class="pf-item"><span class="pf-check">✓</span> Lifetime recurring — not one-time</div>
+            <div class="pf-item"><span class="pf-check">✓</span> Real-time dashboard tracking</div>
+            <div class="pf-item"><span class="pf-check">✓</span> Paid monthly via PayPal / crypto</div>
+          </div>
+          <div class="partner-link-box">
+            <div class="partner-link-label">Your referral link</div>
+            <div class="partner-link-row">
+              <span class="partner-link-url" id="partnerLinkUrl">signalstrike.com/ref/trader123</span>
+              <button class="partner-copy-btn" onclick="copyPartnerLink()">Copy Link</button>
+            </div>
+          </div>
+        </div>
+        <div class="partner-hero-right">
+          <div class="partner-stats-mini">
+            <div class="psm-item">
+              <div class="psm-val">0</div>
+              <div class="psm-lbl">Active Referrals</div>
+            </div>
+            <div class="psm-item">
+              <div class="psm-val">$0</div>
+              <div class="psm-lbl">Total Earned</div>
+            </div>
+            <div class="psm-item">
+              <div class="psm-val">$0</div>
+              <div class="psm-lbl">This Month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profit calculator -->
+      <div class="calc-section">
+        <div class="calc-header">
+          <div class="calc-title">💸 Earnings Calculator</div>
+          <div class="calc-sub">See what your audience could earn you monthly</div>
+        </div>
+        <div class="calc-body">
+          <div class="calc-slider-wrap">
+            <div class="calc-slider-label">
+              <span>Referrals per month</span>
+              <span class="calc-slider-val" id="refCount">10</span>
+            </div>
+            <input type="range" id="refSlider" min="1" max="500" value="10" class="calc-range" oninput="updateCalc()">
+            <div class="calc-slider-ticks"><span>1</span><span>100</span><span>250</span><span>500</span></div>
+          </div>
+          <div class="calc-slider-wrap">
+            <div class="calc-slider-label">
+              <span>Avg. retention (months)</span>
+              <span class="calc-slider-val" id="retentionMonths">6</span>
+            </div>
+            <input type="range" id="retSlider" min="1" max="24" value="6" class="calc-range" oninput="updateCalc()">
+            <div class="calc-slider-ticks"><span>1mo</span><span>6mo</span><span>12mo</span><span>24mo</span></div>
+          </div>
+          <div class="calc-results">
+            <div class="calc-result-item">
+              <div class="cr-label">Monthly income</div>
+              <div class="cr-val green" id="calcMonthly">$149.90</div>
+            </div>
+            <div class="calc-result-divider"></div>
+            <div class="calc-result-item">
+              <div class="cr-label">Annual income</div>
+              <div class="cr-val gold" id="calcAnnual">$1,798.80</div>
+            </div>
+            <div class="calc-result-divider"></div>
+            <div class="calc-result-item">
+              <div class="cr-label">Lifetime value</div>
+              <div class="cr-val pink" id="calcLifetime">$899.40</div>
+            </div>
+          </div>
+        </div>
+        <div class="calc-note">Based on $29.99/mo subscription · 50% commission = $14.99 per referral per month</div>
+      </div>
+
+      <!-- Tier table -->
+      <div class="partner-tiers">
+        <div class="tier-row tier-head">
+          <div>Tier</div><div>Referrals</div><div>Monthly</div><div>Commission</div>
+        </div>
+        <div class="tier-row">
+          <div><span class="tier-badge t-bronze">🥉 Starter</span></div>
+          <div>1–9</div>
+          <div>$14.99 each</div>
+          <div>50% recurring</div>
+        </div>
+        <div class="tier-row">
+          <div><span class="tier-badge t-silver">🥈 Growth</span></div>
+          <div>10–49</div>
+          <div>$14.99 each</div>
+          <div>50% recurring + bonus</div>
+        </div>
+        <div class="tier-row">
+          <div><span class="tier-badge t-gold">🥇 Pro Partner</span></div>
+          <div>50–199</div>
+          <div>$14.99 each</div>
+          <div>50% recurring + dedicated support</div>
+        </div>
+        <div class="tier-row tier-elite">
+          <div><span class="tier-badge t-elite">👑 Elite</span></div>
+          <div>200+</div>
+          <div>$14.99 each</div>
+          <div>50% + custom deal available</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODAY'S ISSUE -->
+    <div class="dash-section delay-1" id="today">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Today's Issue — #285</div>
+        <a href="#" class="dash-section-link">View Full Issue →</a>
+      </div>
+      <div class="issue-card">
+        <div class="issue-card-header">
+          <div class="ich-title">⚡ SIGNALSTRIKE DAILY</div>
+          <div class="ich-date">ISSUE #285 · FRI MAR 20, 2026</div>
+        </div>
+        <div class="issue-card-body">
+          <div class="icb-section">
+            <div class="icb-label">// Macro Pulse</div>
+            <div class="icb-line"><strong>BTC Dominance:</strong> 54.2% (↑ 0.8%) — Altcoin season cooling</div>
+            <div class="icb-line"><strong>Fear & Greed:</strong> 72 — Greed zone, volatility elevated</div>
+            <div class="icb-line"><strong>Fed Watch:</strong> Rate hold confirmed. Risk-on assets bid</div>
+            <div class="icb-label" style="margin-top:1rem;">// Whale Radar</div>
+            <div class="icb-line"><strong>0x8f2a…</strong> moved 12,400 ETH to Binance</div>
+            <div class="icb-line"><strong>0x44cc…</strong> accumulated $8.2M LINK over 3 days</div>
+          </div>
+          <div class="icb-section">
+            <div class="icb-label">// AI Signals Today</div>
+            <div class="icb-line"><strong>BTC:</strong> Holding $85K support. AI confidence 88%. Target: $92K</div>
+            <div class="icb-line"><strong>SOL:</strong> Breakout forming. Whale accumulation +$47M (24h)</div>
+            <div class="icb-line"><strong>RENDER:</strong> AI narrative play. Dev activity ↑ 340%. Watch $7.50</div>
+            <div class="icb-line"><strong>AVAX:</strong> Token unlock Fri 180M tokens. Reduce exposure</div>
+            <div class="icb-label" style="margin-top:1rem;">// DeFi Alpha</div>
+            <div class="icb-line"><strong>Aave v4</strong> on Base — 14.2% APY on USDC for 48hrs</div>
+            <div class="icb-line"><strong>Uniswap:</strong> RENDER/ETH 0.3% fee tier opportunity</div>
+          </div>
+        </div>
+        <div class="issue-card-footer">
+          <a href="#" class="btn-read">Read Full Issue →</a>
+          <a href="#archive" class="btn-archive">Browse Archive</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI SIGNALS -->
+    <div class="dash-section delay-2" id="signals">
+      <div class="dash-section-head">
+        <div class="dash-section-title">AI Signals — Live</div>
+        <a href="#" class="dash-section-link">All 500+ Coins →</a>
+      </div>
+      <div class="signal-grid">
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">₿ Bitcoin</div>
+            <div class="sc-badge badge-buy">BUY ZONE</div>
+          </div>
+          <div class="sc-pct up">+2.47%</div>
+          <div class="sc-meta">Target: $92,000 · Entry: $82,500–$85,000</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:88%"></div></div>
+            <div class="conf-label">88% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">Ξ Ethereum</div>
+            <div class="sc-badge badge-watch">WATCH</div>
+          </div>
+          <div class="sc-pct up">+1.89%</div>
+          <div class="sc-meta">Consolidating. Wait for $3,200 break</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:62%"></div></div>
+            <div class="conf-label">62% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">◎ Solana</div>
+            <div class="sc-badge badge-buy">STRONG BUY</div>
+          </div>
+          <div class="sc-pct up">+4.10%</div>
+          <div class="sc-meta">Breakout forming. Whale acc. +$47M (24h)</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:91%"></div></div>
+            <div class="conf-label">91% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">⬡ AVAX</div>
+            <div class="sc-badge badge-reduce">REDUCE</div>
+          </div>
+          <div class="sc-pct dn">-0.73%</div>
+          <div class="sc-meta">Token unlock Friday 180M tokens. Risk high</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:78%; background:var(--grad-pink);"></div></div>
+            <div class="conf-label">78% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">🔗 Chainlink</div>
+            <div class="sc-badge badge-buy">BREAKOUT</div>
+          </div>
+          <div class="sc-pct up">+4.15%</div>
+          <div class="sc-meta">Smart money acc. Target: $22.00</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:85%"></div></div>
+            <div class="conf-label">85% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">⬡ Render</div>
+            <div class="sc-badge badge-buy">AI PLAY</div>
+          </div>
+          <div class="sc-pct up">+7.44%</div>
+          <div class="sc-meta">Dev activity ↑ 340%. AI narrative strong</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:93%"></div></div>
+            <div class="conf-label">93% conf.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI PERFORMANCE METRICS -->
+    <div class="dash-section delay-2">
+      <div class="dash-section-head">
+        <div class="dash-section-title">AI Engine — Performance</div>
+        <span class="dash-section-link">18-Month Track Record</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-cell">
+          <div class="mc-val" style="background:var(--grad-green);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">97.2%</div>
+          <div class="mc-label">Signal Accuracy</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-val" style="background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">4.2hrs</div>
+          <div class="mc-label">Avg Lead Time</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-val" style="background:var(--grad-blue);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">50k+</div>
+          <div class="mc-label">Data Points / Day</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-val" style="background:var(--grad-pink);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">28</div>
+          <div class="mc-label">Chains Monitored</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHALE RADAR -->
+    <div class="dash-section delay-3" id="whales">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Whale Radar — Last 24hrs</div>
+        <a href="#" class="dash-section-link">Full Tracker →</a>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🐋</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x8f2a…c491</div>
+          <div class="whale-action">Moved <strong>12,400 ETH</strong> to Binance — potential sell pressure incoming</div>
+        </div>
+        <div>
+          <div class="whale-amount sell">-$38.4M</div>
+          <div class="whale-time">2h 14m ago</div>
+        </div>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🟢</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x44cc…7f12</div>
+          <div class="whale-action">Accumulated <strong>$8.2M LINK</strong> over 3 days — smart money accumulation</div>
+        </div>
+        <div>
+          <div class="whale-amount buy">+$8.2M</div>
+          <div class="whale-time">5h 40m ago</div>
+        </div>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🐋</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x91bb…3e08</div>
+          <div class="whale-action">Bridged <strong>4,200 SOL</strong> from Ethereum — cross-chain rotation signal</div>
+        </div>
+        <div>
+          <div class="whale-amount buy">+$598K</div>
+          <div class="whale-time">8h 02m ago</div>
+        </div>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🔴</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x22da…a901</div>
+          <div class="whale-action">Sold <strong>180M AVAX tokens</strong> unlock — pre-positioned exit ahead of Friday</div>
+        </div>
+        <div>
+          <div class="whale-amount sell">-$6.5M</div>
+          <div class="whale-time">11h 55m ago</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEFI ALPHA -->
+    <div class="dash-section delay-3" id="defi">
+      <div class="dash-section-head">
+        <div class="dash-section-title">DeFi Alpha — This Week</div>
+        <a href="#" class="dash-section-link">All Opportunities →</a>
+      </div>
+      <div class="defi-grid">
+        <div class="defi-card">
+          <div class="dc-protocol">Aave v4 · Base</div>
+          <div class="dc-title">USDC Liquidity Pool — Limited Window</div>
+          <div class="dc-apy">14.2%</div>
+          <div class="dc-desc">Post-launch incentives on Aave v4's Base deployment. 48-hour boosted APY window before rates normalize.</div>
+          <span class="dc-tag">⏰ 31hrs remaining</span>
+        </div>
+        <div class="defi-card">
+          <div class="dc-protocol">Uniswap v3 · Ethereum</div>
+          <div class="dc-title">RENDER/ETH 0.3% Fee Tier</div>
+          <div class="dc-apy">8.7%</div>
+          <div class="dc-desc">Thin liquidity in RENDER/ETH pool creates elevated fee income for LPs as volume spikes on AI narrative momentum.</div>
+          <span class="dc-tag">🔥 High volume</span>
+        </div>
+        <div class="defi-card">
+          <div class="dc-protocol">Pendle Finance · Arbitrum</div>
+          <div class="dc-title">stETH Yield Tokenization</div>
+          <div class="dc-apy">11.4%</div>
+          <div class="dc-desc">Fixed yield on stETH through Pendle PT tokens. Lock in above-market rates before May maturity date.</div>
+          <span class="dc-tag">🔒 Fixed rate</span>
+        </div>
+        <div class="defi-card">
+          <div class="dc-protocol">Morpho Blue · Ethereum</div>
+          <div class="dc-title">WBTC/USDC Lending Market</div>
+          <div class="dc-apy">6.9%</div>
+          <div class="dc-desc">Isolated lending market with tighter risk parameters. BTC collateral demand surging as price approaches $90K.</div>
+          <span class="dc-tag">📈 Demand surge</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISSUE ARCHIVE -->
+    <div class="dash-section delay-4" id="archive">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Issue Archive — Recent</div>
+        <a href="#" class="dash-section-link">All 285 Issues →</a>
+      </div>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#285</div>
+        <div class="ar-title">SOL Breakout Signal + Aave v4 Base Launch Alpha</div>
+        <div class="ar-date">Mar 20, 2026</div>
+        <div class="ar-tag">Today</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#284</div>
+        <div class="ar-title">BTC $85K Consolidation + LINK Smart Money Accumulation</div>
+        <div class="ar-date">Mar 19, 2026</div>
+        <div class="ar-tag">Deep Dive</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#283</div>
+        <div class="ar-title">RENDER AI Narrative Play — 340% Dev Activity Spike</div>
+        <div class="ar-date">Mar 18, 2026</div>
+        <div class="ar-tag">Flash Alert</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#282</div>
+        <div class="ar-title">Macro Weekly: Fed Hold Confirmed — Crypto Risk-On</div>
+        <div class="ar-date">Mar 17, 2026</div>
+        <div class="ar-tag">Weekly Wrap</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#281</div>
+        <div class="ar-title">ETH Staking Yield Compression + Pendle Opportunity</div>
+        <div class="ar-date">Mar 14, 2026</div>
+        <div class="ar-tag">Deep Dive</div>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<!-- BYBIT MODAL -->
+<div id="bybitModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div class="bybit-modal-box">
+    <button class="bybit-modal-close" onclick="closeBybitModal()">✕</button>
+    <div class="bybit-modal-logo">⚡ Bybit Eligibility Check</div>
+    <div class="bybit-modal-body" id="bybitModalBody">
+      <div class="bybit-modal-icon">🔐</div>
+      <div class="bybit-modal-title">Are you a Bybit user?</div>
+      <div class="bybit-modal-desc">Confirm you have an active Bybit account to unlock exclusive trading rewards worth up to <strong>$175</strong> in bonuses.</div>
+      <div class="bybit-modal-perks">
+        <div class="bybit-perk">⚡ $50 trading fee rebate</div>
+        <div class="bybit-perk">📈 3-month VIP upgrade</div>
+        <div class="bybit-perk">💎 Up to $100 deposit match</div>
+        <div class="bybit-perk">🚀 $25 futures credit</div>
+      </div>
+      <div class="bybit-modal-actions">
+        <button class="bybit-modal-yes" onclick="confirmBybit()">✓ Yes, I'm a Bybit User</button>
+        <button class="bybit-modal-no" onclick="closeBybitModal()">No, not yet</button>
+      </div>
+      <div class="bybit-modal-note">Don't have Bybit yet? <a href="https://bybit.com" target="_blank">Sign up free →</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBfaThYee5N7mR30YqMzymDsASNg9WI1zY",
+    authDomain: "signalstrike-newsletter.firebaseapp.com",
+    projectId: "signalstrike-newsletter",
+    storageBucket: "signalstrike-newsletter.firebasestorage.app",
+    messagingSenderId: "685841795264",
+    appId: "1:685841795264:web:6a7e9c9d42324ad1b94525",
+    measurementId: "G-CW6DKSN76S"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  function hideLoading() {
+    setTimeout(() => {
+      document.getElementById('loadingScreen').classList.add('hide');
+      setTimeout(() => {
+        document.getElementById('loadingScreen').style.display = 'none';
+      }, 500);
+    }, 1400);
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = '/login.html';
+      return;
+    }
+
+    const displayName = user.displayName || user.email?.split('@')[0] || 'Trader';
+    const email = user.email || '';
+    const memberSince = new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const initials = displayName.charAt(0).toUpperCase();
+
+    const navAv = document.getElementById('navAvatar');
+    if (user.photoURL) {
+      navAv.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+    } else {
+      navAv.textContent = initials;
+    }
+
+    const sbAv = document.getElementById('sidebarAvatar');
+    if (user.photoURL) {
+      sbAv.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+    } else {
+      sbAv.textContent = initials;
+    }
+    document.getElementById('sidebarName').textContent = displayName;
+    document.getElementById('sidebarEmail').textContent = email;
+    document.getElementById('sidebarSince').textContent = `Member since ${memberSince}`;
+
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+    document.querySelector('.wb-tag').textContent = `🌅 ${greeting} — ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}`;
+    document.getElementById('welcomeTitle').innerHTML = `Welcome back, <em>${displayName}</em>`;
+
+    // Set partner referral link
+    const slug = (displayName || 'user').toLowerCase().replace(/\s+/g, '');
+    document.getElementById('partnerLinkUrl').textContent = `signalstrike.com/ref/${slug}`;
+
+    hideLoading();
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerHTML = msg;
+    t.style.transform = 'translateY(0)';
+    t.style.opacity = '1';
+    setTimeout(() => {
+      t.style.transform = 'translateY(100px)';
+      t.style.opacity = '0';
+    }, 4500);
+  }
+
+  async function handleSignOut() {
+    try {
+      await signOut(auth);
+      window.location.href = '/login.html';
+    } catch (error) {
+      showToast('⚠ Sign out failed: ' + error.message);
+    }
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', handleSignOut);
+  document.getElementById('sidebarLogout').addEventListener('click', (e) => {
+    e.preventDefault();
+    handleSignOut();
+  });
+
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // ── REWARDS LOGIC ──
+  let bybitVerified = false;
+  let claimedCount = 0;
+
+  window.claimReward = function(btn, id) {
+    const card = btn.closest('.reward-card');
+    const isBybit = card.dataset.bybit === 'true';
+    if (isBybit && !bybitVerified) {
+      openBybitModal();
+      return;
+    }
+    card.classList.add('is-claimed');
+    claimedCount++;
+    const remaining = 12 - claimedCount;
+    const badge = document.querySelector('.rewards-badge-count');
+    if (badge) badge.textContent = remaining > 0 ? remaining : '✓';
+    showToast(`🎁 Reward claimed! Check your account for details.`);
+  };
+
+  window.openBybitModal = function() {
+    const modal = document.getElementById('bybitModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeBybitModal = function() {
+    const modal = document.getElementById('bybitModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  window.confirmBybit = function() {
+    bybitVerified = true;
+    closeBybitModal();
+
+    // Unlock all bybit reward cards
+    document.querySelectorAll('.reward-card[data-bybit="true"]').forEach(card => {
+      const id = card.dataset.id;
+      const btn = card.querySelector('.reward-claim-btn');
+      const val = card.querySelector('.reward-val');
+      btn.classList.remove('bybit-req');
+      btn.classList.add('bybit-req', 'unlocked');
+      btn.removeAttribute('disabled');
+      btn.textContent = 'Claim';
+      if (val) { val.classList.remove('bybit-locked'); }
+    });
+
+    // Unlock specific value labels
+    const unlocks = { 3: '$50 rebate', 5: '3mo VIP upgrade', 8: 'Up to $100 match', 11: '$25 futures credit' };
+    Object.entries(unlocks).forEach(([id, label]) => {
+      const el = document.getElementById(`r${id}-val`);
+      if (el) {
+        el.classList.remove('bybit-locked');
+        el.style.cssText = 'background:linear-gradient(135deg,#ffaa00,#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;font-size:0.85rem;';
+        el.textContent = label;
+      }
+    });
+
+    // Update banner
+    const banner = document.getElementById('bybitBanner');
+    banner.classList.add('verified');
+    banner.querySelector('.bybit-banner-icon').textContent = '✅';
+    banner.querySelector('.bybit-banner-title').textContent = 'Bybit Account Verified';
+    banner.querySelector('.bybit-banner-sub').textContent = '4 exclusive Bybit rewards have been unlocked. Claim them above.';
+    banner.querySelector('.bybit-verify-btn').textContent = '✓ Verified';
+    banner.querySelector('.bybit-verify-btn').style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+    document.getElementById('bybitCheckBtn').textContent = '✓ Bybit Verified';
+    document.getElementById('bybitCheckBtn').style.color = '#4ade80';
+    document.getElementById('bybitCheckBtn').style.borderColor = 'rgba(34,197,94,0.3)';
+
+    showToast('✅ Bybit verified! 4 exclusive rewards unlocked.');
+  };
+
+  // ── PARTNER CALCULATOR ──
+  window.updateCalc = function() {
+    const refs = parseInt(document.getElementById('refSlider').value);
+    const months = parseInt(document.getElementById('retSlider').value);
+    const perRef = 14.995;
+    const monthly = refs * perRef;
+    const annual = monthly * 12;
+    const lifetime = refs * perRef * months;
+    document.getElementById('refCount').textContent = refs;
+    document.getElementById('retentionMonths').textContent = months;
+    document.getElementById('calcMonthly').textContent = '$' + monthly.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('calcAnnual').textContent = '$' + annual.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('calcLifetime').textContent = '$' + lifetime.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
+  };
+
+  window.copyPartnerLink = function() {
+    const url = document.getElementById('partnerLinkUrl').textContent;
+    navigator.clipboard.writeText('https://' + url).then(() => {
+      showToast('🔗 Partner link copied to clipboard!');
+    }).catch(() => {
+      showToast('🔗 Copy: ' + url);
+    });
+  };
+
+  // Close modal on backdrop click
+  document.getElementById('bybitModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('bybitModal')) closeBybitModal();
+  });
+</script>
+</body>
+</html>
