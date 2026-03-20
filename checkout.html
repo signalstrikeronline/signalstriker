@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Checkout | SignalStrike</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f3f4f6;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.4;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Simple header for context (optional, improves UX) */
+        .store-header {
+            background: #ffffff;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+            border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .store-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.01em;
+        }
+
+        .store-header p {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin-top: 0.25rem;
+        }
+
+        /* Main container: full width, flexible */
+        .checkout-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1rem;
+            background: #f9fafb;
+        }
+
+        /* Card-like wrapper for the iframe – adds polish and consistent spacing */
+        .iframe-card {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* The iframe itself */
+        .checkout-frame {
+            width: 100%;
+            height: 780px;          /* comfortable height for desktop; on mobile it scrolls inside */
+            border: none;
+            display: block;
+            background: #ffffff;
+        }
+
+        /* For smaller devices, allow iframe to take more vertical space and prevent double scrollbars */
+        @media (max-width: 640px) {
+            .checkout-container {
+                padding: 0.75rem;
+            }
+            .iframe-card {
+                border-radius: 20px;
+            }
+            .checkout-frame {
+                height: 720px;
+            }
+        }
+
+        /* On very short screens (landscape phones) reduce iframe height a bit to keep header visible */
+        @media (max-height: 700px) and (orientation: landscape) {
+            .checkout-frame {
+                height: 560px;
+            }
+        }
+
+        /* Extra safety: ensures the iframe never overflows horizontally */
+        iframe {
+            max-width: 100%;
+        }
+
+        /* Simple footer for trust / back link (optional, clean) */
+        .secure-footer {
+            text-align: center;
+            padding: 1.25rem 1rem 1.5rem;
+            font-size: 0.75rem;
+            color: #6c757d;
+            background: transparent;
+            border-top: none;
+            margin-top: 0.5rem;
+        }
+
+        .secure-footer a {
+            color: #4b5563;
+            text-decoration: none;
+            border-bottom: 1px dotted #cbd5e1;
+        }
+
+        .secure-footer a:hover {
+            color: #1f2937;
+            border-bottom-color: #9ca3af;
+        }
+
+        /* loading state (subtle) */
+        .iframe-card {
+            position: relative;
+        }
+
+        /* optional graceful fallback if iframe fails */
+        .iframe-fallback {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+<header class="store-header">
+    <h1>⚡ SignalStrike</h1>
+    <p>Secure checkout • Soft Tech Solutions</p>
+</header>
+
+<main class="checkout-container">
+    <div class="iframe-card">
+        <!-- Gumroad checkout iframe: product ID qtwuz, quantity 1 -->
+        <iframe 
+            class="checkout-frame"
+            src="https://gumroad.com/checkout?product=qtwuz&quantity=1"
+            title="Gumroad Checkout"
+            frameborder="0"
+            allow="payment *; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="eager"
+            referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+        <!-- hidden fallback message (only visible if iframe fails) — could be enhanced but not needed for core -->
+    </div>
+    <div class="secure-footer">
+        <span>🔒 Secure transaction powered by Gumroad</span><br>
+        <span>© Soft Tech Solutions — <a href="#" aria-label="Return to store (demo link)">Continue shopping</a></span>
+    </div>
+</main>
+
+<!-- Simple script to ensure the iframe container adapts if needed (no forced height hacks) -->
+<script>
+    (function() {
+        // Optional: keep iframe accessible and detect any mobile keyboard avoidance
+        // This is purely to enhance reliability, but no intrusive changes.
+        // The iframe itself handles Gumroad's responsive checkout.
+        // On load, ensure iframe is focused only on user click to avoid unwanted behavior.
+        const iframe = document.querySelector('.checkout-frame');
+        if (iframe) {
+            // Make sure iframe is not obscured on iOS when keyboard opens — nothing else needed.
+            iframe.setAttribute('importance', 'high');
+        }
+        // A small helper to log any iframe load errors silently (doesn't disrupt UX)
+        iframe?.addEventListener('error', function() {
+            console.warn('Iframe loading encountered an issue; checkout may still work if blocked by browser extensions.');
+        });
+    })();
+</script>
+</body>
+</html>
