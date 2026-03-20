@@ -607,6 +607,10 @@
 <div id="toast"></div>
 
 <script type="module">
+  console.log("Origin Firebase will check:", window.location.origin);
+console.log("Hostname:", window.location.hostname);
+console.log("Protocol + Host:", window.location.protocol + "//" + window.location.host);
+console.log("Full URL:", window.location.href);
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import {
     getAuth,
