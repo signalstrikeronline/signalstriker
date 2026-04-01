@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — SignalStrike Members</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFEF2;
+    --bg2: #FFF9E6;
+    --pink: #FF90E8;
+    --pink-dark: #d966c8;
+    --lime: #A8FF78;
+    --lime-dark: #5dcf2a;
+    --yellow: #FFE194;
+    --yellow-dark: #e8c300;
+    --black: #111111;
+    --white: #FFFFFF;
+    --border: 2px solid #111111;
+    --shadow: 4px 4px 0px #111111;
+    --shadow-sm: 3px 3px 0px #111111;
+    --shadow-lg: 6px 6px 0px #111111;
+    --radius: 6px;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-display: 'DM Serif Display', serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--bg);
+    color: var(--black);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* LOADING */
+  #loadingScreen {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1.5rem;
+    transition: opacity 0.4s ease;
+  }
+  #loadingScreen.hide { opacity: 0; pointer-events: none; }
+  .load-logo {
+    font-family: var(--font-display); font-size: 2.8rem; font-weight: 400;
+    color: var(--black); font-style: italic;
+    border: 3px solid var(--black);
+    padding: 0.25rem 1.5rem;
+    background: var(--white);
+    box-shadow: var(--shadow-lg);
+  }
+  .load-bar {
+    width: 220px; height: 4px;
+    background: var(--black);
+    border: 2px solid var(--black);
+    overflow: hidden;
+  }
+  .load-fill {
+    height: 100%; background: var(--lime);
+    width: 0%; animation: loadIn 1.2s ease forwards;
+  }
+  @keyframes loadIn { to { width: 100%; } }
+
+  /* TOP NAV */
+  .topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--pink);
+    border-bottom: var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+  }
+  .nav-logo {
+    font-family: var(--font-display); font-size: 1.5rem; font-style: italic;
+    color: var(--black); text-decoration: none;
+    display: flex; align-items: center; gap: 10px; font-weight: 400;
+  }
+  .nav-dot {
+    width: 10px; height: 10px;
+    background: var(--lime);
+    border: 2px solid var(--black);
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+    flex-shrink: 0;
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  @keyframes pulse-dot { 0%,100%{transform:scale(1);} 50%{transform:scale(0.7);} }
+
+  .nav-center {
+    display: flex; align-items: center; gap: 0.25rem;
+  }
+  .nav-tab {
+    font-family: var(--font-body); font-size: 0.8rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--black); padding: 6px 14px; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.15s;
+    background: none; text-decoration: none;
+    border-radius: var(--radius);
+  }
+  .nav-tab:hover { background: rgba(0,0,0,0.08); }
+  .nav-tab.active {
+    background: var(--black); color: var(--pink);
+    border-color: var(--black);
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+  .nav-member-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--yellow); border: 2px solid var(--black);
+    padding: 4px 12px; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    box-shadow: var(--shadow-sm); color: var(--black);
+  }
+  .nav-avatar {
+    width: 36px; height: 36px;
+    background: var(--lime);
+    border: 2px solid var(--black);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 0.85rem;
+    color: var(--black); cursor: pointer; overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .btn-logout {
+    background: var(--white); border: 2px solid var(--black);
+    color: var(--black); font-family: var(--font-body); font-size: 0.72rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 5px 14px; cursor: pointer; transition: all 0.15s;
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .btn-logout:hover { background: var(--black); color: var(--white); box-shadow: none; transform: translate(3px,3px); }
+
+  /* TICKER */
+  .ticker-wrap {
+    background: var(--black);
+    border-bottom: var(--border);
+    overflow: hidden; white-space: nowrap; padding: 7px 0;
+  }
+  .ticker-inner {
+    display: inline-flex; gap: 3rem;
+    animation: ticker 30s linear infinite;
+  }
+  .ticker-item {
+    font-family: var(--font-mono); font-size: 0.68rem; font-weight: 400;
+    color: var(--yellow); text-transform: uppercase; letter-spacing: 0.06em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .up { color: var(--lime); font-weight: 700; }
+  .dn { color: var(--pink); font-weight: 700; }
+  @keyframes ticker { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* LAYOUT */
+  .dash-wrap {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 60px - 34px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-right: var(--border);
+    padding: 1.5rem 0;
+    position: sticky; top: 94px;
+    height: calc(100vh - 94px);
+    overflow-y: auto;
+    background: var(--bg);
+  }
+  .sidebar-section {
+    padding: 0 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+  .sidebar-label {
+    font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.18em; color: #888;
+    margin-bottom: 0.6rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+  }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; margin-bottom: 3px;
+    font-size: 0.82rem; font-weight: 500;
+    color: #555; cursor: pointer; transition: all 0.1s;
+    border: 2px solid transparent; text-decoration: none;
+    border-radius: var(--radius);
+  }
+  .sidebar-link:hover { color: var(--black); background: rgba(0,0,0,0.05); border-color: var(--black); }
+  .sidebar-link.active {
+    color: var(--black); background: var(--pink);
+    border-color: var(--black); box-shadow: var(--shadow-sm);
+    font-weight: 700;
+  }
+  .sl-icon { font-size: 0.9rem; flex-shrink: 0; }
+  .sl-badge {
+    margin-left: auto;
+    background: var(--pink); color: var(--black);
+    border: 1.5px solid var(--black);
+    font-size: 0.58rem; font-weight: 700; padding: 1px 6px;
+    border-radius: 3px; font-family: var(--font-mono);
+  }
+  .sl-badge.new {
+    background: var(--lime); color: var(--black);
+  }
+
+  /* Sidebar member card */
+  .sidebar-member-card {
+    margin: 0 1.25rem 1.5rem;
+    background: var(--yellow);
+    border: var(--border);
+    padding: 1.1rem; border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .smc-avatar {
+    width: 40px; height: 40px; background: var(--pink);
+    border: 2px solid var(--black); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1rem;
+    color: var(--black); margin-bottom: 0.65rem; overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .smc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .smc-name {
+    font-weight: 700; font-size: 0.88rem;
+    color: var(--black); margin-bottom: 1px;
+  }
+  .smc-email { font-size: 0.72rem; color: #555; margin-bottom: 0.65rem; }
+  .smc-since {
+    font-family: var(--font-mono); font-size: 0.6rem; color: var(--black);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .smc-dot { width: 7px; height: 7px; background: var(--lime); border: 1.5px solid var(--black); border-radius: 50%; }
+
+  /* CONTENT */
+  .content {
+    padding: 2.5rem 2rem;
+    max-width: 960px;
+  }
+
+  /* SECTION */
+  .dash-section { margin-bottom: 3rem; animation: fadeUp 0.4s ease forwards; }
+  .dash-section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem; padding-bottom: 0.75rem;
+    border-bottom: var(--border);
+  }
+  .dash-section-title {
+    font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--black);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dash-section-title::before {
+    content: '▪';
+    font-size: 0.8rem; color: var(--pink-dark);
+  }
+  .dash-section-link {
+    font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700;
+    color: var(--black); text-decoration: none; text-transform: uppercase;
+    letter-spacing: 0.08em; border-bottom: 2px solid var(--black);
+    transition: color 0.15s;
+  }
+  .dash-section-link:hover { color: var(--pink-dark); border-color: var(--pink-dark); }
+
+  /* WELCOME BANNER */
+  .welcome-banner {
+    background: var(--lime);
+    border: var(--border);
+    padding: 2rem 2.5rem;
+    margin-bottom: 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 2rem; flex-wrap: wrap;
+    position: relative; overflow: hidden;
+    animation: fadeUp 0.4s ease forwards;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+  .wb-deco {
+    position: absolute; right: 1.5rem; top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-size: 9rem; font-weight: 400; font-style: italic;
+    color: rgba(0,0,0,0.07);
+    line-height: 1; pointer-events: none; user-select: none;
+  }
+  .wb-tag {
+    background: var(--black); color: var(--lime);
+    font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 3px 10px; display: inline-block; margin-bottom: 0.75rem;
+    border-radius: 3px;
+  }
+  .wb-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 400; font-style: normal;
+    line-height: 1.1; margin-bottom: 0.5rem;
+    color: var(--black);
+  }
+  .wb-title em { font-style: italic; }
+  .wb-sub { font-size: 0.85rem; color: #333; line-height: 1.6; font-weight: 400; }
+  .wb-stats { display: flex; gap: 1.5rem; flex-shrink: 0; }
+  .wb-stat {
+    background: var(--white);
+    border: var(--border);
+    padding: 0.85rem 1.25rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+  }
+  .wb-stat .num {
+    font-family: var(--font-display); font-size: 2rem; font-weight: 400;
+    font-style: italic; line-height: 1; color: var(--black);
+  }
+  .wb-stat .lbl {
+    font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-top: 3px;
+  }
+
+  /* ISSUE CARD */
+  .issue-card {
+    background: var(--white); border: var(--border);
+    overflow: hidden; margin-bottom: 1rem;
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .issue-card:hover { box-shadow: var(--shadow-lg); transform: translate(-2px,-2px); }
+  .issue-card-header {
+    background: var(--black);
+    border-bottom: var(--border);
+    padding: 0.8rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .ich-title {
+    font-family: var(--font-mono); font-weight: 700; font-size: 0.82rem;
+    letter-spacing: 0.12em; color: var(--pink);
+  }
+  .ich-date { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,255,255,0.5); }
+  .issue-card-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .icb-label {
+    font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700;
+    color: var(--pink-dark); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.55rem;
+  }
+  .icb-line { font-size: 0.8rem; color: #555; line-height: 1.6; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 0.3rem; margin-bottom: 0.3rem; }
+  .icb-line:last-child { border-bottom: none; }
+  .icb-line strong { color: var(--black); font-weight: 700; }
+  .issue-card-footer {
+    padding: 1rem 1.5rem; border-top: var(--border);
+    display: flex; gap: 0.75rem; align-items: center;
+    background: #fafafa;
+  }
+  .btn-read {
+    background: var(--pink); color: var(--black);
+    border: 2px solid var(--black);
+    padding: 8px 22px; font-family: var(--font-body); font-size: 0.78rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    cursor: pointer; transition: all 0.15s; text-decoration: none;
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .btn-read:hover { background: var(--black); color: var(--pink); box-shadow: none; transform: translate(3px,3px); }
+  .btn-archive {
+    background: transparent; color: var(--black);
+    border: 2px solid var(--black);
+    padding: 8px 20px; font-family: var(--font-body); font-size: 0.78rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    cursor: pointer; transition: all 0.15s; text-decoration: none;
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .btn-archive:hover { background: var(--black); color: var(--white); box-shadow: none; transform: translate(3px,3px); }
+
+  /* SIGNAL GRID */
+  .signal-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border: var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .signal-cell {
+    padding: 1.25rem; border-right: 2px solid var(--black);
+    border-bottom: 2px solid var(--black);
+    transition: background 0.15s; background: var(--white);
+  }
+  .signal-cell:nth-child(3n) { border-right: none; }
+  .signal-cell:nth-last-child(-n+3) { border-bottom: none; }
+  .signal-cell:hover { background: var(--bg2); }
+  .sc-coin {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+  .sc-name { font-weight: 700; font-size: 0.85rem; color: var(--black); }
+  .sc-badge {
+    padding: 2px 8px; font-family: var(--font-mono);
+    font-size: 0.56rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; border-radius: 3px;
+    border: 1.5px solid var(--black);
+  }
+  .badge-buy { background: var(--lime); color: var(--black); }
+  .badge-watch { background: var(--yellow); color: var(--black); }
+  .badge-reduce { background: var(--pink); color: var(--black); }
+  .sc-pct {
+    font-family: var(--font-display); font-size: 1.8rem; font-weight: 400;
+    font-style: italic; line-height: 1; margin-bottom: 0.35rem;
+  }
+  .sc-pct.up { color: var(--lime-dark); }
+  .sc-pct.dn { color: var(--pink-dark); }
+  .sc-meta { font-size: 0.7rem; color: #666; line-height: 1.4; }
+  .sc-conf { margin-top: 0.5rem; display: flex; align-items: center; gap: 6px; }
+  .conf-bar { flex: 1; height: 4px; background: rgba(0,0,0,0.1); border: 1px solid var(--black); border-radius: 2px; }
+  .conf-fill { height: 100%; background: var(--lime-dark); border-radius: 1px; }
+  .conf-fill.red { background: var(--pink-dark); }
+  .conf-label { font-family: var(--font-mono); font-size: 0.58rem; color: #777; white-space: nowrap; }
+
+  /* WHALE ROWS */
+  .whale-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--white); border: var(--border);
+    margin-bottom: 0.5rem; transition: all 0.15s;
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  .whale-row:hover { background: var(--bg2); box-shadow: none; transform: translate(3px,3px); }
+  .whale-icon {
+    width: 38px; height: 38px; background: var(--yellow);
+    border: 2px solid var(--black); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .whale-main { flex: 1; }
+  .whale-addr {
+    font-family: var(--font-mono); font-size: 0.68rem; color: #777; margin-bottom: 2px;
+  }
+  .whale-action { font-size: 0.8rem; color: #555; }
+  .whale-action strong { color: var(--black); font-weight: 700; }
+  .whale-amount {
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 400;
+    font-style: italic; text-align: right; flex-shrink: 0;
+  }
+  .whale-amount.sell { color: var(--pink-dark); }
+  .whale-amount.buy { color: var(--lime-dark); }
+  .whale-time { font-family: var(--font-mono); font-size: 0.58rem; color: #aaa; margin-top: 1px; text-align: right; }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border: var(--border); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .metric-cell {
+    padding: 1.5rem; border-right: 2px solid var(--black);
+    text-align: center; background: var(--white); position: relative;
+  }
+  .metric-cell:nth-child(1) { background: var(--lime); }
+  .metric-cell:nth-child(2) { background: var(--yellow); }
+  .metric-cell:nth-child(3) { background: var(--pink); }
+  .metric-cell:nth-child(4) { background: var(--white); }
+  .metric-cell:last-child { border-right: none; }
+  .mc-val {
+    font-family: var(--font-display); font-size: 2.2rem; font-weight: 400;
+    font-style: italic; line-height: 1; margin-bottom: 0.4rem; color: var(--black);
+  }
+  .mc-label {
+    font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--black);
+  }
+
+  /* ARCHIVE ROWS */
+  .archive-row {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    border: var(--border); margin-bottom: 0.5rem;
+    transition: all 0.15s; cursor: pointer; text-decoration: none; color: inherit;
+    border-radius: var(--radius); background: var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+  .archive-row:hover { background: var(--bg2); box-shadow: none; transform: translate(3px,3px); }
+  .ar-num {
+    font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
+    color: #aaa; flex-shrink: 0; width: 56px;
+  }
+  .ar-title { font-size: 0.82rem; font-weight: 500; color: var(--black); flex: 1; }
+  .ar-date { font-family: var(--font-mono); font-size: 0.65rem; color: #888; flex-shrink: 0; }
+  .ar-tag {
+    padding: 2px 8px; font-family: var(--font-mono);
+    font-size: 0.56rem; font-weight: 700; text-transform: uppercase;
+    background: var(--yellow); color: var(--black);
+    border: 1.5px solid var(--black); flex-shrink: 0; border-radius: 3px;
+  }
+
+  /* DEFI CARDS */
+  .defi-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0; border: var(--border); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .defi-card {
+    padding: 1.5rem; border-right: 2px solid var(--black);
+    border-bottom: 2px solid var(--black);
+    background: var(--white); transition: background 0.15s;
+  }
+  .defi-card:hover { background: var(--bg2); }
+  .defi-card:nth-child(2n) { border-right: none; }
+  .defi-card:nth-last-child(-n+2) { border-bottom: none; }
+  .dc-protocol {
+    font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+    color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem;
+  }
+  .dc-title { font-weight: 700; font-size: 0.95rem; color: var(--black); margin-bottom: 0.5rem; line-height: 1.3; }
+  .dc-apy {
+    font-family: var(--font-display); font-size: 2.4rem; font-weight: 400;
+    font-style: italic; line-height: 1; margin-bottom: 0.4rem; color: var(--lime-dark);
+  }
+  .dc-desc { font-size: 0.78rem; color: #555; line-height: 1.6; }
+  .dc-tag {
+    display: inline-block; margin-top: 0.75rem;
+    background: var(--lime); color: var(--black);
+    border: 1.5px solid var(--black);
+    font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  /* REWARDS */
+  @keyframes rewardFloat {
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-3px); }
+  }
+  @keyframes shimmer {
+    0%{ background-position: -200% center; }
+    100%{ background-position: 200% center; }
+  }
+
+  .rewards-unclaimed-badge {
+    background: var(--yellow); color: var(--black);
+    border: 2px solid var(--black);
+    font-family: var(--font-mono); font-size: 0.62rem;
+    padding: 3px 10px; border-radius: 3px; font-weight: 700;
+    box-shadow: var(--shadow-sm);
+  }
+  .bybit-check-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--black); border: 2px solid var(--black);
+    color: var(--yellow); font-family: var(--font-mono);
+    font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 5px 14px; cursor: pointer; border-radius: var(--radius);
+    transition: all 0.15s; box-shadow: var(--shadow-sm);
+  }
+  .bybit-check-btn:hover { background: #333; box-shadow: none; transform: translate(3px,3px); }
+  .bybit-icon { font-size: 0.8rem; }
+
+  .bybit-banner {
+    background: var(--yellow); border: var(--border);
+    border-radius: var(--radius); padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.5rem; flex-wrap: wrap;
+    box-shadow: var(--shadow);
+  }
+  .bybit-banner.verified {
+    background: var(--lime);
+  }
+  .bybit-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .bybit-banner-text { flex: 1; }
+  .bybit-banner-title { font-weight: 700; font-size: 0.88rem; color: var(--black); margin-bottom: 2px; }
+  .bybit-banner-sub { font-size: 0.75rem; color: #444; line-height: 1.5; }
+  .bybit-verify-btn {
+    background: var(--black); color: var(--yellow);
+    border: 2px solid var(--black); padding: 8px 18px;
+    font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+    cursor: pointer; border-radius: var(--radius); white-space: nowrap;
+    transition: all 0.15s; box-shadow: var(--shadow-sm); text-transform: uppercase;
+  }
+  .bybit-verify-btn:hover { box-shadow: none; transform: translate(3px,3px); }
+
+  .rewards-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .reward-card {
+    position: relative; overflow: hidden;
+    background: var(--white);
+    border: var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+    animation: rewardFloat 4s ease-in-out infinite;
+    box-shadow: var(--shadow);
+  }
+  .reward-card:nth-child(2) { animation-delay: 0.4s; }
+  .reward-card:nth-child(3) { animation-delay: 0.8s; }
+  .reward-card:nth-child(4) { animation-delay: 1.2s; }
+  .reward-card:nth-child(5) { animation-delay: 1.6s; }
+  .reward-card:nth-child(6) { animation-delay: 2s; }
+  .reward-card:hover { box-shadow: var(--shadow-lg); transform: translate(-2px,-2px) !important; animation-play-state: paused; }
+  .reward-card.is-claimed { opacity: 0.6; animation: none; }
+  .reward-card-inner { padding: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .reward-icon-wrap {
+    width: 38px; height: 38px; border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0; border: 2px solid var(--black);
+  }
+  .r-gold { background: var(--yellow); }
+  .r-silver { background: #e8e8e8; }
+  .r-bybit { background: var(--pink); }
+  .r-pink { background: var(--pink); }
+  .r-green { background: var(--lime); }
+
+  .reward-title { font-weight: 700; font-size: 0.82rem; color: var(--black); margin-bottom: 2px; }
+  .reward-desc { font-size: 0.7rem; color: #666; line-height: 1.4; margin-bottom: 0.35rem; }
+  .reward-val {
+    font-family: var(--font-mono); font-weight: 700; font-size: 0.82rem; color: var(--black);
+  }
+  .reward-val.bybit-locked { color: #bbb; font-size: 0.72rem; }
+  .reward-claim-btn {
+    width: 100%; padding: 7px 0;
+    background: var(--lime); border: 2px solid var(--black);
+    color: var(--black); font-family: var(--font-mono);
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; cursor: pointer; border-radius: var(--radius);
+    transition: all 0.15s; box-shadow: var(--shadow-sm);
+  }
+  .reward-claim-btn:hover:not(:disabled) { box-shadow: none; transform: translate(3px,3px); }
+  .reward-claim-btn.bybit-req {
+    background: #eee; border-color: #ccc; color: #bbb; cursor: not-allowed; box-shadow: none;
+  }
+  .reward-claim-btn.bybit-req.unlocked {
+    background: var(--pink); border-color: var(--black); color: var(--black); cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .reward-claim-btn.bybit-req.unlocked:hover:not(:disabled) { box-shadow: none; transform: translate(3px,3px); }
+
+  .reward-claimed-overlay {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.92);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    border-radius: var(--radius);
+  }
+  .reward-claimed-overlay span {
+    font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem;
+    color: var(--lime-dark); letter-spacing: 0.05em;
+    background: var(--lime); border: 2px solid var(--black);
+    padding: 4px 14px; border-radius: 3px; box-shadow: var(--shadow-sm);
+  }
+  .reward-card.is-claimed .reward-claimed-overlay { opacity: 1; pointer-events: auto; }
+
+  /* BYBIT MODAL */
+  .bybit-modal-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 3000;
+    background: rgba(0,0,0,0.5);
+    align-items: center; justify-content: center;
+  }
+  .bybit-modal-backdrop.open { display: flex; }
+  .bybit-modal-box {
+    background: var(--white);
+    border: var(--border);
+    border-radius: var(--radius); padding: 2rem;
+    max-width: 420px; width: 90%;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+  }
+  .bybit-modal-close {
+    position: absolute; top: 0.75rem; right: 0.75rem;
+    background: var(--black); border: 2px solid var(--black);
+    color: var(--white); font-size: 0.85rem; cursor: pointer;
+    padding: 2px 8px; border-radius: 3px; transition: all 0.15s;
+    font-family: var(--font-mono); font-weight: 700;
+  }
+  .bybit-modal-close:hover { background: #444; }
+  .bybit-modal-logo {
+    font-family: var(--font-mono); font-weight: 700; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--pink-dark); margin-bottom: 1.25rem;
+  }
+  .bybit-modal-icon { font-size: 2.5rem; margin-bottom: 0.6rem; }
+  .bybit-modal-title { font-family: var(--font-display); font-weight: 400; font-style: italic; font-size: 1.6rem; color: var(--black); margin-bottom: 0.5rem; }
+  .bybit-modal-desc { font-size: 0.84rem; color: #555; line-height: 1.6; margin-bottom: 1.25rem; }
+  .bybit-modal-desc strong { color: var(--black); font-weight: 700; }
+  .bybit-modal-perks {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;
+  }
+  .bybit-perk {
+    background: var(--bg2); border: 2px solid var(--black);
+    padding: 8px 12px; border-radius: var(--radius);
+    font-size: 0.75rem; font-weight: 700; color: var(--black);
+    box-shadow: var(--shadow-sm);
+  }
+  .bybit-modal-actions { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .bybit-modal-yes {
+    background: var(--lime); color: var(--black);
+    border: 2px solid var(--black); padding: 12px 0;
+    font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem;
+    cursor: pointer; border-radius: var(--radius); text-transform: uppercase;
+    transition: all 0.15s; box-shadow: var(--shadow);
+    letter-spacing: 0.06em;
+  }
+  .bybit-modal-yes:hover { box-shadow: none; transform: translate(4px,4px); }
+  .bybit-modal-no {
+    background: transparent; color: #888; border: 2px solid #ccc;
+    padding: 10px 0; font-family: var(--font-mono); font-weight: 700; font-size: 0.82rem;
+    cursor: pointer; border-radius: var(--radius); transition: all 0.15s;
+    text-transform: uppercase;
+  }
+  .bybit-modal-no:hover { border-color: var(--black); color: var(--black); }
+  .bybit-modal-note { font-size: 0.72rem; color: #888; text-align: center; }
+  .bybit-modal-note a { color: var(--black); text-decoration: underline; }
+
+  /* PARTNER */
+  .sub-prompt {
+    background: var(--pink);
+    border: var(--border);
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    flex-wrap: wrap; margin-bottom: 2.5rem;
+    border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  }
+  .sp-text .sp-title { font-family: var(--font-display); font-size: 1.3rem; font-style: italic; color: var(--black); margin-bottom: 0.2rem; }
+  .sp-text .sp-sub { font-size: 0.82rem; color: #333; }
+  .btn-subscribe {
+    background: var(--black); color: var(--white); border: 2px solid var(--black);
+    padding: 10px 22px; font-family: var(--font-mono);
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; cursor: pointer; white-space: nowrap;
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+    transition: all 0.15s; text-decoration: none; display: inline-block;
+  }
+  .btn-subscribe:hover { box-shadow: none; transform: translate(3px,3px); }
+
+  .partner-hero {
+    background: var(--white); border: var(--border);
+    border-radius: var(--radius); padding: 2rem;
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 2rem; margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-lg);
+  }
+  .partner-tag {
+    background: var(--lime); border: 2px solid var(--black);
+    display: inline-block; padding: 3px 10px; border-radius: 3px;
+    font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--black); margin-bottom: 0.75rem; box-shadow: var(--shadow-sm);
+  }
+  .partner-headline {
+    font-family: var(--font-display); font-weight: 400; font-style: normal;
+    font-size: 1.6rem; color: var(--black); margin-bottom: 0.6rem; line-height: 1.2;
+  }
+  .partner-headline em { font-style: italic; }
+  .partner-sub { font-size: 0.84rem; color: #555; line-height: 1.7; margin-bottom: 1.25rem; max-width: 480px; }
+  .partner-features { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; }
+  .pf-item { font-size: 0.8rem; color: #444; display: flex; align-items: center; gap: 8px; }
+  .pf-check { color: var(--lime-dark); font-size: 0.9rem; font-weight: 900; }
+  .partner-link-box {
+    background: var(--bg); border: 2px solid var(--black);
+    border-radius: var(--radius); padding: 0.85rem 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .partner-link-label { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 0.4rem; }
+  .partner-link-row { display: flex; align-items: center; gap: 0.75rem; }
+  .partner-link-url {
+    font-family: var(--font-mono); font-size: 0.75rem; color: #555;
+    flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .partner-copy-btn {
+    background: var(--black); border: 2px solid var(--black);
+    color: var(--yellow); font-family: var(--font-mono);
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; padding: 5px 12px; cursor: pointer;
+    border-radius: 3px; white-space: nowrap; transition: all 0.15s;
+    box-shadow: var(--shadow-sm);
+  }
+  .partner-copy-btn:hover { box-shadow: none; transform: translate(2px,2px); }
+  .partner-stats-mini {
+    display: flex; flex-direction: column; gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--bg2); border: var(--border);
+    border-radius: var(--radius); min-width: 140px;
+    box-shadow: var(--shadow);
+  }
+  .psm-item { text-align: center; }
+  .psm-val {
+    font-family: var(--font-display); font-weight: 400; font-style: italic;
+    font-size: 1.6rem; color: var(--black);
+  }
+  .psm-lbl { font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-top: 2px; }
+
+  /* Calc */
+  .calc-section {
+    background: var(--white); border: var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  .calc-header {
+    padding: 1rem 1.5rem; border-bottom: var(--border);
+    background: var(--yellow);
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .calc-title { font-family: var(--font-mono); font-weight: 700; font-size: 0.88rem; color: var(--black); }
+  .calc-sub { font-size: 0.73rem; color: #555; }
+  .calc-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+  .calc-slider-wrap { display: flex; flex-direction: column; gap: 0.5rem; }
+  .calc-slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #555; }
+  .calc-slider-val { font-family: var(--font-mono); font-weight: 700; font-size: 0.88rem; color: var(--black); }
+  .calc-range {
+    width: 100%; -webkit-appearance: none; appearance: none;
+    height: 4px; border-radius: 2px; background: var(--black); outline: none; cursor: pointer;
+    border: none;
+  }
+  .calc-range::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--pink); cursor: pointer; border: 2px solid var(--black);
+    box-shadow: var(--shadow-sm);
+  }
+  .calc-slider-ticks { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.56rem; color: #aaa; }
+  .calc-results { display: flex; flex-direction: column; gap: 0.6rem; }
+  .calc-result-item { display: flex; justify-content: space-between; align-items: center; }
+  .cr-label { font-size: 0.75rem; color: #666; }
+  .cr-val { font-family: var(--font-display); font-weight: 400; font-style: italic; font-size: 1.4rem; color: var(--black); }
+  .cr-val.green { color: var(--lime-dark); }
+  .cr-val.gold { color: #c8a000; }
+  .cr-val.pink { color: var(--pink-dark); }
+  .calc-result-divider { height: 1px; background: rgba(0,0,0,0.1); }
+  .calc-note { padding: 0.75rem 1.5rem; font-family: var(--font-mono); font-size: 0.62rem; color: #aaa; border-top: 2px solid var(--black); background: var(--bg); }
+
+  /* Tier table */
+  .partner-tiers { border: var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .tier-row {
+    display: grid; grid-template-columns: 160px 100px 140px 1fr;
+    gap: 0; padding: 0.8rem 1.25rem;
+    border-bottom: 2px solid var(--black);
+    font-size: 0.8rem; color: #555; align-items: center;
+    transition: background 0.15s; background: var(--white);
+  }
+  .tier-row:last-child { border-bottom: none; }
+  .tier-row:hover:not(.tier-head) { background: var(--bg2); }
+  .tier-head {
+    background: var(--black); color: var(--white);
+    font-family: var(--font-mono); font-weight: 700; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .tier-elite { background: var(--bg2); }
+  .tier-badge {
+    font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 3px; border: 2px solid var(--black);
+    display: inline-block;
+  }
+  .t-bronze { background: #f5dfc0; color: #7a4f1a; }
+  .t-silver { background: #e8e8e8; color: #444; }
+  .t-gold { background: var(--yellow); color: var(--black); }
+  .t-elite { background: var(--black); color: var(--pink); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+  .delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 2000;
+    background: var(--black); color: var(--lime);
+    border: 2px solid var(--black);
+    padding: 1rem 1.5rem; border-radius: var(--radius);
+    font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.4s; max-width: 320px; line-height: 1.5;
+  }
+
+  /* ── MEMBERSHIP GATE ── */
+  #memberGate {
+    display: none;
+    position: fixed; inset: 0; z-index: 8000;
+    pointer-events: none;
+  }
+  #memberGate.active { display: block; pointer-events: auto; }
+
+  /* Blur/lock the entire page content */
+  #memberGate.active ~ * { pointer-events: none; }
+  body.is-locked .dash-wrap,
+  body.is-locked .ticker-wrap {
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+    transition: filter 0.4s;
+  }
+  body.is-locked .topnav {
+    filter: blur(3px);
+    pointer-events: none;
+  }
+
+  /* The floating gate card */
+  .gate-backdrop {
+    position: fixed; inset: 0; z-index: 8000;
+    background: rgba(17,17,17,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .gate-card {
+    background: var(--white);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 2.5rem 2rem;
+    max-width: 460px; width: 100%;
+    position: relative; overflow: hidden;
+    text-align: center;
+    animation: fadeUp 0.4s ease forwards;
+  }
+  .gate-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    background: var(--pink);
+    border-bottom: 2px solid var(--black);
+  }
+  .gate-logo {
+    font-family: var(--font-display); font-size: 1.4rem; font-style: italic;
+    color: var(--black); margin-bottom: 1.5rem; margin-top: 0.5rem;
+    display: block;
+  }
+  .gate-icon {
+    font-size: 2.8rem; margin-bottom: 1rem; display: block;
+    line-height: 1;
+  }
+  .gate-title {
+    font-family: var(--font-display); font-size: 1.7rem; font-style: italic;
+    color: var(--black); margin-bottom: 0.5rem; line-height: 1.2;
+  }
+  .gate-sub {
+    font-size: 0.88rem; color: #555; line-height: 1.65;
+    margin-bottom: 1.75rem;
+  }
+  .gate-email-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--yellow); border: 2px solid var(--black);
+    padding: 4px 14px; border-radius: 3px; margin-bottom: 1.75rem;
+    font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+    color: var(--black); box-shadow: var(--shadow-sm);
+  }
+  .gate-features {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0.5rem; margin-bottom: 1.75rem; text-align: left;
+  }
+  .gate-feat {
+    background: var(--bg2); border: 2px solid var(--black);
+    padding: 8px 12px; border-radius: var(--radius);
+    font-size: 0.76rem; font-weight: 500; color: var(--black);
+    box-shadow: var(--shadow-sm);
+  }
+  .gate-feat::before { content: '→ '; color: var(--pink-dark); font-weight: 700; }
+  .gate-btn-primary {
+    display: block; width: 100%;
+    background: var(--pink); color: var(--black);
+    border: 2px solid var(--black); padding: 13px 0;
+    font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    cursor: pointer; border-radius: var(--radius);
+    box-shadow: var(--shadow); text-decoration: none;
+    transition: all 0.15s; margin-bottom: 0.6rem;
+  }
+  .gate-btn-primary:hover { box-shadow: none; transform: translate(4px,4px); }
+  .gate-btn-secondary {
+    display: block; width: 100%;
+    background: transparent; color: #888;
+    border: 2px solid #ccc; padding: 10px 0;
+    font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    cursor: pointer; border-radius: var(--radius);
+    transition: all 0.15s;
+  }
+  .gate-btn-secondary:hover { border-color: var(--black); color: var(--black); }
+  .gate-note {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: #aaa; margin-top: 1rem; line-height: 1.5;
+  }
+  .gate-note a { color: var(--black); text-decoration: underline; }
+
+  /* Checking state */
+  .gate-checking {
+    text-align: center; padding: 1rem 0;
+  }
+  .gate-spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--black);
+    border-top-color: var(--pink);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .gate-checking-text {
+    font-family: var(--font-mono); font-size: 0.78rem; color: #666;
+  }
+
+  /* Error state */
+  .gate-error-badge {
+    display: inline-block;
+    background: #fff0f0; border: 2px solid #e00;
+    color: #c00; padding: 4px 12px; border-radius: 3px;
+    font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+    margin-bottom: 1rem; box-shadow: 2px 2px 0 #c00;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .dash-wrap { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .signal-grid { grid-template-columns: 1fr 1fr; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .metric-cell:nth-child(2n) { border-right: none; }
+    .defi-grid { grid-template-columns: 1fr; }
+    .issue-card-body { grid-template-columns: 1fr; }
+    .rewards-grid { grid-template-columns: 1fr 1fr; }
+    .partner-hero { grid-template-columns: 1fr; }
+    .calc-body { grid-template-columns: 1fr; }
+    .tier-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  }
+  @media (max-width: 600px) {
+    .signal-grid { grid-template-columns: 1fr; }
+    .signal-cell { border-right: none !important; }
+    .topnav { padding: 0 1rem; }
+    .nav-center { display: none; }
+    .content { padding: 1.5rem 1rem; }
+    .wb-stats { display: none; }
+    .rewards-grid { grid-template-columns: 1fr; }
+    .bybit-modal-perks { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <div class="load-logo">SignalStrike</div>
+  <div class="load-bar"><div class="load-fill"></div></div>
+</div>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="index.html" class="nav-logo">SignalStrike <span class="nav-dot"></span></a>
+
+  <div class="nav-center">
+    <span class="nav-tab active">Dashboard</span>
+    <a href="#archive" class="nav-tab">Archive</a>
+    <a href="#signals" class="nav-tab">Signals</a>
+    <a href="#defi" class="nav-tab">DeFi</a>
+  </div>
+
+  <div class="nav-right">
+    <div class="nav-member-badge">⚡ Pro Member</div>
+    <div class="nav-avatar" id="navAvatar"></div>
+    <button class="btn-logout" id="logoutBtn">Sign Out</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span> $84,210</span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span> $3,102</span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span> $142.80</span>
+    <span class="ticker-item">BNB <span class="up">▲ +0.95%</span> $598</span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span> $0.178</span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span> $7.48</span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span> $18.22</span>
+    <span class="ticker-item">AVAX <span class="dn">▼ -0.42%</span> $36.10</span>
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span> $84,210</span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span> $3,102</span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span> $142.80</span>
+    <span class="ticker-item">BNB <span class="up">▲ +0.95%</span> $598</span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span> $0.178</span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span> $7.48</span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span> $18.22</span>
+    <span class="ticker-item">AVAX <span class="dn">▼ -0.42%</span> $36.10</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="dash-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-member-card">
+      <div class="smc-avatar" id="sidebarAvatar"></div>
+      <div class="smc-name" id="sidebarName">Loading…</div>
+      <div class="smc-email" id="sidebarEmail"></div>
+      <div class="smc-since">
+        <span class="smc-dot"></span>
+        <span id="sidebarSince">Member since —</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a href="#rewards" class="sidebar-link rewards-link"><span class="sl-icon">🎁</span> Rewards <span class="sl-badge new rewards-badge-count">12</span></a>
+      <a href="#today" class="sidebar-link active"><span class="sl-icon">📬</span> Today's Brief <span class="sl-badge new">NEW</span></a>
+      <a href="#signals" class="sidebar-link"><span class="sl-icon">📡</span> AI Signals</a>
+      <a href="#whales" class="sidebar-link"><span class="sl-icon">🐋</span> Whale Radar</a>
+      <a href="#defi" class="sidebar-link"><span class="sl-icon">🌾</span> DeFi Alpha</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Content</div>
+      <a href="#archive" class="sidebar-link"><span class="sl-icon">📂</span> Issue Archive <span class="sl-badge">285</span></a>
+      <a href="#deepdive" class="sidebar-link"><span class="sl-icon">🔬</span> Deep Dives</a>
+      <a href="#regulatory" class="sidebar-link"><span class="sl-icon">⚖️</span> Regulatory Radar</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="sidebar-link"><span class="sl-icon">💳</span> Manage Billing</a>
+      <a href="#partner" class="sidebar-link"><span class="sl-icon">💰</span> Partner Program</a>
+      <a href="#" class="sidebar-link" id="sidebarLogout"><span class="sl-icon">🚪</span> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- Welcome banner -->
+    <div class="welcome-banner">
+      <div>
+        <div class="wb-tag" id="wbTag">🌅 Good Morning — Friday, Mar 20, 2026</div>
+        <div class="wb-title" id="welcomeTitle">Welcome back, <em>Trader</em></div>
+        <div class="wb-sub" id="welcomeSub">Your daily AI brief is ready. Markets open in 2h 14m. 6 signals flagged overnight.</div>
+      </div>
+      <div class="wb-stats">
+        <div class="wb-stat">
+          <div class="num">97.2%</div>
+          <div class="lbl">Signal Accuracy</div>
+        </div>
+        <div class="wb-stat">
+          <div class="num">285+</div>
+          <div class="lbl">Issues in Archive</div>
+        </div>
+      </div>
+      <div class="wb-deco">₿</div>
+    </div>
+
+    <!-- Subscribe prompt -->
+    <div class="sub-prompt" id="subPrompt" style="display:none;">
+      <div class="sp-text">
+        <div class="sp-title">You're on a free preview. Unlock full access →</div>
+        <div class="sp-sub">Get all AI signals, whale alerts, deep dives & flash alerts from $29.99/mo.</div>
+      </div>
+      <a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="btn-subscribe">🚀 Subscribe Now</a>
+    </div>
+
+    <!-- REWARDS -->
+    <div class="dash-section rewards-section" id="rewards">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Member Rewards</div>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span class="rewards-unclaimed-badge">12 unclaimed</span>
+          <button class="bybit-check-btn" id="bybitCheckBtn" onclick="openBybitModal()">
+            <span class="bybit-icon">⚡</span> Verify Bybit
+          </button>
+        </div>
+      </div>
+
+      <div class="bybit-banner" id="bybitBanner">
+        <div class="bybit-banner-icon">🔒</div>
+        <div class="bybit-banner-text">
+          <div class="bybit-banner-title">Unlock Bybit Trading Rewards</div>
+          <div class="bybit-banner-sub">Some rewards require a verified Bybit account. Confirm eligibility to unlock exclusive trading bonuses.</div>
+        </div>
+        <button class="bybit-verify-btn" onclick="openBybitModal()">Verify Now →</button>
+      </div>
+
+      <div class="rewards-grid" id="rewardsGrid">
+        <div class="reward-card" data-id="1" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-gold"><span>🏆</span></div>
+            <div>
+              <div class="reward-title">Welcome Bonus</div>
+              <div class="reward-desc">$10 credit for new Pro members</div>
+              <div class="reward-val">$10.00</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 1)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="2" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-silver"><span>📊</span></div>
+            <div>
+              <div class="reward-title">30-Day Streak Badge</div>
+              <div class="reward-desc">Read 30 consecutive daily briefs</div>
+              <div class="reward-val">Badge + 1 mo. free</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 2)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="3" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>⚡</span></div>
+            <div>
+              <div class="reward-title">Bybit Trading Bonus</div>
+              <div class="reward-desc">$50 trading fee rebate via Bybit</div>
+              <div class="reward-val bybit-locked" id="r3-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r3-btn" onclick="claimReward(this, 3)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="4" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-pink"><span>🎯</span></div>
+            <div>
+              <div class="reward-title">Signal Accuracy Award</div>
+              <div class="reward-desc">First 10 correct calls tracked</div>
+              <div class="reward-val">$5.00 credit</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 4)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="5" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>📈</span></div>
+            <div>
+              <div class="reward-title">Bybit VIP Upgrade</div>
+              <div class="reward-desc">3-month VIP tier upgrade voucher</div>
+              <div class="reward-val bybit-locked" id="r5-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r5-btn" onclick="claimReward(this, 5)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="6" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-green"><span>🐋</span></div>
+            <div>
+              <div class="reward-title">Whale Watcher</div>
+              <div class="reward-desc">Followed 5 whale wallets</div>
+              <div class="reward-val">Exclusive report</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 6)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="7" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-gold"><span>📅</span></div>
+            <div>
+              <div class="reward-title">3-Month Milestone</div>
+              <div class="reward-desc">Active member for 90 days</div>
+              <div class="reward-val">$15.00 credit</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 7)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="8" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>💎</span></div>
+            <div>
+              <div class="reward-title">Bybit Deposit Match</div>
+              <div class="reward-desc">Up to $100 deposit match bonus</div>
+              <div class="reward-val bybit-locked" id="r8-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r8-btn" onclick="claimReward(this, 8)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="9" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-silver"><span>🤝</span></div>
+            <div>
+              <div class="reward-title">First Referral</div>
+              <div class="reward-desc">Referred your first subscriber</div>
+              <div class="reward-val">$14.99 bonus</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 9)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="10" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-pink"><span>🔬</span></div>
+            <div>
+              <div class="reward-title">Deep Dive Completion</div>
+              <div class="reward-desc">Read all 5 deep dive reports</div>
+              <div class="reward-val">Premium report pack</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 10)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="11" data-bybit="true">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-bybit"><span>🚀</span></div>
+            <div>
+              <div class="reward-title">Bybit Futures Bonus</div>
+              <div class="reward-desc">$25 futures trading credit</div>
+              <div class="reward-val bybit-locked" id="r11-val">🔒 Bybit Required</div>
+            </div>
+            <button class="reward-claim-btn bybit-req" id="r11-btn" onclick="claimReward(this, 11)" disabled>Locked</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+
+        <div class="reward-card" data-id="12" data-bybit="false">
+          <div class="reward-card-inner">
+            <div class="reward-icon-wrap r-gold"><span>👑</span></div>
+            <div>
+              <div class="reward-title">Annual Member Crown</div>
+              <div class="reward-desc">Celebrate your 1-year anniversary</div>
+              <div class="reward-val">1 month free + badge</div>
+            </div>
+            <button class="reward-claim-btn" onclick="claimReward(this, 12)">Claim</button>
+          </div>
+          <div class="reward-claimed-overlay"><span>✓ Claimed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTNER PROGRAM -->
+    <div class="dash-section" id="partner">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Partner Program — Earn 50% Recurring</div>
+        <a href="#" class="dash-section-link">Get Your Link →</a>
+      </div>
+
+      <div class="partner-hero">
+        <div class="partner-hero-left">
+          <div class="partner-tag">💰 50% Lifetime Recurring Commission</div>
+          <div class="partner-headline">Turn your audience into <em>passive income</em></div>
+          <div class="partner-sub">Every subscriber you refer pays you 50% of their monthly fee — forever. No caps, no expiry, no catch. Paid monthly to your wallet or bank.</div>
+          <div class="partner-features">
+            <div class="pf-item"><span class="pf-check">✓</span> $14.99 per referral per month</div>
+            <div class="pf-item"><span class="pf-check">✓</span> Lifetime recurring — not one-time</div>
+            <div class="pf-item"><span class="pf-check">✓</span> Real-time dashboard tracking</div>
+            <div class="pf-item"><span class="pf-check">✓</span> Paid monthly via PayPal / crypto</div>
+          </div>
+          <div class="partner-link-box">
+            <div class="partner-link-label">Your referral link</div>
+            <div class="partner-link-row">
+              <span class="partner-link-url" id="partnerLinkUrl">signalstrike.com/ref/trader123</span>
+              <button class="partner-copy-btn" onclick="copyPartnerLink()">Copy Link</button>
+            </div>
+          </div>
+        </div>
+        <div class="partner-hero-right">
+          <div class="partner-stats-mini">
+            <div class="psm-item">
+              <div class="psm-val">0</div>
+              <div class="psm-lbl">Active Referrals</div>
+            </div>
+            <div class="psm-item">
+              <div class="psm-val">$0</div>
+              <div class="psm-lbl">Total Earned</div>
+            </div>
+            <div class="psm-item">
+              <div class="psm-val">$0</div>
+              <div class="psm-lbl">This Month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-section">
+        <div class="calc-header">
+          <div class="calc-title">💸 Earnings Calculator</div>
+          <div class="calc-sub">See what your audience could earn you monthly</div>
+        </div>
+        <div class="calc-body">
+          <div>
+            <div class="calc-slider-wrap" style="margin-bottom:1rem;">
+              <div class="calc-slider-label">
+                <span>Referrals per month</span>
+                <span class="calc-slider-val" id="refCount">10</span>
+              </div>
+              <input type="range" id="refSlider" min="1" max="500" value="10" step="1" class="calc-range" oninput="updateCalc()">
+              <div class="calc-slider-ticks"><span>1</span><span>100</span><span>250</span><span>500</span></div>
+            </div>
+            <div class="calc-slider-wrap">
+              <div class="calc-slider-label">
+                <span>Avg. retention (months)</span>
+                <span class="calc-slider-val" id="retentionMonths">6</span>
+              </div>
+              <input type="range" id="retSlider" min="1" max="24" value="6" step="1" class="calc-range" oninput="updateCalc()">
+              <div class="calc-slider-ticks"><span>1mo</span><span>6mo</span><span>12mo</span><span>24mo</span></div>
+            </div>
+          </div>
+          <div class="calc-results">
+            <div class="calc-result-item">
+              <div class="cr-label">Monthly income</div>
+              <div class="cr-val green" id="calcMonthly">$149.90</div>
+            </div>
+            <div class="calc-result-divider"></div>
+            <div class="calc-result-item">
+              <div class="cr-label">Annual income</div>
+              <div class="cr-val gold" id="calcAnnual">$1,798.80</div>
+            </div>
+            <div class="calc-result-divider"></div>
+            <div class="calc-result-item">
+              <div class="cr-label">Lifetime value</div>
+              <div class="cr-val pink" id="calcLifetime">$899.40</div>
+            </div>
+          </div>
+        </div>
+        <div class="calc-note">Based on $29.99/mo subscription · 50% commission = $14.99 per referral per month</div>
+      </div>
+
+      <div class="partner-tiers">
+        <div class="tier-row tier-head">
+          <div>Tier</div><div>Referrals</div><div>Monthly</div><div>Commission</div>
+        </div>
+        <div class="tier-row">
+          <div><span class="tier-badge t-bronze">🥉 Starter</span></div>
+          <div>1–9</div><div>$14.99 each</div><div>50% recurring</div>
+        </div>
+        <div class="tier-row">
+          <div><span class="tier-badge t-silver">🥈 Growth</span></div>
+          <div>10–49</div><div>$14.99 each</div><div>50% recurring + bonus</div>
+        </div>
+        <div class="tier-row">
+          <div><span class="tier-badge t-gold">🥇 Pro Partner</span></div>
+          <div>50–199</div><div>$14.99 each</div><div>50% + dedicated support</div>
+        </div>
+        <div class="tier-row tier-elite">
+          <div><span class="tier-badge t-elite">👑 Elite</span></div>
+          <div>200+</div><div>$14.99 each</div><div>50% + custom deal available</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODAY'S ISSUE -->
+    <div class="dash-section delay-1" id="today">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Today's Issue — #285</div>
+        <a href="#" class="dash-section-link">View Full Issue →</a>
+      </div>
+      <div class="issue-card">
+        <div class="issue-card-header">
+          <div class="ich-title">⚡ SIGNALSTRIKE DAILY</div>
+          <div class="ich-date">ISSUE #285 · FRI MAR 20, 2026</div>
+        </div>
+        <div class="issue-card-body">
+          <div class="icb-section">
+            <div class="icb-label">// Macro Pulse</div>
+            <div class="icb-line"><strong>BTC Dominance:</strong> 54.2% (↑ 0.8%) — Altcoin season cooling</div>
+            <div class="icb-line"><strong>Fear & Greed:</strong> 72 — Greed zone, volatility elevated</div>
+            <div class="icb-line"><strong>Fed Watch:</strong> Rate hold confirmed. Risk-on assets bid</div>
+            <div class="icb-label" style="margin-top:1rem;">// Whale Radar</div>
+            <div class="icb-line"><strong>0x8f2a…</strong> moved 12,400 ETH to Binance</div>
+            <div class="icb-line"><strong>0x44cc…</strong> accumulated $8.2M LINK over 3 days</div>
+          </div>
+          <div class="icb-section">
+            <div class="icb-label">// AI Signals Today</div>
+            <div class="icb-line"><strong>BTC:</strong> Holding $85K support. AI confidence 88%. Target: $92K</div>
+            <div class="icb-line"><strong>SOL:</strong> Breakout forming. Whale accumulation +$47M (24h)</div>
+            <div class="icb-line"><strong>RENDER:</strong> AI narrative play. Dev activity ↑ 340%. Watch $7.50</div>
+            <div class="icb-line"><strong>AVAX:</strong> Token unlock Fri 180M tokens. Reduce exposure</div>
+            <div class="icb-label" style="margin-top:1rem;">// DeFi Alpha</div>
+            <div class="icb-line"><strong>Aave v4</strong> on Base — 14.2% APY on USDC for 48hrs</div>
+            <div class="icb-line"><strong>Uniswap:</strong> RENDER/ETH 0.3% fee tier opportunity</div>
+          </div>
+        </div>
+        <div class="issue-card-footer">
+          <a href="#" class="btn-read">Read Full Issue →</a>
+          <a href="#archive" class="btn-archive">Browse Archive</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI SIGNALS -->
+    <div class="dash-section delay-2" id="signals">
+      <div class="dash-section-head">
+        <div class="dash-section-title">AI Signals — Live</div>
+        <a href="#" class="dash-section-link">All 500+ Coins →</a>
+      </div>
+      <div class="signal-grid">
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">₿ Bitcoin</div>
+            <div class="sc-badge badge-buy">BUY ZONE</div>
+          </div>
+          <div class="sc-pct up">+2.47%</div>
+          <div class="sc-meta">Target: $92,000 · Entry: $82,500–$85,000</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:88%"></div></div>
+            <div class="conf-label">88% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">Ξ Ethereum</div>
+            <div class="sc-badge badge-watch">WATCH</div>
+          </div>
+          <div class="sc-pct up">+1.89%</div>
+          <div class="sc-meta">Consolidating. Wait for $3,200 break</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:62%"></div></div>
+            <div class="conf-label">62% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">◎ Solana</div>
+            <div class="sc-badge badge-buy">STRONG BUY</div>
+          </div>
+          <div class="sc-pct up">+4.10%</div>
+          <div class="sc-meta">Breakout forming. Whale acc. +$47M (24h)</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:91%"></div></div>
+            <div class="conf-label">91% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">⬡ AVAX</div>
+            <div class="sc-badge badge-reduce">REDUCE</div>
+          </div>
+          <div class="sc-pct dn">-0.73%</div>
+          <div class="sc-meta">Token unlock Friday 180M tokens. Risk high</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill red" style="width:78%"></div></div>
+            <div class="conf-label">78% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">🔗 Chainlink</div>
+            <div class="sc-badge badge-buy">BREAKOUT</div>
+          </div>
+          <div class="sc-pct up">+4.15%</div>
+          <div class="sc-meta">Smart money acc. Target: $22.00</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:85%"></div></div>
+            <div class="conf-label">85% conf.</div>
+          </div>
+        </div>
+        <div class="signal-cell">
+          <div class="sc-coin">
+            <div class="sc-name">⬡ Render</div>
+            <div class="sc-badge badge-buy">AI PLAY</div>
+          </div>
+          <div class="sc-pct up">+7.44%</div>
+          <div class="sc-meta">Dev activity ↑ 340%. AI narrative strong</div>
+          <div class="sc-conf">
+            <div class="conf-bar"><div class="conf-fill" style="width:93%"></div></div>
+            <div class="conf-label">93% conf.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI PERFORMANCE METRICS -->
+    <div class="dash-section delay-2">
+      <div class="dash-section-head">
+        <div class="dash-section-title">AI Engine — Performance</div>
+        <span class="dash-section-link">18-Month Track Record</span>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-cell">
+          <div class="mc-val">97.2%</div>
+          <div class="mc-label">Signal Accuracy</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-val">4.2hrs</div>
+          <div class="mc-label">Avg Lead Time</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-val">50k+</div>
+          <div class="mc-label">Data Points / Day</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-val">28</div>
+          <div class="mc-label">Chains Monitored</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHALE RADAR -->
+    <div class="dash-section delay-3" id="whales">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Whale Radar — Last 24hrs</div>
+        <a href="#" class="dash-section-link">Full Tracker →</a>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🐋</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x8f2a…c491</div>
+          <div class="whale-action">Moved <strong>12,400 ETH</strong> to Binance — potential sell pressure incoming</div>
+        </div>
+        <div>
+          <div class="whale-amount sell">-$38.4M</div>
+          <div class="whale-time">2h 14m ago</div>
+        </div>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🟢</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x44cc…7f12</div>
+          <div class="whale-action">Accumulated <strong>$8.2M LINK</strong> over 3 days — smart money accumulation</div>
+        </div>
+        <div>
+          <div class="whale-amount buy">+$8.2M</div>
+          <div class="whale-time">5h 40m ago</div>
+        </div>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🐋</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x91bb…3e08</div>
+          <div class="whale-action">Bridged <strong>4,200 SOL</strong> from Ethereum — cross-chain rotation signal</div>
+        </div>
+        <div>
+          <div class="whale-amount buy">+$598K</div>
+          <div class="whale-time">8h 02m ago</div>
+        </div>
+      </div>
+      <div class="whale-row">
+        <div class="whale-icon">🔴</div>
+        <div class="whale-main">
+          <div class="whale-addr">0x22da…a901</div>
+          <div class="whale-action">Sold <strong>180M AVAX tokens</strong> unlock — pre-positioned exit ahead of Friday</div>
+        </div>
+        <div>
+          <div class="whale-amount sell">-$6.5M</div>
+          <div class="whale-time">11h 55m ago</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEFI ALPHA -->
+    <div class="dash-section delay-3" id="defi">
+      <div class="dash-section-head">
+        <div class="dash-section-title">DeFi Alpha — This Week</div>
+        <a href="#" class="dash-section-link">All Opportunities →</a>
+      </div>
+      <div class="defi-grid">
+        <div class="defi-card">
+          <div class="dc-protocol">Aave v4 · Base</div>
+          <div class="dc-title">USDC Liquidity Pool — Limited Window</div>
+          <div class="dc-apy">14.2%</div>
+          <div class="dc-desc">Post-launch incentives on Aave v4's Base deployment. 48-hour boosted APY window before rates normalize.</div>
+          <span class="dc-tag">⏰ 31hrs remaining</span>
+        </div>
+        <div class="defi-card">
+          <div class="dc-protocol">Uniswap v3 · Ethereum</div>
+          <div class="dc-title">RENDER/ETH 0.3% Fee Tier</div>
+          <div class="dc-apy">8.7%</div>
+          <div class="dc-desc">Thin liquidity in RENDER/ETH pool creates elevated fee income for LPs as volume spikes on AI narrative momentum.</div>
+          <span class="dc-tag">🔥 High volume</span>
+        </div>
+        <div class="defi-card">
+          <div class="dc-protocol">Pendle Finance · Arbitrum</div>
+          <div class="dc-title">stETH Yield Tokenization</div>
+          <div class="dc-apy">11.4%</div>
+          <div class="dc-desc">Fixed yield on stETH through Pendle PT tokens. Lock in above-market rates before May maturity date.</div>
+          <span class="dc-tag">🔒 Fixed rate</span>
+        </div>
+        <div class="defi-card">
+          <div class="dc-protocol">Morpho Blue · Ethereum</div>
+          <div class="dc-title">WBTC/USDC Lending Market</div>
+          <div class="dc-apy">6.9%</div>
+          <div class="dc-desc">Isolated lending market with tighter risk parameters. BTC collateral demand surging as price approaches $90K.</div>
+          <span class="dc-tag">📈 Demand surge</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISSUE ARCHIVE -->
+    <div class="dash-section delay-4" id="archive">
+      <div class="dash-section-head">
+        <div class="dash-section-title">Issue Archive — Recent</div>
+        <a href="#" class="dash-section-link">All 285 Issues →</a>
+      </div>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#285</div>
+        <div class="ar-title">SOL Breakout Signal + Aave v4 Base Launch Alpha</div>
+        <div class="ar-date">Mar 20, 2026</div>
+        <div class="ar-tag">Today</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#284</div>
+        <div class="ar-title">BTC $85K Consolidation + LINK Smart Money Accumulation</div>
+        <div class="ar-date">Mar 19, 2026</div>
+        <div class="ar-tag">Deep Dive</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#283</div>
+        <div class="ar-title">RENDER AI Narrative Play — 340% Dev Activity Spike</div>
+        <div class="ar-date">Mar 18, 2026</div>
+        <div class="ar-tag">Flash Alert</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#282</div>
+        <div class="ar-title">Macro Weekly: Fed Hold Confirmed — Crypto Risk-On</div>
+        <div class="ar-date">Mar 17, 2026</div>
+        <div class="ar-tag">Weekly Wrap</div>
+      </a>
+      <a href="#" class="archive-row">
+        <div class="ar-num">#281</div>
+        <div class="ar-title">ETH Staking Yield Compression + Pendle Opportunity</div>
+        <div class="ar-date">Mar 14, 2026</div>
+        <div class="ar-tag">Deep Dive</div>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<!-- MEMBERSHIP GATE OVERLAY -->
+<div class="gate-backdrop" id="memberGate" style="display:none;">
+  <div class="gate-card">
+    <span class="gate-logo">SignalStrike</span>
+
+    <!-- CHECKING STATE -->
+    <div id="gateChecking" class="gate-checking">
+      <div class="gate-spinner"></div>
+      <div class="gate-checking-text">Verifying your membership…</div>
+    </div>
+
+    <!-- LOCKED STATE (hidden until check fails) -->
+    <div id="gateLocked" style="display:none;">
+      <span class="gate-icon">🔒</span>
+      <div class="gate-title">Members Only</div>
+      <div class="gate-sub">
+        This dashboard is exclusive to paid SignalStrike subscribers.
+        Your account <span id="gateEmailSpan" style="font-weight:700;"></span> does not have an active membership.
+      </div>
+      <div class="gate-features">
+        <div class="gate-feat">Daily AI Signals</div>
+        <div class="gate-feat">Whale Radar</div>
+        <div class="gate-feat">DeFi Alpha</div>
+        <div class="gate-feat">285+ Archive Issues</div>
+        <div class="gate-feat">Partner Program</div>
+        <div class="gate-feat">Member Rewards</div>
+      </div>
+      <a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="gate-btn-primary">
+        🚀 Get Full Access — $29.99/mo
+      </a>
+      <button class="gate-btn-secondary" onclick="handleGateSignOut()">Sign out &amp; use different account</button>
+      <div class="gate-note">
+        Already subscribed? Make sure you're logged in with the email you used to purchase.<br>
+        Need help? <a href="mailto:support@signalstrike.com">support@signalstrike.com</a>
+      </div>
+    </div>
+
+    <!-- ERROR STATE (hidden until fetch fails) -->
+    <div id="gateError" style="display:none;">
+      <span class="gate-icon">⚠️</span>
+      <div class="gate-title">Check failed</div>
+      <div class="gate-sub">We couldn't verify your membership right now. Please try again or contact support.</div>
+      <div class="gate-error-badge" id="gateErrorMsg">Network error</div>
+      <button class="gate-btn-primary" onclick="retryMemberCheck()" style="margin-bottom:0.6rem;">Retry</button>
+      <button class="gate-btn-secondary" onclick="handleGateSignOut()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- BYBIT MODAL -->
+<div id="bybitModal" class="bybit-modal-backdrop">
+  <div class="bybit-modal-box">
+    <button class="bybit-modal-close" onclick="closeBybitModal()">✕</button>
+    <div class="bybit-modal-logo">⚡ Bybit Eligibility Check</div>
+    <div class="bybit-modal-body" id="bybitModalBody">
+      <div class="bybit-modal-icon">🔐</div>
+      <div class="bybit-modal-title">Are you a Bybit user?</div>
+      <div class="bybit-modal-desc">Confirm you have an active Bybit account to unlock exclusive trading rewards worth up to <strong>$175</strong> in bonuses.</div>
+      <div class="bybit-modal-perks">
+        <div class="bybit-perk">⚡ $50 trading fee rebate</div>
+        <div class="bybit-perk">📈 3-month VIP upgrade</div>
+        <div class="bybit-perk">💎 Up to $100 deposit match</div>
+        <div class="bybit-perk">🚀 $25 futures credit</div>
+      </div>
+      <div class="bybit-modal-actions">
+        <button class="bybit-modal-yes" onclick="confirmBybit()">✓ Yes, I'm a Bybit User</button>
+        <button class="bybit-modal-no" onclick="closeBybitModal()">No, not yet</button>
+      </div>
+      <div class="bybit-modal-note">Don't have Bybit yet? <a href="https://bybit.com" target="_blank">Sign up free →</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  // ─────────────────────────────────────────────────────────────
+  //  ★ CONFIGURATION — UPDATE THESE TWO VALUES ★
+  // ─────────────────────────────────────────────────────────────
+
+  // STEP 1: Paste your Google Sheet ID here.
+  //   → Open your sheet → share as "Anyone with link can view"
+  //   → The URL looks like: https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit
+  //   → Copy just the SHEET_ID_HERE part and paste below
+  const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE';
+
+  // STEP 2: Paste the name of the sheet tab that holds your member emails
+  //   (bottom tab in Google Sheets — usually "Sheet1")
+  const SHEET_TAB = 'Sheet1';
+
+  // STEP 3: Column letter that contains the email addresses (e.g. 'A')
+  const EMAIL_COLUMN = 'A';
+
+  // How long to cache a membership check (ms). 3600000 = 1 hour.
+  // While cached, no network call is made — fast page loads.
+  const CACHE_TTL_MS = 3600000;
+
+  // ─────────────────────────────────────────────────────────────
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBfaThYee5N7mR30YqMzymDsASNg9WI1zY",
+    authDomain: "signalstrike-newsletter.firebaseapp.com",
+    projectId: "signalstrike-newsletter",
+    storageBucket: "signalstrike-newsletter.firebasestorage.app",
+    messagingSenderId: "685841795264",
+    appId: "1:685841795264:web:6a7e9c9d42324ad1b94525",
+    measurementId: "G-CW6DKSN76S"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // ── HELPERS ──
+
+  function hideLoading() {
+    setTimeout(() => {
+      document.getElementById('loadingScreen').classList.add('hide');
+      setTimeout(() => { document.getElementById('loadingScreen').style.display = 'none'; }, 500);
+    }, 1200);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerHTML = msg;
+    t.style.transform = 'translateY(0)';
+    t.style.opacity = '1';
+    setTimeout(() => { t.style.transform = 'translateY(100px)'; t.style.opacity = '0'; }, 4500);
+  }
+
+  async function handleSignOut() {
+    try { await signOut(auth); window.location.href = '/login.html'; }
+    catch (err) { showToast('⚠ Sign out failed: ' + err.message); }
+  }
+
+  // Exposed globally so gate buttons can call it
+  window.handleGateSignOut = handleSignOut;
+
+  // ── MEMBERSHIP CHECK ──
+
+  /**
+   * Fetch the Google Sheet as CSV and check if `email` is in EMAIL_COLUMN.
+   * Uses sessionStorage to cache the result for CACHE_TTL_MS milliseconds,
+   * so repeat page loads don't hammer the sheet.
+   */
+  async function checkMembership(email) {
+    const cacheKey = `ss_member_${email}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      const { result, ts } = JSON.parse(cached);
+      if (Date.now() - ts < CACHE_TTL_MS) return result;
+    }
+
+    // Google Sheets CSV export URL — works when sheet is shared publicly (view only)
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Sheet fetch failed: ${resp.status}`);
+
+    const csv = await resp.text();
+
+    // Parse the column we care about — handle quoted cells
+    const colIndex = EMAIL_COLUMN.toUpperCase().charCodeAt(0) - 65; // A=0, B=1, …
+    const emails = csv.split('\n')
+      .slice(1)                              // skip header row
+      .map(row => {
+        const cells = row.match(/(".*?"|[^,]+)/g) || [];
+        const cell = (cells[colIndex] || '').trim().replace(/^"|"$/g, '').toLowerCase();
+        return cell;
+      })
+      .filter(Boolean);
+
+    const result = emails.includes(email.toLowerCase().trim());
+
+    // Cache result
+    sessionStorage.setItem(cacheKey, JSON.stringify({ result, ts: Date.now() }));
+    return result;
+  }
+
+  // ── GATE UI ──
+
+  function showGate() {
+    document.getElementById('memberGate').style.display = 'flex';
+    document.body.classList.add('is-locked');
+  }
+
+  function hideGate() {
+    document.getElementById('memberGate').style.display = 'none';
+    document.body.classList.remove('is-locked');
+  }
+
+  function showGateChecking() {
+    showGate();
+    document.getElementById('gateChecking').style.display = 'block';
+    document.getElementById('gateLocked').style.display = 'none';
+    document.getElementById('gateError').style.display = 'none';
+  }
+
+  function showGateLocked(email) {
+    document.getElementById('gateChecking').style.display = 'none';
+    document.getElementById('gateError').style.display = 'none';
+    document.getElementById('gateLocked').style.display = 'block';
+    document.getElementById('gateEmailSpan').textContent = `(${email})`;
+  }
+
+  function showGateError(msg) {
+    document.getElementById('gateChecking').style.display = 'none';
+    document.getElementById('gateLocked').style.display = 'none';
+    document.getElementById('gateError').style.display = 'block';
+    document.getElementById('gateErrorMsg').textContent = msg;
+  }
+
+  // ── POPULATE DASHBOARD ──
+
+  function populateDashboard(user) {
+    const displayName = user.displayName || user.email?.split('@')[0] || 'Trader';
+    const email = user.email || '';
+    const memberSince = new Date(user.metadata.creationTime)
+      .toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const initials = displayName.charAt(0).toUpperCase();
+
+    const navAv = document.getElementById('navAvatar');
+    navAv.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="avatar">` : initials;
+
+    const sbAv = document.getElementById('sidebarAvatar');
+    sbAv.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="avatar">` : initials;
+
+    document.getElementById('sidebarName').textContent = displayName;
+    document.getElementById('sidebarEmail').textContent = email;
+    document.getElementById('sidebarSince').textContent = `Member since ${memberSince}`;
+
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+    document.getElementById('wbTag').textContent = `🌅 ${greeting} — ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}`;
+    document.getElementById('welcomeTitle').innerHTML = `Welcome back, <em>${displayName}</em>`;
+
+    const slug = (displayName || 'user').toLowerCase().replace(/\s+/g, '');
+    document.getElementById('partnerLinkUrl').textContent = `signalstrike.com/ref/${slug}`;
+  }
+
+  // ── RETRY HANDLER (exposed for gate error button) ──
+
+  let _currentUser = null;
+  window.retryMemberCheck = async function() {
+    if (!_currentUser) return;
+    // Clear cached result so we force a fresh fetch
+    sessionStorage.removeItem(`ss_member_${_currentUser.email}`);
+    showGateChecking();
+    try {
+      const isMember = await checkMembership(_currentUser.email);
+      if (isMember) { hideGate(); }
+      else { showGateLocked(_currentUser.email); }
+    } catch(err) {
+      showGateError(err.message);
+    }
+  };
+
+  // ── MAIN AUTH FLOW ──
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = '/login.html'; return; }
+
+    _currentUser = user;
+
+    // Always populate dashboard UI behind the gate
+    populateDashboard(user);
+
+    // If sheet isn't configured yet, skip the check and let everyone through
+    // (useful during development — remove this block when you add your sheet ID)
+    if (SHEET_ID === 'https://docs.google.com/spreadsheets/d/1b6m_3YzruHWlCyJCj2uPp_k_kRvI2j7gMgyS29S3xO4/edit?usp=sharing') {
+      console.warn('SignalStrike: No Google Sheet ID set — membership check skipped. Add SHEET_ID to enable gating.');
+      hideLoading();
+      return;
+    }
+
+    // Show gate in "checking" state immediately
+    showGateChecking();
+    hideLoading();
+
+    try {
+      const isMember = await checkMembership(user.email);
+      if (isMember) {
+        hideGate();
+        showToast(`✅ Welcome back, ${user.displayName || user.email.split('@')[0]}!`);
+      } else {
+        showGateLocked(user.email);
+      }
+    } catch (err) {
+      // If the sheet fetch fails we show an error, not a false lock-out
+      showGateError(err.message);
+    }
+  });
+
+  // ── NAV & SIDEBAR ──
+
+  document.getElementById('logoutBtn').addEventListener('click', handleSignOut);
+  document.getElementById('sidebarLogout').addEventListener('click', (e) => { e.preventDefault(); handleSignOut(); });
+
+  document.querySelectorAll('.sidebar-link[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // ── BYBIT REWARDS ──
+
+  let bybitVerified = false;
+  let claimedCount = 0;
+
+  window.claimReward = function(btn, id) {
+    const card = btn.closest('.reward-card');
+    if (card.dataset.bybit === 'true' && !bybitVerified) { openBybitModal(); return; }
+    card.classList.add('is-claimed');
+    claimedCount++;
+    const remaining = 12 - claimedCount;
+    const badge = document.querySelector('.rewards-badge-count');
+    if (badge) badge.textContent = remaining > 0 ? remaining : '✓';
+    showToast('🎁 Reward claimed! Check your account for details.');
+  };
+
+  window.openBybitModal = function() {
+    document.getElementById('bybitModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeBybitModal = function() {
+    document.getElementById('bybitModal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  window.confirmBybit = function() {
+    bybitVerified = true;
+    closeBybitModal();
+    document.querySelectorAll('.reward-card[data-bybit="true"]').forEach(card => {
+      const btn = card.querySelector('.reward-claim-btn');
+      const val = card.querySelector('.reward-val');
+      btn.classList.add('unlocked');
+      btn.removeAttribute('disabled');
+      btn.textContent = 'Claim';
+      if (val) val.classList.remove('bybit-locked');
+    });
+    const unlocks = { 3: '$50 rebate', 5: '3mo VIP upgrade', 8: 'Up to $100 match', 11: '$25 futures credit' };
+    Object.entries(unlocks).forEach(([id, label]) => {
+      const el = document.getElementById(`r${id}-val`);
+      if (el) { el.classList.remove('bybit-locked'); el.textContent = label; el.style.color = 'var(--lime-dark)'; }
+    });
+    const banner = document.getElementById('bybitBanner');
+    banner.classList.add('verified');
+    banner.querySelector('.bybit-banner-icon').textContent = '✅';
+    banner.querySelector('.bybit-banner-title').textContent = 'Bybit Account Verified';
+    banner.querySelector('.bybit-banner-sub').textContent = '4 exclusive Bybit rewards unlocked. Claim them above.';
+    const vbtn = banner.querySelector('.bybit-verify-btn');
+    vbtn.textContent = '✓ Verified';
+    vbtn.style.background = 'var(--lime-dark)';
+    vbtn.style.color = 'var(--white)';
+    const cb = document.getElementById('bybitCheckBtn');
+    cb.textContent = '✓ Bybit Verified';
+    cb.style.background = 'var(--lime-dark)';
+    showToast('✅ Bybit verified! 4 exclusive rewards unlocked.');
+  };
+
+  // ── PARTNER CALCULATOR ──
+
+  window.updateCalc = function() {
+    const refs = parseInt(document.getElementById('refSlider').value);
+    const months = parseInt(document.getElementById('retSlider').value);
+    const perRef = 14.99;
+    document.getElementById('refCount').textContent = refs;
+    document.getElementById('retentionMonths').textContent = months;
+    document.getElementById('calcMonthly').textContent = '$' + (refs * perRef).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('calcAnnual').textContent = '$' + (refs * perRef * 12).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('calcLifetime').textContent = '$' + (refs * perRef * months).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  };
+
+  window.copyPartnerLink = function() {
+    const url = document.getElementById('partnerLinkUrl').textContent;
+    navigator.clipboard.writeText('https://' + url)
+      .then(() => showToast('🔗 Partner link copied!'))
+      .catch(() => showToast('🔗 Copy: ' + url));
+  };
+
+  document.getElementById('bybitModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('bybitModal')) closeBybitModal();
+  });
+</script>
+</body>
+</html>
