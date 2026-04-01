@@ -1803,25 +1803,14 @@
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
   // ─────────────────────────────────────────────────────────────
-  //  ★ CONFIGURATION — UPDATE THESE TWO VALUES ★
+  //  ★ CONFIGURATION ★
   // ─────────────────────────────────────────────────────────────
 
-  // STEP 1: Paste your Google Sheet ID here.
-  //   → Open your sheet → share as "Anyone with link can view"
-  //   → The URL looks like: https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit
-  //   → Copy just the SHEET_ID_HERE part and paste below
-  const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID_HERE';
-
-  // STEP 2: Paste the name of the sheet tab that holds your member emails
-  //   (bottom tab in Google Sheets — usually "Sheet1")
+  // Google Sheet ID (your actual sheet ID)
+  const SHEET_ID = '1b6m_3YzruHWlCyJCj2uPp_k_kRvI2j7gMgyS29S3xO4';
   const SHEET_TAB = 'Sheet1';
-
-  // STEP 3: Column letter that contains the email addresses (e.g. 'A')
   const EMAIL_COLUMN = 'A';
-
-  // How long to cache a membership check (ms). 3600000 = 1 hour.
-  // While cached, no network call is made — fast page loads.
-  const CACHE_TTL_MS = 3600000;
+  const CACHE_TTL_MS = 3600000; // 1 hour
 
   // ─────────────────────────────────────────────────────────────
 
@@ -1860,16 +1849,10 @@
     catch (err) { showToast('⚠ Sign out failed: ' + err.message); }
   }
 
-  // Exposed globally so gate buttons can call it
   window.handleGateSignOut = handleSignOut;
 
   // ── MEMBERSHIP CHECK ──
 
-  /**
-   * Fetch the Google Sheet as CSV and check if `email` is in EMAIL_COLUMN.
-   * Uses sessionStorage to cache the result for CACHE_TTL_MS milliseconds,
-   * so repeat page loads don't hammer the sheet.
-   */
   async function checkMembership(email) {
     const cacheKey = `ss_member_${email}`;
     const cached = sessionStorage.getItem(cacheKey);
@@ -1878,7 +1861,6 @@
       if (Date.now() - ts < CACHE_TTL_MS) return result;
     }
 
-    // Google Sheets CSV export URL — works when sheet is shared publicly (view only)
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
 
     const resp = await fetch(url);
@@ -1886,10 +1868,9 @@
 
     const csv = await resp.text();
 
-    // Parse the column we care about — handle quoted cells
     const colIndex = EMAIL_COLUMN.toUpperCase().charCodeAt(0) - 65; // A=0, B=1, …
     const emails = csv.split('\n')
-      .slice(1)                              // skip header row
+      .slice(1)
       .map(row => {
         const cells = row.match(/(".*?"|[^,]+)/g) || [];
         const cell = (cells[colIndex] || '').trim().replace(/^"|"$/g, '').toLowerCase();
@@ -1899,7 +1880,6 @@
 
     const result = emails.includes(email.toLowerCase().trim());
 
-    // Cache result
     sessionStorage.setItem(cacheKey, JSON.stringify({ result, ts: Date.now() }));
     return result;
   }
@@ -1965,12 +1945,11 @@
     document.getElementById('partnerLinkUrl').textContent = `signalstrike.com/ref/${slug}`;
   }
 
-  // ── RETRY HANDLER (exposed for gate error button) ──
+  // ── RETRY HANDLER ──
 
   let _currentUser = null;
   window.retryMemberCheck = async function() {
     if (!_currentUser) return;
-    // Clear cached result so we force a fresh fetch
     sessionStorage.removeItem(`ss_member_${_currentUser.email}`);
     showGateChecking();
     try {
@@ -1989,18 +1968,7 @@
 
     _currentUser = user;
 
-    // Always populate dashboard UI behind the gate
     populateDashboard(user);
-
-    // If sheet isn't configured yet, skip the check and let everyone through
-    // (useful during development — remove this block when you add your sheet ID)
-    if (SHEET_ID === '1b6m_3YzruHWlCyJCj2uPp_k_kRvI2j7gMgyS29S3xO4') {
-      console.warn('SignalStrike: No Google Sheet ID set — membership check skipped. Add SHEET_ID to enable gating.');
-      hideLoading();
-      return;
-    }
-
-    // Show gate in "checking" state immediately
     showGateChecking();
     hideLoading();
 
@@ -2013,7 +1981,6 @@
         showGateLocked(user.email);
       }
     } catch (err) {
-      // If the sheet fetch fails we show an error, not a false lock-out
       showGateError(err.message);
     }
   });
