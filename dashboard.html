@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SignalStrike — AI-Powered Crypto Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#fffbf5;
+  --surface:#f5f0e8;
+  --surface2:#eee8dc;
+  --surface3:#e5ddd0;
+  --border:#0a0a0a18;
+  --border2:#0a0a0a2a;
+  --pink:#ff4d6d;
+  --pink-dim:#ff4d6d14;
+  --yellow:#ffd60a;
+  --yellow-dim:#ffd60a22;
+  --green:#1a7a4a;
+  --green-dim:#1a7a4a14;
+  --green-light:#22c55e;
+  --black:#0a0a0a;
+  --cream:#fffbf5;
+  --text:#0a0a0a;
+  --text2:#5a5550;
+  --text3:#9a9590;
+  --r:12px;
+  --r2:16px;
+  --r3:20px;
+}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;}
+input,select,textarea{font-family:inherit;}
+img{max-width:100%;display:block;}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────── */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ─── TYPOGRAPHY ──────────────────────────────────────────── */
+.outfit{font-family:'Outfit',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+/* ─── NAV ─────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  background:rgba(255,251,245,0.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border2);
+}
+.nav-logo{
+  font-family:'Outfit',sans-serif;
+  font-weight:800;font-size:1.2rem;
+  letter-spacing:-0.02em;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo .accent{color:var(--pink);}
+.live-badge{
+  display:flex;align-items:center;gap:5px;
+  background:var(--green-dim);
+  border:1px solid #22c55e44;
+  border-radius:20px;
+  padding:3px 8px;
+  font-size:0.6rem;font-weight:700;
+  color:var(--green);letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.live-dot{
+  width:5px;height:5px;
+  background:var(--green-light);border-radius:50%;
+  animation:pulse 1.8s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;align-items:center;gap:4px;}
+.nav-links a{
+  padding:6px 12px;border-radius:8px;
+  font-size:0.82rem;font-weight:500;color:var(--text2);
+  transition:all 0.2s;
+}
+.nav-links a:hover{color:var(--text);background:var(--surface2);}
+.btn-nav-ghost{
+  padding:8px 14px;border-radius:8px;
+  font-size:0.8rem;font-weight:600;
+  color:var(--text);background:var(--surface);
+  border:1px solid var(--border2);
+  transition:all 0.2s;display:flex;align-items:center;gap:5px;
+}
+.btn-nav-ghost:hover{background:var(--surface2);}
+.btn-nav-primary{
+  padding:8px 16px;border-radius:8px;
+  font-size:0.82rem;font-weight:700;
+  color:#fff;background:var(--pink);
+  border:none;transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-nav-primary:hover{background:#ff6b85;transform:translateY(-1px);}
+
+/* mobile menu toggle */
+.ham{
+  display:none;width:36px;height:36px;
+  align-items:center;justify-content:center;
+  background:var(--surface);border-radius:8px;
+  border:1px solid var(--border2);cursor:pointer;
+  flex-direction:column;gap:5px;
+}
+.ham span{
+  display:block;width:18px;height:2px;
+  background:var(--text);border-radius:2px;
+  transition:all 0.3s;
+}
+.ham.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.ham.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.ham.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+.mobile-menu{
+  display:none;position:fixed;top:60px;left:0;right:0;z-index:199;
+  background:rgba(255,251,245,0.97);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border2);
+  padding:16px;
+  flex-direction:column;gap:6px;
+  opacity:0;transform:translateY(-8px);
+  transition:all 0.25s;
+  pointer-events:none;
+}
+.mobile-menu.open{opacity:1;transform:translateY(0);pointer-events:all;}
+.mobile-menu a{
+  padding:12px 16px;border-radius:10px;
+  font-size:0.95rem;font-weight:500;
+  color:var(--text2);display:block;
+  border:1px solid transparent;transition:all 0.2s;
+}
+.mobile-menu a:hover,.mobile-menu a.primary-link{background:var(--surface2);border-color:var(--border2);color:var(--text);}
+.mobile-menu a.primary-link{background:var(--pink-dim);border-color:#ff4d6d44;color:var(--pink);}
+.mobile-menu-ctas{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border2);}
+.mobile-menu-ctas a{flex:1;text-align:center;}
+
+/* ─── TICKER ──────────────────────────────────────────────── */
+.ticker-wrap{
+  margin-top:60px;
+  background:var(--yellow);
+  border-bottom:2px solid var(--black);
+  overflow:hidden;
+  padding:10px 0;
+}
+.ticker-inner{
+  display:inline-flex;gap:2.5rem;
+  animation:ticker 35s linear infinite;
+}
+.ticker-item{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;font-weight:700;
+  color:var(--black);
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;text-transform:uppercase;letter-spacing:0.06em;
+}
+.ticker-item .sym{color:var(--black);font-weight:800;}
+.up{color:#15532e;}
+.dn{color:#7f1d1d;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ─── HERO ────────────────────────────────────────────────── */
+.hero{
+  min-height:100svh;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:80px 20px 60px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 30%, #ff4d6d0d 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 20% 80%, #ffd60a0d 0%, transparent 60%);
+}
+.hero-grid-bg{
+  position:absolute;inset:0;z-index:0;
+  background-image:linear-gradient(#0a0a0a0a 1px, transparent 1px),
+    linear-gradient(90deg, #0a0a0a0a 1px, transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse at center, black 0%, transparent 75%);
+}
+.hero-content{position:relative;z-index:1;max-width:680px;margin:0 auto;text-align:center;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--yellow);
+  border:2px solid var(--black);
+  border-radius:20px;padding:6px 14px;
+  font-size:0.72rem;font-weight:700;
+  color:var(--black);letter-spacing:0.06em;
+  margin-bottom:24px;
+}
+.hero-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.8s infinite;}
+.hero-h1{
+  font-family:'Outfit',sans-serif;
+  font-size:clamp(2.4rem,6vw,4.5rem);
+  font-weight:900;line-height:1.05;
+  letter-spacing:-0.03em;
+  margin-bottom:20px;
+}
+.hero-h1 .accent{color:var(--pink);}
+.hero-sub{
+  font-size:clamp(0.9rem,2vw,1.05rem);
+  color:var(--text2);line-height:1.75;
+  max-width:540px;margin:0 auto 32px;
+}
+.hero-ctas{
+  display:flex;gap:10px;justify-content:center;
+  flex-wrap:wrap;margin-bottom:48px;
+}
+.btn-primary{
+  padding:14px 28px;border-radius:12px;
+  font-size:0.9rem;font-weight:700;
+  color:#fff;background:var(--pink);
+  border:none;transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px var(--pink)44;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--pink)55;background:#ff5a7d;}
+.btn-secondary{
+  padding:14px 24px;border-radius:12px;
+  font-size:0.9rem;font-weight:600;
+  color:var(--text);background:var(--surface2);
+  border:1px solid var(--border2);
+  transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-secondary:hover{background:var(--surface3);transform:translateY(-1px);}
+
+/* stats row */
+.hero-stats{
+  display:flex;justify-content:center;gap:0;
+  background:var(--cream);
+  border:2px solid var(--black);
+  border-radius:var(--r2);
+  overflow:hidden;
+}
+.stat-item{
+  flex:1;padding:18px 12px;text-align:center;
+  border-right:2px solid var(--black);
+  position:relative;
+}
+.stat-item:last-child{border-right:none;}
+.stat-num{
+  font-family:'Outfit',sans-serif;
+  font-size:1.5rem;font-weight:800;
+  color:var(--text);line-height:1;
+  margin-bottom:4px;
+}
+.stat-num .accent{color:var(--pink);}
+.stat-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
+
+/* ─── SIGNAL PREVIEW CARD (UPDATED) ──────────────────────── */
+.signal-preview-section{padding:0 20px 60px;}
+.signal-preview-inner{max-width:900px;margin:0 auto;}
+
+.sp-card{
+  background:var(--cream);
+  border:2px solid var(--black);
+  border-radius:var(--r3);
+  overflow:hidden;
+  box-shadow:6px 6px 0 var(--black);
+}
+.sp-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  border-bottom:2px solid var(--black);
+  background:var(--surface);
+}
+.sp-header-title{
+  font-size:0.78rem;font-weight:700;
+  color:var(--text);letter-spacing:0.08em;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
+}
+.sp-grid{
+  padding:16px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.sp-tile{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  padding:14px;
+  display:flex;flex-direction:column;gap:10px;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.sp-tile:hover{border-color:var(--black);background:var(--surface2);}
+.sp-tile-top{display:flex;align-items:center;justify-content:space-between;}
+.sp-coin{font-weight:700;font-size:0.9rem;display:flex;align-items:center;gap:6px;color:var(--text);}
+
+/* signal chips */
+.signal-chip{
+  padding:3px 8px;border-radius:6px;
+  font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+}
+.chip-buy{background:#dcfce7;color:#15803d;border:1px solid #86efac;}
+.chip-watch{background:var(--yellow-dim);color:#92400e;border:1px solid var(--yellow);}
+.chip-sell{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;}
+
+/* blurred placeholder for hidden % */
+.sp-blur-num{
+  height:20px;width:60px;
+  border-radius:6px;
+  background:var(--surface3);
+  position:relative;overflow:hidden;
+  filter:blur(0px);
+}
+.sp-blur-num::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.45) 50%,transparent 100%);
+  background-size:200% 100%;
+  animation:shimmer 2s infinite linear;
+}
+@keyframes shimmer{
+  0%{background-position:200% 0;}
+  100%{background-position:-200% 0;}
+}
+
+/* progress bars */
+.sp-bar-wrap{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;position:relative;}
+.sp-bar{
+  height:100%;border-radius:2px;
+  position:relative;overflow:hidden;
+  transition:width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.bar-green{background:linear-gradient(90deg,#1a7a4a,#22c55e);}
+.bar-yellow{background:linear-gradient(90deg,#b45309,var(--yellow));}
+.bar-pink{background:linear-gradient(90deg,var(--pink),#ff8a6a);}
+.sp-bar::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.4) 50%,transparent 100%);
+  background-size:200% 100%;
+  animation:shimmer 2s infinite linear;
+}
+
+/* footer lock */
+.sp-footer{
+  padding:12px 16px;
+  border-top:2px solid var(--black);
+  display:flex;align-items:center;gap:10px;
+  background:var(--yellow);
+  font-size:0.75rem;color:var(--black);font-weight:600;
+}
+.sp-lock-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:#fff8e0;
+  border:1px solid var(--black);
+  border-radius:6px;
+  padding:3px 9px;
+  font-size:0.68rem;font-weight:700;
+  color:var(--black);white-space:nowrap;
+  letter-spacing:0.04em;
+}
+
+/* ─── FEATURES ────────────────────────────────────────────── */
+section{padding:64px 20px;}
+.container{max-width:960px;margin:0 auto;}
+.section-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--pink);margin-bottom:16px;
+}
+.section-eyebrow::before{content:'';width:20px;height:2px;background:var(--pink);border-radius:1px;}
+.section-title{
+  font-family:'Outfit',sans-serif;
+  font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:800;line-height:1.1;
+  letter-spacing:-0.025em;
+  margin-bottom:12px;
+}
+.section-title .accent{color:var(--pink);}
+.section-sub{font-size:0.95rem;color:var(--text2);line-height:1.7;max-width:520px;}
+
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-top:40px;
+}
+.feature-card{
+  background:var(--cream);
+  border:2px solid var(--black);
+  border-radius:var(--r2);
+  padding:22px;
+  transition:all 0.25s;
+  position:relative;overflow:hidden;
+  box-shadow:4px 4px 0 var(--black);
+}
+.feature-card::before{
+  content:'';position:absolute;inset:0;
+  background:var(--yellow);
+  opacity:0;transition:opacity 0.3s;
+}
+.feature-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--black);}
+.feature-card:hover::before{opacity:1;}
+.f-icon{
+  width:42px;height:42px;
+  background:var(--yellow);
+  border:2px solid var(--black);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;margin-bottom:16px;
+  position:relative;z-index:1;
+}
+.f-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.65rem;font-weight:700;
+  color:var(--text3);letter-spacing:0.1em;margin-bottom:8px;
+  position:relative;z-index:1;
+}
+.f-title{font-size:0.95rem;font-weight:700;margin-bottom:8px;color:var(--text);position:relative;z-index:1;}
+.f-desc{font-size:0.8rem;color:var(--text2);line-height:1.65;position:relative;z-index:1;}
+
+/* ─── WHY SECTION ─────────────────────────────────────────── */
+.why-section{background:var(--surface);}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+.big-quote{
+  font-family:'Outfit',sans-serif;
+  font-style:italic;
+  font-size:1.2rem;line-height:1.55;
+  color:var(--text2);
+  padding-left:18px;
+  border-left:4px solid var(--pink);
+  margin-bottom:28px;
+}
+.why-list{list-style:none;}
+.why-list li{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 0;
+  border-bottom:2px solid var(--black);
+  font-size:0.85rem;line-height:1.6;color:var(--text2);
+}
+.why-list li:last-child{border-bottom:none;}
+.why-list li::before{content:'✦';color:var(--pink);flex-shrink:0;font-size:0.8rem;margin-top:2px;font-weight:700;}
+.why-list li strong{color:var(--text);}
+
+/* ─── DASHBOARD CARD ──────────────────────────────────────── */
+.dash-card{
+  background:var(--cream);
+  border:2px solid var(--black);
+  border-radius:var(--r2);
+  overflow:hidden;
+  box-shadow:6px 6px 0 var(--pink);
+}
+.dash-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;
+  border-bottom:2px solid var(--black);
+  background:var(--surface);
+}
+.dash-signal-row{
+  display:flex;align-items:center;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border2);
+  gap:10px;transition:background 0.2s;
+}
+.dash-signal-row:last-child{border-bottom:none;}
+.dash-signal-row:hover{background:var(--surface);}
+.dash-coin{flex:1;display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:var(--text);}
+.dash-pct-blur{
+  min-width:56px;height:18px;
+  border-radius:5px;
+  background:var(--surface3);
+  position:relative;overflow:hidden;
+}
+.dash-pct-blur::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.5) 50%,transparent 100%);
+  background-size:200% 100%;
+  animation:shimmer 2s infinite linear;
+}
+.lock-notice{
+  padding:12px 16px;
+  background:var(--yellow);
+  border-top:2px solid var(--black);
+  font-size:0.75rem;color:var(--black);font-weight:600;
+  display:flex;gap:8px;align-items:center;
+}
+
+/* ─── COMPARE ─────────────────────────────────────────────── */
+.compare-wrap{overflow-x:auto;margin-top:36px;border-radius:var(--r2);border:1px solid var(--border2);}
+.compare-table{width:100%;border-collapse:collapse;min-width:580px;}
+.compare-table th{
+  padding:14px 16px;text-align:left;
+  font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;
+  color:var(--text2);background:var(--surface2);
+  border-bottom:1px solid var(--border2);
+}
+.compare-table th.hl{color:var(--pink);}
+.compare-table td{
+  padding:12px 16px;
+  font-size:0.82rem;color:var(--text2);
+  border-bottom:1px solid var(--border);
+}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table td.hl{color:var(--text);font-weight:600;background:var(--pink)08;}
+.compare-table tr:hover td{background:var(--surface);}
+.check{color:var(--green);font-weight:700;}
+.cross{color:var(--text3);}
+.partial{color:var(--yellow);}
+
+/* ─── SAMPLE ISSUE ────────────────────────────────────────── */
+.sample-section{background:var(--surface);}
+.sample-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;margin-top:36px;}
+.issue-card{
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);
+  overflow:hidden;
+}
+.issue-topbar{
+  background:var(--yellow);
+  padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.issue-topbar .title{
+  font-family:'Outfit',sans-serif;
+  font-weight:800;font-size:0.85rem;
+  letter-spacing:0.04em;color:#1a1200;
+}
+.issue-topbar .date{font-size:0.65rem;color:#5a4800;font-weight:600;}
+.issue-body{padding:16px;}
+.issue-section-head{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.62rem;font-weight:700;letter-spacing:0.14em;
+  color:var(--yellow);text-transform:uppercase;
+  margin-top:16px;margin-bottom:8px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.issue-section-head:first-child{margin-top:0;}
+.issue-line{
+  font-size:0.78rem;color:var(--text2);line-height:1.6;
+  padding:4px 0;border-bottom:1px solid var(--border)88;
+}
+.issue-line:last-child{border-bottom:none;}
+.issue-line strong{color:var(--text);font-weight:600;}
+.sample-bullets{list-style:none;}
+.sample-bullets li{
+  display:flex;gap:10px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+  font-size:0.85rem;color:var(--text2);line-height:1.6;
+}
+.sample-bullets li:last-child{border-bottom:none;}
+.sample-bullets li .bul{color:var(--pink);flex-shrink:0;font-weight:700;margin-top:1px;}
+.sample-bullets li strong{color:var(--text);}
+
+/* ─── HOW IT WORKS ────────────────────────────────────────── */
+.how-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;margin-top:36px;
+}
+.how-step{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:22px;
+  position:relative;
+  transition:all 0.25s;
+}
+.how-step:hover{border-color:var(--pink)44;transform:translateY(-2px);}
+.step-num{
+  font-family:'Outfit',sans-serif;
+  font-size:2.5rem;font-weight:900;
+  color:var(--pink)22;line-height:1;
+  margin-bottom:12px;
+}
+.step-icon{font-size:1.4rem;margin-bottom:10px;}
+.step-title{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
+.step-desc{font-size:0.78rem;color:var(--text2);line-height:1.65;}
+
+/* ─── TESTIMONIALS ────────────────────────────────────────── */
+.testi-section{background:var(--surface);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:36px;}
+.testi-card{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:var(--r2);
+  padding:22px;
+  transition:all 0.25s;
+}
+.testi-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.t-stars{color:var(--yellow);font-size:0.9rem;margin-bottom:14px;letter-spacing:2px;}
+.t-quote{
+  font-size:0.85rem;line-height:1.65;color:var(--text2);
+  font-style:italic;margin-bottom:18px;
+}
+.t-author{display:flex;align-items:center;gap:10px;}
+.t-avatar{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--surface2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',sans-serif;font-weight:800;font-size:0.85rem;color:var(--pink);
+  flex-shrink:0;
+}
+.t-name{font-size:0.85rem;font-weight:700;color:var(--text);}
+.t-role{font-size:0.72rem;color:var(--text3);}
+.t-pnl{
+  margin-top:4px;
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--green-dim);border:1px solid var(--green)33;border-radius:6px;
+  padding:2px 7px;
+  font-size:0.65rem;font-weight:700;color:var(--green);letter-spacing:0.04em;
+}
+
+/* ─── AI SECTION ──────────────────────────────────────────── */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:36px;}
+.ai-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;}
+.ai-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
+  padding:7px 12px;font-size:0.75rem;font-weight:600;
+  color:var(--text2);transition:all 0.2s;
+}
+.ai-pill:hover{background:var(--surface3);color:var(--text);border-color:var(--border2);}
+.ai-metrics-card{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);
+  padding:22px;
+}
+.ai-metrics-title{
+  font-size:0.7rem;font-weight:700;color:var(--yellow);
+  letter-spacing:0.12em;text-transform:uppercase;margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.ai-metric{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.ai-metric:last-child{border-bottom:none;}
+.ai-metric-label{
+  flex:1;font-size:0.72rem;color:var(--text2);font-weight:500;
+}
+.ai-metric-bar{flex:2;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ai-metric-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
+.fill-green{background:linear-gradient(90deg,var(--green),#4dffb4);}
+.fill-yellow{background:linear-gradient(90deg,var(--yellow),#ffdf70);}
+.fill-pink{background:linear-gradient(90deg,var(--pink),#ff8a6a);}
+.ai-metric-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.82rem;font-weight:700;min-width:56px;text-align:right;
+}
+.ai-note{
+  margin-top:16px;padding:12px;
+  background:var(--yellow-dim);border:1px solid var(--yellow)22;border-radius:8px;
+  font-size:0.75rem;color:var(--text2);line-height:1.6;
+}
+.ai-note strong{color:var(--yellow);}
+
+/* ─── PRICING ─────────────────────────────────────────────── */
+.pricing-section{background:var(--surface);}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px;}
+.pricing-card{
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);
+  padding:28px;
+  position:relative;overflow:hidden;
+}
+.pricing-card.featured{
+  border-color:var(--pink)44;
+  background:linear-gradient(135deg,var(--surface)0%,var(--bg)100%);
+  box-shadow:0 0 0 1px var(--pink)22, 0 20px 60px var(--pink)0f;
+}
+.pricing-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--pink);border-radius:8px;
+  padding:5px 12px;font-size:0.7rem;font-weight:700;
+  color:#fff;letter-spacing:0.05em;margin-bottom:18px;
+}
+.pricing-name{font-family:'Outfit',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:6px;}
+.pricing-desc{font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:24px;}
+.price-block{margin-bottom:24px;}
+.price-was{font-size:0.8rem;color:var(--text3);text-decoration:line-through;margin-bottom:4px;}
+.price-main{
+  font-family:'Outfit',sans-serif;
+  font-size:3.5rem;font-weight:900;line-height:1;color:var(--text);
+}
+.price-main sup{font-size:1.5rem;vertical-align:super;color:var(--text2);}
+.price-period{font-size:0.8rem;color:var(--text2);margin-top:4px;}
+.pricing-features{list-style:none;margin-bottom:24px;}
+.pricing-features li{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 0;border-bottom:1px solid var(--border);
+  font-size:0.82rem;color:var(--text2);
+}
+.pricing-features li:last-child{border-bottom:none;}
+.pricing-features li .check-icon{color:var(--green);font-size:0.9rem;flex-shrink:0;}
+.btn-full{
+  width:100%;padding:14px;border-radius:12px;
+  font-size:0.9rem;font-weight:700;color:#fff;
+  background:var(--pink);border:none;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;box-shadow:0 4px 20px var(--pink)33;
+}
+.btn-full:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--pink)44;background:#ff5a7d;}
+.btn-full-ghost{
+  width:100%;padding:14px;border-radius:12px;
+  font-size:0.9rem;font-weight:600;
+  color:var(--text);background:transparent;
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;
+}
+.btn-full-ghost:hover{background:var(--surface2);}
+.guarantee-note{
+  margin-top:12px;font-size:0.75rem;color:var(--text3);text-align:center;
+}
+
+/* bonus cards */
+.bonus-grid{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.bonus-item{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:12px;
+}
+.bonus-icon{
+  width:34px;height:34px;flex-shrink:0;
+  background:var(--surface3);border:1px solid var(--border2);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+}
+.bonus-title{font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:2px;}
+.bonus-desc{font-size:0.73rem;color:var(--text2);}
+
+/* ─── FAQ ─────────────────────────────────────────────────── */
+.faq-list{margin-top:36px;display:flex;flex-direction:column;gap:8px;}
+.faq-item{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;transition:border-color 0.2s;
+}
+.faq-item.open{border-color:var(--border2);}
+.faq-q{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;cursor:pointer;
+  font-size:0.9rem;font-weight:600;color:var(--text);
+  gap:12px;
+}
+.faq-icon{
+  width:24px;height:24px;flex-shrink:0;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:var(--text2);
+  transition:transform 0.3s,background 0.2s;
+}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:var(--pink);border-color:var(--pink);color:#fff;}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.35s ease,padding 0.3s;
+  font-size:0.85rem;color:var(--text2);line-height:1.7;
+  padding:0 20px;
+}
+.faq-item.open .faq-a{max-height:300px;padding:0 20px 16px;}
+
+/* ─── CTA SECTION ─────────────────────────────────────────── */
+.cta-section{
+  padding:80px 20px;text-align:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%,var(--pink)12 0%,transparent 70%);
+  border-top:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,var(--pink)08 0%,transparent 65%);
+}
+.cta-section h2{
+  font-family:'Outfit',sans-serif;
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:900;line-height:1.05;letter-spacing:-0.025em;
+  margin-bottom:18px;position:relative;z-index:1;
+}
+.cta-section p{font-size:1rem;color:var(--text2);margin-bottom:32px;position:relative;z-index:1;}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;}
+.cta-sub{margin-top:18px;font-size:0.72rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;position:relative;z-index:1;}
+
+/* ─── FOOTER ──────────────────────────────────────────────── */
+footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var(--border);}
+.footer-grid{
+  max-width:960px;margin:0 auto;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:32px;padding-bottom:32px;
+  border-bottom:1px solid var(--border);margin-bottom:24px;
+}
+.footer-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:10px;}
+.footer-logo .accent{color:var(--pink);}
+.footer-desc{font-size:0.82rem;color:var(--text3);line-height:1.7;margin-bottom:16px;}
+.footer-social{display:flex;gap:8px;}
+.social-btn{
+  width:34px;height:34px;border-radius:8px;
+  background:var(--surface2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;color:var(--text2);cursor:pointer;transition:all 0.2s;
+}
+.social-btn:hover{background:var(--pink);border-color:var(--pink);color:#fff;}
+.footer-col h4{
+  font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--yellow);margin-bottom:14px;
+}
+.footer-col a{display:block;font-size:0.8rem;color:var(--text3);margin-bottom:8px;transition:color 0.2s;}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{
+  max-width:960px;margin:0 auto;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:0.75rem;color:var(--text3);flex-wrap:wrap;gap:8px;
+}
+.disclaimer{color:var(--pink);font-weight:700;font-size:0.68rem;letter-spacing:0.06em;}
+
+/* ─── MARQUEE ─────────────────────────────────────────────── */
+.marquee-wrap{
+  border-top:2px solid var(--black);border-bottom:2px solid var(--black);
+  overflow:hidden;padding:12px 0;background:var(--yellow);
+}
+.marquee-inner{display:inline-flex;gap:2.5rem;animation:marquee 30s linear infinite;}
+.marquee-item{
+  font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--black);white-space:nowrap;display:flex;align-items:center;gap:10px;
+}
+.marquee-item::after{content:'✦';color:var(--pink);opacity:0.7;}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ─── SCROLL REVEAL ───────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ─── MOBILE RESPONSIVE ───────────────────────────────────── */
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .btn-nav-ghost{display:none;}
+  .ham{display:flex;}
+  .mobile-menu{display:flex;}
+
+  .hero{padding:80px 20px 50px;}
+  .hero-stats{flex-direction:row;flex-wrap:wrap;}
+  .stat-item{min-width:0;}
+
+  .sp-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+
+  .features-grid{grid-template-columns:1fr 1fr;}
+
+  .why-grid{grid-template-columns:1fr;gap:32px;}
+
+  .sample-grid{grid-template-columns:1fr;gap:24px;}
+
+  .how-grid{grid-template-columns:1fr 1fr;}
+
+  .testi-grid{grid-template-columns:1fr;}
+
+  .ai-grid{grid-template-columns:1fr;gap:28px;}
+
+  .pricing-grid{grid-template-columns:1fr;}
+
+  .footer-grid{grid-template-columns:1fr 1fr;}
+
+  .hero-ctas{flex-direction:column;align-items:stretch;}
+  .hero-ctas a,.hero-ctas button{text-align:center;justify-content:center;}
+}
+
+@media(max-width:480px){
+  .hero-stats{flex-wrap:wrap;}
+  .stat-item{width:50%;border-bottom:1px solid var(--border);}
+  .stat-item:nth-child(odd){border-right:1px solid var(--border);}
+  .stat-item:nth-child(even){border-right:none;}
+
+  .sp-grid{grid-template-columns:1fr;}
+
+  .features-grid{grid-template-columns:1fr;}
+
+  .how-grid{grid-template-columns:1fr;}
+
+  .footer-grid{grid-template-columns:1fr;}
+
+  .section-title{font-size:1.7rem;}
+
+  .cta-btns{flex-direction:column;}
+  .cta-btns a,.cta-btns button{text-align:center;justify-content:center;}
+}
+
+/* ─── SAFE AREA ───────────────────────────────────────────── */
+@supports(padding:max(0px)){
+  nav{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));}
+  footer{padding-bottom:max(24px,env(safe-area-inset-bottom));}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ───────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">
+    Signal<span class="accent">Strike</span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#sample">Sample</a>
+    <a href="#testimonials">Reviews</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="btn-nav-ghost">🔐 Members</a>
+    <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-nav-primary">Subscribe — $29.99</a>
+    <div class="ham" id="hamBtn" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── MOBILE MENU ────────────────────────────────────────── -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" onclick="closeMobileMenu()">Features</a>
+  <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+  <a href="#sample" onclick="closeMobileMenu()">Sample Issue</a>
+  <a href="#testimonials" onclick="closeMobileMenu()">Reviews</a>
+  <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+  <div class="mobile-menu-ctas">
+    <a href="login.html" class="btn-nav-ghost" style="flex:1;text-align:center;border-radius:10px;">🔐 Members</a>
+    <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-nav-primary primary-link" style="flex:1;text-align:center;border-radius:10px;padding:12px 16px;">Subscribe</a>
+  </div>
+</div>
+
+<!-- ─── TICKER ─────────────────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker">
+    <span class="ticker-item"><span class="sym">BTC</span> <span class="up">▲+2.47%</span></span>
+    <span class="ticker-item"><span class="sym">ETH</span> <span class="up">▲+1.89%</span></span>
+    <span class="ticker-item"><span class="sym">SOL</span> <span class="dn">▼−0.73%</span></span>
+    <span class="ticker-item"><span class="sym">BNB</span> <span class="up">▲+0.95%</span></span>
+    <span class="ticker-item"><span class="sym">DOGE</span> <span class="up">▲+5.12%</span></span>
+    <span class="ticker-item"><span class="sym">ADA</span> <span class="dn">▼−1.20%</span></span>
+    <span class="ticker-item"><span class="sym">AVAX</span> <span class="up">▲+3.30%</span></span>
+    <span class="ticker-item"><span class="sym">LINK</span> <span class="up">▲+4.15%</span></span>
+    <span class="ticker-item"><span class="sym">MATIC</span> <span class="dn">▼−0.42%</span></span>
+    <span class="ticker-item"><span class="sym">RENDER</span> <span class="up">▲+7.44%</span></span>
+    <span class="ticker-item"><span class="sym">BTC</span> <span class="up">▲+2.47%</span></span>
+    <span class="ticker-item"><span class="sym">ETH</span> <span class="up">▲+1.89%</span></span>
+    <span class="ticker-item"><span class="sym">SOL</span> <span class="dn">▼−0.73%</span></span>
+    <span class="ticker-item"><span class="sym">BNB</span> <span class="up">▲+0.95%</span></span>
+    <span class="ticker-item"><span class="sym">DOGE</span> <span class="up">▲+5.12%</span></span>
+    <span class="ticker-item"><span class="sym">ADA</span> <span class="dn">▼−1.20%</span></span>
+    <span class="ticker-item"><span class="sym">AVAX</span> <span class="up">▲+3.30%</span></span>
+    <span class="ticker-item"><span class="sym">LINK</span> <span class="up">▲+4.15%</span></span>
+    <span class="ticker-item"><span class="sym">MATIC</span> <span class="dn">▼−0.42%</span></span>
+    <span class="ticker-item"><span class="sym">RENDER</span> <span class="up">▲+7.44%</span></span>
+  </div>
+</div>
+
+<!-- ─── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="dot"></div>AI-Powered · Delivered Daily · 14,800+ Traders</div>
+    <h1 class="hero-h1 outfit">The crypto newsletter that <span class="accent">trades smarter</span> than you</h1>
+    <p class="hero-sub">Real-time AI signal scanning. Institutional-grade analysis. On-chain whale alerts. Delivered every morning before the market opens — so you never miss a move again.</p>
+    <div class="hero-ctas">
+      <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-primary">🚀 Subscribe Now — $29.99/mo</a>
+      <a href="#sample" class="btn-secondary">View Sample Issue →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">14,800<span class="accent">+</span></div>
+        <div class="stat-label">Subscribers</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">97.2<span class="accent">%</span></div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">500<span class="accent">+</span></div>
+        <div class="stat-label">Altcoins</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3<span class="accent">min</span></div>
+        <div class="stat-label">Daily Read</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SIGNAL PREVIEW (UPDATED — gated, no numbers) ──────── -->
+<div class="signal-preview-section">
+  <div class="signal-preview-inner">
+    <div class="sp-card reveal">
+      <div class="sp-header">
+        <div class="sp-header-title">⚡ Today's AI Signals Preview</div>
+        <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+      </div>
+
+      <div class="sp-grid">
+
+        <div class="sp-tile">
+          <div class="sp-tile-top">
+            <div class="sp-coin">₿ Bitcoin</div>
+            <div class="signal-chip chip-buy">BUY</div>
+          </div>
+          <div class="sp-blur-num"></div>
+          <div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="82"></div></div>
+        </div>
+
+        <div class="sp-tile">
+          <div class="sp-tile-top">
+            <div class="sp-coin">Ξ Ethereum</div>
+            <div class="signal-chip chip-watch">WATCH</div>
+          </div>
+          <div class="sp-blur-num"></div>
+          <div class="sp-bar-wrap"><div class="sp-bar bar-yellow" style="width:0%" data-w="57"></div></div>
+        </div>
+
+        <div class="sp-tile">
+          <div class="sp-tile-top">
+            <div class="sp-coin">◎ Solana</div>
+            <div class="signal-chip chip-buy">STRONG BUY</div>
+          </div>
+          <div class="sp-blur-num"></div>
+          <div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="91"></div></div>
+        </div>
+
+        <div class="sp-tile">
+          <div class="sp-tile-top">
+            <div class="sp-coin">🔗 Chainlink</div>
+            <div class="signal-chip chip-buy">BREAKOUT</div>
+          </div>
+          <div class="sp-blur-num"></div>
+          <div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="75"></div></div>
+        </div>
+
+        <div class="sp-tile">
+          <div class="sp-tile-top">
+            <div class="sp-coin">⬡ AVAX</div>
+            <div class="signal-chip chip-sell">REDUCE</div>
+          </div>
+          <div class="sp-blur-num"></div>
+          <div class="sp-bar-wrap"><div class="sp-bar bar-pink" style="width:0%" data-w="28"></div></div>
+        </div>
+
+        <div class="sp-tile">
+          <div class="sp-tile-top">
+            <div class="sp-coin">⬡ Render</div>
+            <div class="signal-chip chip-buy">AI PLAY</div>
+          </div>
+          <div class="sp-blur-num"></div>
+          <div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="94"></div></div>
+        </div>
+
+      </div>
+
+      <div class="sp-footer">
+        <span class="sp-lock-badge">🔒 Members Only</span>
+        <span>Full analysis, entry/exit zones &amp; confidence scores available to subscribers only.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MARQUEE ────────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <span class="marquee-item">AI Signal Scanning</span>
+    <span class="marquee-item">Whale Wallet Alerts</span>
+    <span class="marquee-item">DeFi Alpha</span>
+    <span class="marquee-item">On-Chain Data</span>
+    <span class="marquee-item">Altcoin Deep Dives</span>
+    <span class="marquee-item">Macro Analysis</span>
+    <span class="marquee-item">NFT Intelligence</span>
+    <span class="marquee-item">Regulatory Radar</span>
+    <span class="marquee-item">Portfolio Strategy</span>
+    <span class="marquee-item">AI Signal Scanning</span>
+    <span class="marquee-item">Whale Wallet Alerts</span>
+    <span class="marquee-item">DeFi Alpha</span>
+    <span class="marquee-item">On-Chain Data</span>
+    <span class="marquee-item">Altcoin Deep Dives</span>
+    <span class="marquee-item">Macro Analysis</span>
+    <span class="marquee-item">NFT Intelligence</span>
+    <span class="marquee-item">Regulatory Radar</span>
+    <span class="marquee-item">Portfolio Strategy</span>
+  </div>
+</div>
+
+<!-- ─── FEATURES ───────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="section-eyebrow">What You Get</div>
+    <h2 class="section-title outfit">Intelligence That <span class="accent">Moves Markets</span></h2>
+    <p class="section-sub">Every edition powered by our proprietary AI engine — scanning millions of on-chain signals, news events, and social sentiment before the market opens.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="f-num">// 01</div>
+        <div class="f-icon">🤖</div>
+        <div class="f-title">AI Signal Engine</div>
+        <p class="f-desc">Our ML models process 50,000+ data points daily — surfacing signals hours before retail catches on.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="f-num">// 02</div>
+        <div class="f-icon">🐋</div>
+        <div class="f-title">Whale Wallet Tracker</div>
+        <p class="f-desc">Know when wallets holding $1M+ move. Every major accumulation, distribution, and bridge flagged.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="f-num">// 03</div>
+        <div class="f-icon">📊</div>
+        <div class="f-title">Daily Market Briefing</div>
+        <p class="f-desc">Macro conditions, BTC dominance, fear & greed, and top trades — distilled into a 3-minute morning read.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="f-num">// 04</div>
+        <div class="f-icon">🔬</div>
+        <div class="f-title">Altcoin Deep Dives</div>
+        <p class="f-desc">Weekly deep analysis on high-conviction altcoins — tokenomics, unlock schedules, developer activity.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="f-num">// 05</div>
+        <div class="f-icon">⚡</div>
+        <div class="f-title">Flash Alerts</div>
+        <p class="f-desc">Breaking moves don't wait for tomorrow. Critical price events, hacks, regulatory shocks — sent instantly.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="f-num">// 06</div>
+        <div class="f-icon">🧠</div>
+        <div class="f-title">DeFi & NFT Alpha</div>
+        <p class="f-desc">Yield farming opps, protocol launches, liquidity shifts — the alpha most newsletters miss.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY ─────────────────────────────────────────────────── -->
+<section class="why-section" id="why">
+  <div class="container">
+    <div class="why-grid">
+      <div>
+        <div class="section-eyebrow">Why SignalStrike</div>
+        <h2 class="section-title outfit">Stop Trading <span class="accent">On Hope</span></h2>
+        <p class="big-quote">"Most crypto traders lose not because of bad luck — but because they're always the last to know."</p>
+        <ul class="why-list">
+          <li>Our AI reads the blockchain in real-time — you get signals <strong>before</strong> the crowd reacts</li>
+          <li>Unlike generic newsletters, we track <strong>500+ altcoins</strong> with custom scoring models</li>
+          <li>Editorial team includes ex-Binance, CoinGecko, and TradFi quant analysts</li>
+          <li>No fluff, no token shilling, no paid promotions — pure data-driven intelligence</li>
+          <li><strong>14-Day Money-Back Guarantee</strong> — try it risk-free, no questions asked</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <div class="dash-card">
+          <div class="dash-header">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;">✦ Signal Dashboard</div>
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div class="dash-signal-row">
+            <div class="dash-coin">₿ Bitcoin</div>
+            <div class="signal-chip chip-buy">BUY ZONE</div>
+            <div class="dash-pct-blur"></div>
+          </div>
+          <div class="dash-signal-row">
+            <div class="dash-coin">Ξ Ethereum</div>
+            <div class="signal-chip chip-watch">WATCH</div>
+            <div class="dash-pct-blur"></div>
+          </div>
+          <div class="dash-signal-row">
+            <div class="dash-coin">◎ Solana</div>
+            <div class="signal-chip chip-buy">STRONG BUY</div>
+            <div class="dash-pct-blur"></div>
+          </div>
+          <div class="dash-signal-row">
+            <div class="dash-coin">⬡ AVAX</div>
+            <div class="signal-chip chip-sell">REDUCE</div>
+            <div class="dash-pct-blur"></div>
+          </div>
+          <div class="dash-signal-row">
+            <div class="dash-coin">🔗 Chainlink</div>
+            <div class="signal-chip chip-buy">BREAKOUT</div>
+            <div class="dash-pct-blur"></div>
+          </div>
+          <div class="dash-signal-row">
+            <div class="dash-coin">⬡ Render</div>
+            <div class="signal-chip chip-buy">AI PLAY</div>
+            <div class="dash-pct-blur"></div>
+          </div>
+          <div class="lock-notice">
+            🔒 Full analysis + entry/exit zones locked for subscribers
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMPARE ─────────────────────────────────────────────── -->
+<section>
+  <div class="container">
+    <div class="section-eyebrow">Comparison</div>
+    <h2 class="section-title outfit">SignalStrike vs <span class="accent">The Rest</span></h2>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr><th style="width:28%">Feature</th><th class="hl">SignalStrike ★</th><th>Bankless</th><th>Milk Road</th><th>Messari</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AI Signal Engine</td><td class="hl"><span class="check">✓</span> Proprietary AI</td><td class="cross">✗</td><td class="cross">✗</td><td class="partial">~ Basic</td></tr>
+          <tr><td>Whale Wallet Alerts</td><td class="hl"><span class="check">✓</span> Real-time</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>On-Chain Analytics</td><td class="hl"><span class="check">✓</span> Deep</td><td class="partial">~ Limited</td><td class="cross">✗</td><td class="partial">~ Paid tier</td></tr>
+          <tr><td>Daily Flash Alerts</td><td class="hl"><span class="check">✓</span> Included</td><td class="cross">✗</td><td class="partial">~ Occasional</td><td class="partial">~ Pro only</td></tr>
+          <tr><td>500+ Altcoin Coverage</td><td class="hl"><span class="check">✓</span> All tiers</td><td class="cross">✗</td><td class="partial">~ Top 50</td><td class="partial">~ Limited</td></tr>
+          <tr><td>DeFi Alpha</td><td class="hl"><span class="check">✓</span> Weekly</td><td class="check">✓</td><td class="cross">✗</td><td class="partial">~ Partial</td></tr>
+          <tr><td>Price / Month</td><td class="hl" style="color:var(--pink);font-weight:800;">$29.99</td><td>$22</td><td>Free</td><td>$29</td></tr>
+          <tr><td>Money-Back Guarantee</td><td class="hl"><span class="check">✓</span> 14 days</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SAMPLE ──────────────────────────────────────────────── -->
+<section class="sample-section" id="sample">
+  <div class="container">
+    <div class="section-eyebrow">Sample Issue</div>
+    <h2 class="section-title outfit">What Lands in <span class="accent">Your Inbox</span></h2>
+    <div class="sample-grid">
+      <div class="issue-card reveal">
+        <div class="issue-topbar"><div class="title">⚡ SIGNALSTRIKE DAILY</div><div class="date">ISSUE #284 · WED MAR 19, 2026</div></div>
+        <div class="issue-body">
+          <div class="issue-section-head">// MACRO PULSE</div>
+          <div class="issue-line"><strong>BTC Dominance:</strong> 54.2% (↑ 0.8%) — Altcoin season cooling, rotate caution</div>
+          <div class="issue-line"><strong>Fear & Greed:</strong> 72 — Greed zone, elevated volatility expected</div>
+          <div class="issue-line"><strong>Fed Watch:</strong> Rate hold confirmed. Risk-on assets bid</div>
+          <div class="issue-section-head">// AI SIGNALS TODAY</div>
+          <div class="issue-line"><strong>BTC:</strong> Holding $85K support. AI confidence 88%. Target: $92K</div>
+          <div class="issue-line"><strong>SOL:</strong> Breakout pattern forming. Whale accumulation +$47M (24h)</div>
+          <div class="issue-line"><strong>RENDER:</strong> AI narrative play. Dev activity ↑ 340%. Watch $7.50</div>
+          <div class="issue-line"><strong>AVAX:</strong> Token unlock Friday 180M tokens. Reduce exposure</div>
+          <div class="issue-section-head">// WHALE RADAR</div>
+          <div class="issue-line"><strong>0x8f2a...</strong> moved 12,400 ETH to Binance — potential sell pressure</div>
+          <div class="issue-line"><strong>0x44cc...</strong> accumulated $8.2M LINK over 3 days — smart money</div>
+          <div class="issue-section-head">// DEFI ALPHA</div>
+          <div class="issue-line"><strong>Aave v4</strong> launch on Base — 14.2% APY on USDC for 48hrs</div>
+          <div class="issue-line"><strong>New Uniswap pool:</strong> RENDER/ETH 0.3% fee tier opportunity</div>
+        </div>
+      </div>
+      <div>
+        <ul class="sample-bullets">
+          <li><span class="bul">→</span><span><strong>Morning Macro Snapshot</strong> — Bitcoin dominance, fear/greed index, Fed signals in 3 sentences.</span></li>
+          <li><span class="bul">→</span><span><strong>Top AI Signals</strong> — Your 4–6 highest-conviction setups with confidence scores, entry zones, and catalyst.</span></li>
+          <li><span class="bul">→</span><span><strong>Whale Radar</strong> — The 2–3 biggest on-chain moves and what they signal for short-term price action.</span></li>
+          <li><span class="bul">→</span><span><strong>DeFi Alpha Pick</strong> — One DeFi opportunity daily — high APY pools, new protocol launches, or liquidity windows.</span></li>
+          <li><span class="bul">→</span><span><strong>Weekly Deep Dive</strong> (Wednesdays) — Full altcoin breakdown: tokenomics, on-chain activity, and 3-month thesis.</span></li>
+          <li><span class="bul">→</span><span><strong>Regulatory Radar</strong> — Global policy moves simplified and made actionable.</span></li>
+        </ul>
+        <div style="margin-top:24px;"><a href="https://signalstrike.online/pay.html" target="_blank" class="btn-primary" style="display:inline-flex;">Get This In Your Inbox →</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ────────────────────────────────────────── -->
+<section id="how">
+  <div class="container">
+    <div class="section-eyebrow">Simple Process</div>
+    <h2 class="section-title outfit">Up & Running in <span class="accent">60 Seconds</span></h2>
+    <div class="how-grid">
+      <div class="how-step reveal"><div class="step-num">01</div><div class="step-icon">✉️</div><div class="step-title">Subscribe</div><p class="step-desc">Enter your email and subscribe for $29.99/month. Cancel anytime. Your first issue arrives the next morning at 6 AM EST.</p></div>
+      <div class="how-step reveal"><div class="step-num">02</div><div class="step-icon">🔔</div><div class="step-title">Confirm & Access</div><p class="step-desc">Confirm your inbox and unlock immediate access to our full archive — 280+ back issues and the AI dashboard.</p></div>
+      <div class="how-step reveal"><div class="step-num">03</div><div class="step-icon">🌅</div><div class="step-title">Morning Brief</div><p class="step-desc">Every trading day at 6:00 AM EST, your AI-curated brief lands. Read in 3 minutes. Know what the market doesn't yet.</p></div>
+      <div class="how-step reveal"><div class="step-num">04</div><div class="step-icon">📈</div><div class="step-title">Trade Smarter</div><p class="step-desc">Make informed decisions backed by data. Our publicly-tracked signal accuracy: 97.2% over 18 months.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ────────────────────────────────────────── -->
+<section class="testi-section" id="testimonials">
+  <div class="container">
+    <div class="section-eyebrow">Social Proof</div>
+    <h2 class="section-title outfit">Traders Who <span class="accent">Trust Signals</span></h2>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"The whale wallet section alone is worth 10x the subscription. I followed a LINK alert and caught a 28% move within 48 hours. This newsletter pays for itself daily."</p><div class="t-author"><div class="t-avatar">RK</div><div><div class="t-name">Ryan K.</div><div class="t-role">Swing Trader, 4 years in crypto</div><div class="t-pnl">▲ +$14,200 last 30 days</div></div></div></div>
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"I tried Bankless, Milk Road, Messari — nothing comes close to SignalStrike's signal quality. The AI surfaced the Render move 3 days before everyone was talking about it."</p><div class="t-author"><div class="t-avatar">JP</div><div><div class="t-name">Jessica P.</div><div class="t-role">Portfolio Manager & DeFi Strategist</div><div class="t-pnl">▲ +$31,500 Q1 2026</div></div></div></div>
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"As someone who doesn't have time to watch charts all day, SignalStrike is a game-changer. The 3-minute format is perfect. I read it with coffee and my day is set."</p><div class="t-author"><div class="t-avatar">MT</div><div><div class="t-name">Marcus T.</div><div class="t-role">Entrepreneur & Part-time Trader</div><div class="t-pnl">▲ +$8,700 since subscribing</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── AI SECTION ──────────────────────────────────────────── -->
+<section id="ai">
+  <div class="container">
+    <div class="section-eyebrow">The Technology</div>
+    <h2 class="section-title outfit">Why Our AI <span class="accent">Wins</span></h2>
+    <div class="ai-grid">
+      <div><p style="font-size:0.9rem;color:var(--text2);line-height:1.75;margin-bottom:20px;">SignalStrike isn't one analyst with opinions. It's a machine processing data no human could — then our editorial team translates it into intelligence you can actually use.</p><div class="ai-pills"><div class="ai-pill">🔍 On-Chain Pattern Recognition</div><div class="ai-pill">📡 Social Sentiment NLP</div><div class="ai-pill">📰 News Impact Scoring</div><div class="ai-pill">📊 Order Book Analysis</div><div class="ai-pill">🐋 Whale Behavior Modeling</div><div class="ai-pill">⚙️ Cross-Exchange Arbitrage</div><div class="ai-pill">🌐 Macro Correlation Engine</div><div class="ai-pill">🎯 Entry/Exit Zone Calculator</div></div></div>
+      <div class="ai-metrics-card reveal"><div class="ai-metrics-title">✦ AI Performance Metrics</div><div class="ai-metric"><div class="ai-metric-label">Signal Accuracy (18mo)</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-green" data-width="97"></div></div><div class="ai-metric-val" style="color:var(--green);">97.2%</div></div><div class="ai-metric"><div class="ai-metric-label">Avg. Signal Lead Time</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-yellow" data-width="75"></div></div><div class="ai-metric-val" style="color:var(--yellow);">4.2 hrs</div></div><div class="ai-metric"><div class="ai-metric-label">Data Points / Day</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-pink" data-width="90"></div></div><div class="ai-metric-val">50K+</div></div><div class="ai-metric"><div class="ai-metric-label">Networks Monitored</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-yellow" data-width="65"></div></div><div class="ai-metric-val" style="color:var(--yellow);">28</div></div><div class="ai-metric"><div class="ai-metric-label">Altcoins Tracked</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-green" data-width="80"></div></div><div class="ai-metric-val" style="color:var(--green);">500+</div></div><div class="ai-note"><strong>✓ All metrics are publicly verifiable.</strong> Track our full signal history in the subscriber dashboard.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─────────────────────────────────────────────── -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div class="section-eyebrow">Pricing</div>
+    <h2 class="section-title outfit">Less Than a <span class="accent">Coffee a Week</span></h2>
+    <p class="section-sub">One tier. No confusing plans. Every feature included — because information advantages shouldn't cost a fortune.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card featured reveal"><div class="pricing-badge">★ Most Popular</div><div class="pricing-name">SignalStrike Pro</div><div class="pricing-desc">Daily AI signals, whale alerts & DeFi alpha — every morning at 6AM EST.</div><div class="price-block"><div class="price-was">Less than $1.00 per day</div><div class="price-main outfit"><sup>$</sup>29.99</div><div class="price-period">per month · or $299/yr (save 17%)</div></div><ul class="pricing-features"><li><span class="check-icon">✓</span>Daily AI Signal Brief (6 AM EST)</li><li><span class="check-icon">✓</span>Whale Wallet Tracker & Alerts</li><li><span class="check-icon">✓</span>500+ Altcoin AI Coverage</li><li><span class="check-icon">✓</span>Weekly Altcoin Deep Dive</li><li><span class="check-icon">✓</span>Real-time Flash Alerts</li><li><span class="check-icon">✓</span>DeFi & NFT Alpha Section</li><li><span class="check-icon">✓</span>Full Archive (280+ issues)</li><li><span class="check-icon">✓</span>AI Signal Dashboard</li></ul><a href="https://signalstrike.online/pay.html" target="_blank" class="btn-full">🚀 Subscribe Now →</a><div class="guarantee-note">14-Day Money Back Guarantee · Cancel Anytime</div></div>
+      <div class="pricing-card reveal"><div class="pricing-name">Annual Plan</div><div class="pricing-desc">Everything in Pro, billed annually. Save $60/year compared to monthly.</div><div class="price-block"><div class="price-was">$359.88/yr monthly equivalent</div><div class="price-main outfit"><sup>$</sup>299</div><div class="price-period">per year · ~$24.92/mo · Save 17%</div></div><div class="bonus-grid"><div class="bonus-item"><div class="bonus-icon">🤖</div><div><div class="bonus-title">AI Signal Dashboard</div><div class="bonus-desc">Live signal performance & history</div></div></div><div class="bonus-item"><div class="bonus-icon">📂</div><div><div class="bonus-title">Full Issue Archive</div><div class="bonus-desc">280+ back issues unlocked immediately</div></div></div><div class="bonus-item"><div class="bonus-icon">📋</div><div><div class="bonus-title">Portfolio Strategy Templates</div><div class="bonus-desc">Professional allocation frameworks</div></div></div><div class="bonus-item"><div class="bonus-icon">🌐</div><div><div class="bonus-title">Regulatory Radar</div><div class="bonus-desc">Global policy updates made actionable</div></div></div></div><div style="height:16px;"></div><a href="https://signalstrike.online/pay.html" target="_blank" class="btn-full-ghost">Subscribe Annual →</a><div class="guarantee-note">14-Day Money Back Guarantee · Cancel Anytime</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─────────────────────────────────────────────────── -->
+<section id="faq">
+  <div class="container">
+    <div class="section-eyebrow">Questions & Answers</div>
+    <h2 class="section-title outfit">Frequently Asked <span class="accent">Questions</span></h2>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Is there a money-back guarantee?</span><div class="faq-icon">+</div></div><div class="faq-a">Yes. If you subscribe and aren't completely satisfied within the first 14 days, email us for a full refund — no questions asked. After 14 days, you can cancel at any time and retain access until end of your billing period.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>How is SignalStrike different from free crypto newsletters?</span><div class="faq-icon">+</div></div><div class="faq-a">Free newsletters aggregate what everyone already knows. SignalStrike processes on-chain data, whale movements, and AI pattern recognition to identify setups before they become mainstream news. You're not reading news — you're reading intelligence that precedes the news.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Is this financial advice? What does 97.2% accuracy mean?</span><div class="faq-icon">+</div></div><div class="faq-a">SignalStrike is not financial advice — it's data-driven intelligence to inform your own decisions. The 97.2% accuracy refers to directional correctness of our AI signals over an 18-month backtest period. Always practice proper risk management and never invest more than you can afford to lose.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>How often will I receive issues?</span><div class="faq-icon">+</div></div><div class="faq-a">Monday–Friday you receive the Daily Brief at 6:00 AM EST. Saturdays include the Weekly Wrap-Up. Flash alerts are sent as needed. On average, subscribers receive 6–8 emails per week — none promotional.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Can I cancel anytime?</span><div class="faq-icon">+</div></div><div class="faq-a">Absolutely. Cancel from your account dashboard or by replying to any newsletter. No calls, no forms, no guilt-tripping. If you cancel during a paid period, you retain access until the end of that billing cycle.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Is this for beginners or advanced traders?</span><div class="faq-icon">+</div></div><div class="faq-a">Both. Each issue has a "what to do" layer for beginners and a "why and how" layer for advanced traders. Brief context for every signal means new subscribers understand the reasoning, while experienced traders go straight to the data.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─────────────────────────────────────────────────── -->
+<div class="cta-section">
+  <h2 class="outfit">Stop Reacting.<br><em style="font-style:italic;color:var(--pink);">Start Striking.</em></h2>
+  <p>14,800+ traders already read SignalStrike every morning. The next big move is being mapped right now.</p>
+  <div class="cta-btns">
+    <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-primary" style="font-size:1rem;padding:16px 32px;">🚀 Subscribe Now — $29.99/mo</a>
+  </div>
+  <div class="cta-sub">14-Day Money Back · Cancel Anytime · AI-Powered · 14,800+ Traders</div>
+</div>
+
+<!-- ─── FOOTER ──────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-grid">
+    <div><div class="footer-logo">Signal<span class="accent">Strike</span></div><p class="footer-desc">The AI-powered crypto intelligence newsletter trusted by 14,800+ traders. Daily signals. Whale alerts. DeFi alpha. Delivered 6 AM EST.</p><div class="footer-social"><div class="social-btn">𝕏</div><div class="social-btn">in</div><div class="social-btn">📱</div><div class="social-btn">💬</div></div></div>
+    <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#sample">Sample Issue</a><a href="#ai">AI Technology</a><a href="https://signalstrike.online/pay.html" target="_blank">Subscribe Now</a></div>
+    <div class="footer-col"><h4>Company</h4><a href="#">About Us</a><a href="#">Signal Track Record</a><a href="#">Press Kit</a><a href="#">Blog</a><a href="#">Contact</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Disclaimer</a><a href="#">Refund Policy</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 SignalStrike · signalstrike.online · All rights reserved</span><span class="disclaimer">NOT FINANCIAL ADVICE · DYOR</span></div>
+</footer>
+
+<!-- ─── TOAST ───────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script>
+// ─── MOBILE MENU ──────────────────────────
+function toggleMobileMenu(){
+  const btn=document.getElementById('hamBtn');
+  const menu=document.getElementById('mobileMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('hamBtn').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// ─── FAQ ──────────────────────────────────
+function toggleFaq(el){
+  const item=el.parentElement;
+  const all=document.querySelectorAll('.faq-item');
+  all.forEach(i=>{if(i!==item) i.classList.remove('open');});
+  item.classList.toggle('open');
+}
+
+// ─── TOAST ────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.innerHTML=msg;
+  t.style.transform='translateY(0)';
+  t.style.opacity='1';
+  setTimeout(()=>{t.style.transform='translateY(80px)';t.style.opacity='0';},4500);
+}
+
+// ─── SCROLL REVEAL ────────────────────────
+const revealObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+// ─── SIGNAL PREVIEW BARS ANIMATE ──────────
+const spBarObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.sp-bar[data-w]').forEach((bar,i)=>{
+        setTimeout(()=>{
+          bar.style.transition='width 1.2s cubic-bezier(0.4,0,0.2,1)';
+          bar.style.width=bar.dataset.w+'%';
+        },i*100);
+      });
+      spBarObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.2});
+document.querySelectorAll('.sp-card').forEach(el=>spBarObs.observe(el));
+
+// ─── AI BARS ──────────────────────────────
+const barObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.ai-metric-fill[data-width]').forEach(bar=>{
+        const w=bar.getAttribute('data-width');
+        bar.style.width='0%';
+        setTimeout(()=>{bar.style.width=w+'%';},120);
+      });
+    }
+  });
+},{threshold:0.3});
+document.querySelectorAll('.ai-metrics-card').forEach(el=>barObs.observe(el));
+
+// ─── NAV SCROLL STYLE ─────────────────────
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  if(window.scrollY>20){
+    nav.style.background='rgba(255,251,245,0.97)';
+    nav.style.borderBottomColor='rgba(10,10,10,0.15)';
+  } else {
+    nav.style.background='rgba(255,251,245,0.92)';
+    nav.style.borderBottomColor='rgba(10,10,10,0.1)';
+  }
+},{passive:true});
+</script>
+</body>
+</html>
