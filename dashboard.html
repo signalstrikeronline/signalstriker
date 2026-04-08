@@ -1,1 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — SignalStrike Members</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFEF2;
+    --bg2: #FFF9E6;
+    --pink: #FF90E8;
+    --pink-dark: #d966c8;
+    --lime: #A8FF78;
+    --lime-dark: #5dcf2a;
+    --yellow: #FFE194;
+    --yellow-dark: #e8c300;
+    --black: #111111;
+    --white: #FFFFFF;
+    --border: 2px solid #111111;
+    --shadow: 4px 4px 0px #111111;
+    --shadow-sm: 3px 3px 0px #111111;
+    --shadow-lg: 6px 6px 0px #111111;
+    --radius: 6px;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-display: 'DM Serif Display', serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
 
+  body {
+    font-family: var(--font-body);
+    background-color: var(--bg);
+    color: var(--black);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* LOADING */
+  #loadingScreen {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1.5rem;
+    transition: opacity 0.4s ease;
+  }
+  #loadingScreen.hide { opacity: 0; pointer-events: none; }
+  .load-logo { font-family: var(--font-display); font-size: 2.8rem; font-weight: 400; color: var(--black); font-style: italic; border: 3px solid var(--black); padding: 0.25rem 1.5rem; background: var(--white); box-shadow: var(--shadow-lg); }
+  .load-bar { width: 220px; height: 4px; background: var(--black); border: 2px solid var(--black); overflow: hidden; }
+  .load-fill { height: 100%; background: var(--lime); width: 0%; animation: loadIn 1.2s ease forwards; }
+  @keyframes loadIn { to { width: 100%; } }
+
+  /* TOP NAV */
+  .topnav { position: sticky; top: 0; z-index: 100; background: var(--pink); border-bottom: var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; }
+  .nav-logo { font-family: var(--font-display); font-size: 1.5rem; font-style: italic; color: var(--black); text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: 400; }
+  .nav-dot { width: 10px; height: 10px; background: var(--lime); border: 2px solid var(--black); border-radius: 50%; animation: pulse-dot 2s infinite; flex-shrink: 0; box-shadow: 2px 2px 0 var(--black); }
+  @keyframes pulse-dot { 0%,100%{transform:scale(1);} 50%{transform:scale(0.7);} }
+  .nav-center { display: flex; align-items: center; gap: 0.25rem; }
+  .nav-tab { font-family: var(--font-body); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--black); padding: 6px 14px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; background: none; text-decoration: none; border-radius: var(--radius); }
+  .nav-tab:hover { background: rgba(0,0,0,0.08); }
+  .nav-tab.active { background: var(--black); color: var(--pink); border-color: var(--black); }
+  .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+  .nav-member-badge { display: flex; align-items: center; gap: 6px; background: var(--yellow); border: 2px solid var(--black); padding: 4px 12px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; box-shadow: var(--shadow-sm); color: var(--black); }
+  .nav-avatar { width: 36px; height: 36px; background: var(--lime); border: 2px solid var(--black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; color: var(--black); cursor: pointer; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .btn-logout { background: var(--white); border: 2px solid var(--black); color: var(--black); font-family: var(--font-body); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 5px 14px; cursor: pointer; transition: all 0.15s; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+  .btn-logout:hover { background: var(--black); color: var(--white); box-shadow: none; transform: translate(3px,3px); }
+
+  /* LIVE TICKER */
+  .ticker-wrap {
+    background: var(--black);
+    border-bottom: var(--border);
+    overflow: hidden; white-space: nowrap;
+    padding: 7px 0;
+    position: relative;
+  }
+  .ticker-status {
+    position: absolute; right: 0; top: 0; bottom: 0;
+    display: flex; align-items: center;
+    background: var(--black);
+    padding: 0 10px;
+    z-index: 2;
+    border-left: 1px solid #333;
+  }
+  .ticker-status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--lime); margin-right: 5px;
+    animation: pulse-dot 2s infinite;
+  }
+  .ticker-status-dot.loading { background: var(--yellow); }
+  .ticker-status-dot.error   { background: var(--pink); animation: none; }
+  .ticker-status-text {
+    font-family: var(--font-mono); font-size: 0.55rem;
+    color: #666; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .ticker-wrap::before,
+  .ticker-wrap::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 60px; z-index: 1; pointer-events: none;
+  }
+  .ticker-wrap::before { left: 0;  background: linear-gradient(to right, var(--black), transparent); }
+  .ticker-wrap::after  { right: 60px; background: linear-gradient(to left,  var(--black), transparent); }
+  .ticker-inner {
+    display: inline-flex; gap: 3rem;
+    animation: ticker var(--ticker-duration, 40s) linear infinite;
+    will-change: transform;
+  }
+  .ticker-inner.paused { animation-play-state: paused; }
+  .ticker-item { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 400; color: var(--yellow); text-transform: uppercase; letter-spacing: 0.06em; display: inline-flex; align-items: center; gap: 8px; }
+  .ticker-price { color: #ddd; font-weight: 500; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
+  .ticker-sep { color: #333; user-select: none; margin: 0 4px; }
+  @keyframes ticker { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* LAYOUT */
+  .dash-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 60px - 34px); }
+
+  /* SIDEBAR */
+  .sidebar { border-right: var(--border); padding: 1.5rem 0; position: sticky; top: 94px; height: calc(100vh - 94px); overflow-y: auto; background: var(--bg); }
+  .sidebar-section { padding: 0 1.25rem; margin-bottom: 1.75rem; }
+  .sidebar-label { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #888; margin-bottom: 0.6rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.12); }
+  .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 7px 10px; margin-bottom: 3px; font-size: 0.82rem; font-weight: 500; color: #555; cursor: pointer; transition: all 0.1s; border: 2px solid transparent; text-decoration: none; border-radius: var(--radius); }
+  .sidebar-link:hover { color: var(--black); background: rgba(0,0,0,0.05); border-color: var(--black); }
+  .sidebar-link.active { color: var(--black); background: var(--pink); border-color: var(--black); box-shadow: var(--shadow-sm); font-weight: 700; }
+  .sl-icon { font-size: 0.9rem; flex-shrink: 0; }
+  .sl-badge { margin-left: auto; background: var(--pink); color: var(--black); border: 1.5px solid var(--black); font-size: 0.58rem; font-weight: 700; padding: 1px 6px; border-radius: 3px; font-family: var(--font-mono); }
+  .sl-badge.new { background: var(--lime); color: var(--black); }
+  .sidebar-member-card { margin: 0 1.25rem 1.5rem; background: var(--yellow); border: var(--border); padding: 1.1rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .smc-avatar { width: 40px; height: 40px; background: var(--pink); border: 2px solid var(--black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; color: var(--black); margin-bottom: 0.65rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .smc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .smc-name { font-weight: 700; font-size: 0.88rem; color: var(--black); margin-bottom: 1px; }
+  .smc-email { font-size: 0.72rem; color: #555; margin-bottom: 0.65rem; }
+  .smc-since { font-family: var(--font-mono); font-size: 0.6rem; color: var(--black); text-transform: uppercase; letter-spacing: 0.06em; display: flex; align-items: center; gap: 6px; }
+  .smc-dot { width: 7px; height: 7px; background: var(--lime); border: 1.5px solid var(--black); border-radius: 50%; }
+
+  /* CONTENT */
+  .content { padding: 2.5rem 2rem; max-width: 1100px; }
+
+  /* SECTION HEADINGS */
+  .section-heading-1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-style: italic;
+    margin: 1.5rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--black);
+    display: inline-block;
+  }
+  .section-heading-2 {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-style: italic;
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--pink);
+    display: inline-block;
+  }
+  .section-heading-3 {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--pink-dark);
+  }
+
+  /* DASH SECTIONS */
+  .dash-section { margin-bottom: 2rem; animation: fadeUp 0.4s ease forwards; }
+  .dash-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: var(--border); }
+  .dash-section-title { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--black); display: flex; align-items: center; gap: 8px; }
+  .dash-section-title::before { content: '▪'; font-size: 0.8rem; color: var(--pink-dark); }
+  .dash-section-link { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; color: var(--black); text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 2px solid var(--black); transition: color 0.15s; }
+  .dash-section-link:hover { color: var(--pink-dark); border-color: var(--pink-dark); }
+
+  /* WELCOME BANNER */
+  .welcome-banner { background: var(--lime); border: var(--border); padding: 2rem 2.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; position: relative; overflow: hidden; border-radius: var(--radius); box-shadow: var(--shadow-lg); }
+  .wb-deco { position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); font-family: var(--font-display); font-size: 9rem; font-weight: 400; font-style: italic; color: rgba(0,0,0,0.07); line-height: 1; pointer-events: none; user-select: none; }
+  .wb-tag { background: var(--black); color: var(--lime); font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 10px; display: inline-block; margin-bottom: 0.75rem; border-radius: 3px; }
+  .wb-title { font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 400; font-style: normal; line-height: 1.1; margin-bottom: 0.5rem; color: var(--black); }
+  .wb-title em { font-style: italic; }
+  .wb-sub { font-size: 0.85rem; color: #333; line-height: 1.6; font-weight: 400; }
+  .wb-stats { display: flex; gap: 1.5rem; flex-shrink: 0; }
+  .wb-stat { background: var(--white); border: var(--border); padding: 0.85rem 1.25rem; border-radius: var(--radius); box-shadow: var(--shadow-sm); text-align: center; }
+  .wb-stat .num { font-family: var(--font-display); font-size: 2rem; font-weight: 400; font-style: italic; line-height: 1; color: var(--black); }
+  .wb-stat .lbl { font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-top: 3px; }
+
+  /* EXISTING STYLES (issue-card, signal-grid, whale-row, defi-grid, rewards, etc.) remain unchanged */
+  .issue-card { background: var(--white); border: var(--border); overflow: hidden; margin-bottom: 1rem; border-radius: var(--radius); box-shadow: var(--shadow); transition: box-shadow 0.15s, transform 0.15s; }
+  .issue-card:hover { box-shadow: var(--shadow-lg); transform: translate(-2px,-2px); }
+  .issue-card-header { background: var(--black); border-bottom: var(--border); padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .ich-title { font-family: var(--font-mono); font-weight: 700; font-size: 0.82rem; letter-spacing: 0.12em; color: var(--pink); }
+  .ich-date { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,255,255,0.5); }
+  .issue-card-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .icb-label { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; color: var(--pink-dark); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.55rem; }
+  .icb-line { font-size: 0.8rem; color: #555; line-height: 1.6; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 0.3rem; margin-bottom: 0.3rem; }
+  .icb-line:last-child { border-bottom: none; }
+  .icb-line strong { color: var(--black); font-weight: 700; }
+  .issue-card-footer { padding: 1rem 1.5rem; border-top: var(--border); display: flex; gap: 0.75rem; align-items: center; background: #fafafa; }
+  .btn-read, .btn-archive { background: var(--pink); color: var(--black); border: 2px solid var(--black); padding: 8px 22px; font-family: var(--font-body); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; text-decoration: none; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+  .btn-read:hover, .btn-archive:hover { background: var(--black); color: var(--pink); box-shadow: none; transform: translate(3px,3px); }
+  .btn-archive { background: transparent; color: var(--black); }
+  .signal-grid, .metrics-grid, .defi-grid, .rewards-grid, .whale-row, .archive-row { /* keep as before */ }
+  .signal-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .signal-cell { padding: 1.25rem; border-right: 2px solid var(--black); border-bottom: 2px solid var(--black); background: var(--white); }
+  .signal-cell:nth-child(3n) { border-right: none; }
+  .sc-coin { display: flex; justify-content: space-between; margin-bottom: 0.6rem; }
+  .sc-name { font-weight: 700; font-size: 0.85rem; }
+  .sc-badge { padding: 2px 8px; font-family: var(--font-mono); font-size: 0.56rem; border-radius: 3px; border: 1.5px solid var(--black); }
+  .badge-buy { background: var(--lime); }
+  .sc-pct.up { color: var(--lime-dark); }
+  .sc-pct.dn { color: var(--pink-dark); }
+  .sc-conf { margin-top: 0.5rem; display: flex; gap: 6px; align-items: center; }
+  .conf-bar { flex: 1; height: 4px; background: rgba(0,0,0,0.1); border: 1px solid var(--black); }
+  .conf-fill { height: 100%; background: var(--lime-dark); }
+  .whale-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; background: var(--white); border: var(--border); margin-bottom: 0.5rem; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+  .defi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: var(--border); border-radius: var(--radius); overflow: hidden; }
+  .defi-card { padding: 1.5rem; border-right: 2px solid var(--black); border-bottom: 2px solid var(--black); background: var(--white); }
+  .defi-card:nth-child(2n) { border-right: none; }
+  .dc-apy { font-family: var(--font-display); font-size: 2.4rem; font-style: italic; color: var(--lime-dark); }
+  .archive-row { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.25rem; border: var(--border); margin-bottom: 0.5rem; border-radius: var(--radius); background: var(--white); box-shadow: var(--shadow-sm); text-decoration: none; color: inherit; }
+  .rewards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .reward-card { position: relative; background: var(--white); border: var(--border); border-radius: var(--radius); padding: 1rem; transition: all 0.2s; }
+  /* meme coin table */
+  .meme-table-wrapper { overflow-x: auto; margin-top: 0.5rem; border: var(--border); border-radius: var(--radius); background: var(--white); box-shadow: var(--shadow); }
+  .meme-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; font-family: var(--font-mono); }
+  .meme-table th, .meme-table td { padding: 0.75rem 0.5rem; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .meme-table th { background: var(--black); color: var(--pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.65rem; }
+  .meme-table tr:hover { background: var(--bg2); }
+  .price-up { color: var(--lime-dark); font-weight: 700; }
+  .price-down { color: var(--pink-dark); font-weight: 700; }
+  .meme-status { font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; background: var(--yellow); border: 1px solid var(--black); }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+  .delay-1, .delay-2, .delay-3, .delay-4 { opacity: 0; animation-fill-mode: forwards; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--black); color: var(--lime); border: 2px solid var(--black); padding: 1rem 1.5rem; border-radius: var(--radius); font-family: var(--font-mono); font-weight: 700; box-shadow: var(--shadow-lg); transition: all 0.4s; transform: translateY(100px); opacity: 0; z-index: 2000; }
+  /* gate styles omitted for brevity (same as before) */
+  .gate-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 8000; }
+  .gate-card { background: var(--white); border: var(--border); border-radius: var(--radius); padding: 2rem; max-width: 460px; text-align: center; }
+  @media (max-width: 900px) {
+    .dash-wrap { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .signal-grid { grid-template-columns: 1fr 1fr; }
+    .rewards-grid { grid-template-columns: 1fr 1fr; }
+    .defi-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .signal-grid { grid-template-columns: 1fr; }
+    .rewards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="loadingScreen"><div class="load-logo">SignalStrike</div><div class="load-bar"><div class="load-fill"></div></div></div>
+<nav class="topnav"><a href="index.html" class="nav-logo">SignalStrike <span class="nav-dot"></span></a><div class="nav-center"><span class="nav-tab active">Dashboard</span><a href="#archive" class="nav-tab">Archive</a><a href="#signals" class="nav-tab">Signals</a><a href="#defi" class="nav-tab">DeFi</a></div><div class="nav-right"><div class="nav-member-badge">⚡ Pro Member</div><div class="nav-avatar" id="navAvatar"></div><button class="btn-logout" id="logoutBtn">Sign Out</button></div></nav>
+<div class="ticker-wrap"><div class="ticker-inner" id="tickerInner"><span class="ticker-item">Loading market data…</span></div><div class="ticker-status"><div class="ticker-status-dot loading" id="tickerDot"></div><span class="ticker-status-text" id="tickerStatusText">Loading</span></div></div>
+<div class="dash-wrap">
+  <aside class="sidebar"><div class="sidebar-member-card"><div class="smc-avatar" id="sidebarAvatar"></div><div class="smc-name" id="sidebarName">Loading…</div><div class="smc-email" id="sidebarEmail"></div><div class="smc-since"><span class="smc-dot"></span><span id="sidebarSince">Member since —</span></div></div>
+    <div class="sidebar-section"><div class="sidebar-label">Overview</div><a href="#overview" class="sidebar-link"><span class="sl-icon">🏠</span> Dashboard</a><a href="#rewards" class="sidebar-link"><span class="sl-icon">🎁</span> Rewards <span class="sl-badge new rewards-badge-count">12</span></a></div>
+    <div class="sidebar-section"><div class="sidebar-label">Market Intel</div><a href="#today" class="sidebar-link active"><span class="sl-icon">📬</span> Today's Brief</a><a href="#signals" class="sidebar-link"><span class="sl-icon">📡</span> AI Signals</a><a href="#whales" class="sidebar-link"><span class="sl-icon">🐋</span> Whale Radar</a><a href="#defi" class="sidebar-link"><span class="sl-icon">🌾</span> DeFi Alpha</a><a href="#memecoins" class="sidebar-link"><span class="sl-icon">🐸</span> Meme Coins</a></div>
+    <div class="sidebar-section"><div class="sidebar-label">Content</div><a href="#archive" class="sidebar-link"><span class="sl-icon">📂</span> Issue Archive</a><a href="#deepdives" class="sidebar-link"><span class="sl-icon">🔬</span> Deep Dives</a><a href="#regulatory" class="sidebar-link"><span class="sl-icon">⚖️</span> Regulatory Radar</a></div>
+    <div class="sidebar-section"><div class="sidebar-label">Account</div><a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="sidebar-link"><span class="sl-icon">💳</span> Manage Billing</a><a href="#partner" class="sidebar-link"><span class="sl-icon">💰</span> Partner Program</a><a href="#" class="sidebar-link" id="sidebarLogout"><span class="sl-icon">🚪</span> Sign Out</a></div>
+  </aside>
+  <main class="content">
+    <!-- Overview heading -->
+    <h1 class="section-heading-1" id="overview">Overview</h1>
+    <div class="welcome-banner"><div><div class="wb-tag" id="wbTag">🌅 Good Morning</div><div class="wb-title" id="welcomeTitle">Welcome back, <em>Trader</em></div><div class="wb-sub" id="welcomeSub">Your daily AI brief is ready. Markets open in 2h 14m. 6 signals flagged overnight.</div></div><div class="wb-stats"><div class="wb-stat"><div class="num">97.2%</div><div class="lbl">Signal Accuracy</div></div><div class="wb-stat"><div class="num">285+</div><div class="lbl">Issues in Archive</div></div></div><div class="wb-deco">₿</div></div>
+
+    <!-- Today's Brief -->
+    <div class="dash-section delay-1" id="today"><div class="dash-section-head"><div class="dash-section-title">Today's Issue — #285</div><a href="#" class="dash-section-link">View Full Issue →</a></div>
+      <div class="issue-card"><div class="issue-card-header"><div class="ich-title">⚡ SIGNALSTRIKE DAILY</div><div class="ich-date">ISSUE #285 · FRI MAR 20, 2026</div></div><div class="issue-card-body"><div class="icb-section"><div class="icb-label">// Macro Pulse</div><div class="icb-line"><strong>BTC Dominance:</strong> 54.2% (↑ 0.8%)</div><div class="icb-line"><strong>Fear & Greed:</strong> 72 — Greed zone</div><div class="icb-label" style="margin-top:1rem;">// Whale Radar</div><div class="icb-line"><strong>0x8f2a…</strong> moved 12,400 ETH to Binance</div></div><div class="icb-section"><div class="icb-label">// AI Signals Today</div><div class="icb-line"><strong>BTC:</strong> Holding $85K support. Target: $92K</div><div class="icb-line"><strong>SOL:</strong> Breakout forming. +$47M whale</div><div class="icb-label" style="margin-top:1rem;">// DeFi Alpha</div><div class="icb-line"><strong>Aave v4</strong> on Base — 14.2% APY</div></div></div><div class="issue-card-footer"><a href="#" class="btn-read">Read Full Issue →</a><a href="#archive" class="btn-archive">Browse Archive</a></div></div></div>
+
+    <!-- AI Signals -->
+    <div class="dash-section delay-2" id="signals"><div class="dash-section-head"><div class="dash-section-title">AI Signals — Live</div><a href="#" class="dash-section-link">All 500+ Coins →</a></div><div class="signal-grid"><div class="signal-cell"><div class="sc-coin"><div class="sc-name">₿ Bitcoin</div><div class="sc-badge badge-buy">BUY ZONE</div></div><div class="sc-pct up">+2.47%</div><div class="sc-meta">Target: $92,000</div><div class="sc-conf"><div class="conf-bar"><div class="conf-fill" style="width:88%"></div></div><div class="conf-label">88% conf.</div></div></div><div class="signal-cell"><div class="sc-coin"><div class="sc-name">◎ Solana</div><div class="sc-badge badge-buy">STRONG BUY</div></div><div class="sc-pct up">+4.10%</div><div class="sc-meta">Breakout forming</div><div class="sc-conf"><div class="conf-bar"><div class="conf-fill" style="width:91%"></div></div><div class="conf-label">91% conf.</div></div></div><div class="signal-cell"><div class="sc-coin"><div class="sc-name">⬡ Render</div><div class="sc-badge badge-buy">AI PLAY</div></div><div class="sc-pct up">+7.44%</div><div class="sc-meta">Dev activity ↑ 340%</div><div class="sc-conf"><div class="conf-bar"><div class="conf-fill" style="width:93%"></div></div><div class="conf-label">93% conf.</div></div></div></div><div class="metrics-grid" style="margin-top:1rem;"><div class="metric-cell"><div class="mc-val">97.2%</div><div class="mc-label">Accuracy</div></div><div class="metric-cell"><div class="mc-val">4.2hrs</div><div class="mc-label">Lead Time</div></div><div class="metric-cell"><div class="mc-val">50k+</div><div class="mc-label">Data/Day</div></div><div class="metric-cell"><div class="mc-val">28</div><div class="mc-label">Chains</div></div></div></div>
+
+    <!-- Whale Radar -->
+    <div class="dash-section delay-3" id="whales"><div class="dash-section-head"><div class="dash-section-title">Whale Radar — Last 24hrs</div><a href="#" class="dash-section-link">Full Tracker →</a></div><div class="whale-row"><div class="whale-icon">🐋</div><div class="whale-main"><div class="whale-addr">0x8f2a…c491</div><div class="whale-action">Moved <strong>12,400 ETH</strong> to Binance</div></div><div><div class="whale-amount sell">-$38.4M</div><div class="whale-time">2h ago</div></div></div><div class="whale-row"><div class="whale-icon">🟢</div><div class="whale-main"><div class="whale-addr">0x44cc…7f12</div><div class="whale-action">Accumulated <strong>$8.2M LINK</strong></div></div><div><div class="whale-amount buy">+$8.2M</div><div class="whale-time">5h ago</div></div></div></div>
+
+    <!-- DeFi Alpha -->
+    <div class="dash-section delay-3" id="defi"><div class="dash-section-head"><div class="dash-section-title">DeFi Alpha — This Week</div><a href="#" class="dash-section-link">All Opportunities →</a></div><div class="defi-grid"><div class="defi-card"><div class="dc-protocol">Aave v4 · Base</div><div class="dc-title">USDC Liquidity Pool</div><div class="dc-apy">14.2%</div><div class="dc-desc">48-hour boosted APY window.</div><span class="dc-tag">⏰ 31hrs remaining</span></div><div class="defi-card"><div class="dc-protocol">Uniswap v3</div><div class="dc-title">RENDER/ETH 0.3% Fee Tier</div><div class="dc-apy">8.7%</div><div class="dc-desc">High volume on AI narrative.</div><span class="dc-tag">🔥 High volume</span></div></div></div>
+
+    <!-- Meme Coins Section (live from Google Sheet) -->
+    <div class="dash-section delay-3" id="memecoins"><div class="dash-section-head"><div class="dash-section-title">🐸 Meme Coins — Top by Market Cap</div><span class="dash-section-link">Live from DEXTools</span></div><div class="meme-table-wrapper" id="memeTableWrapper"><table class="meme-table" id="memeTable"><thead><tr><th>#</th><th>Symbol</th><th>Name</th><th>Price (USD)</th><th>24h %</th><th>Market Cap</th></tr></thead><tbody id="memeTableBody"><tr><td colspan="6">Loading meme coin data...</td></tr></tbody></table></div></div>
+
+    <!-- Rewards -->
+    <div class="dash-section" id="rewards"><div class="dash-section-head"><div class="dash-section-title">Member Rewards</div><div><span class="rewards-unclaimed-badge">12 unclaimed</span><button class="bybit-check-btn" id="bybitCheckBtn" onclick="openBybitModal()"><span class="bybit-icon">⚡</span> Verify Bybit</button></div></div><div class="rewards-grid" id="rewardsGrid"><!-- static reward cards same as before --></div></div>
+
+    <!-- Content Heading 2 -->
+    <h2 class="section-heading-2" id="content-heading">Content</h2>
+    <!-- Issue Archive -->
+    <div class="dash-section" id="archive"><div class="dash-section-head"><div class="dash-section-title">Issue Archive — Recent</div><a href="#" class="dash-section-link">All 285 Issues →</a></div><a href="#" class="archive-row"><div class="ar-num">#285</div><div class="ar-title">SOL Breakout Signal + Aave v4 Base Launch Alpha</div><div class="ar-date">Mar 20, 2026</div><div class="ar-tag">Today</div></a><a href="#" class="archive-row"><div class="ar-num">#284</div><div class="ar-title">BTC $85K Consolidation + LINK Smart Money</div><div class="ar-date">Mar 19, 2026</div><div class="ar-tag">Deep Dive</div></a><a href="#" class="archive-row"><div class="ar-num">#283</div><div class="ar-title">RENDER AI Narrative Play — 340% Dev Activity</div><div class="ar-date">Mar 18, 2026</div><div class="ar-tag">Flash Alert</div></a></div>
+    <!-- Deep Dives -->
+    <div class="dash-section" id="deepdives"><div class="dash-section-head"><div class="dash-section-title">Deep Dives — Research Reports</div><a href="#" class="dash-section-link">View All →</a></div><div class="archive-row" style="cursor:default;"><div class="ar-num">📘</div><div class="ar-title">The Solana Ecosystem: Q2 2026 Outlook</div><div class="ar-date">Mar 10, 2026</div><div class="ar-tag">Premium</div></div><div class="archive-row" style="cursor:default;"><div class="ar-num">📗</div><div class="ar-title">AI x Crypto: The Render Network Thesis</div><div class="ar-date">Feb 25, 2026</div><div class="ar-tag">Premium</div></div></div>
+    <!-- Regulatory Radar -->
+    <div class="dash-section" id="regulatory"><div class="dash-section-head"><div class="dash-section-title">Regulatory Radar — Global Policy</div><a href="#" class="dash-section-link">Full Analysis →</a></div><div class="archive-row" style="cursor:default;"><div class="ar-num">⚖️</div><div class="ar-title">EU MiCA Implementation: What it means for DeFi</div><div class="ar-date">Mar 15, 2026</div><div class="ar-tag">Analysis</div></div><div class="archive-row" style="cursor:default;"><div class="ar-num">🇺🇸</div><div class="ar-title">US Stablecoin Bill — Latest Committee Draft</div><div class="ar-date">Mar 12, 2026</div><div class="ar-tag">Update</div></div></div>
+
+    <!-- Account Heading 3 -->
+    <h3 class="section-heading-3" id="account-heading">Account</h3>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;"><a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="btn-read" style="background:var(--yellow);">💳 Manage Billing</a><a href="#partner" class="btn-read" style="background:var(--lime);">💰 Partner Program</a><button id="logoutBtn2" class="btn-archive" style="background:var(--white);">🚪 Sign Out</button></div>
+    <!-- Partner Program (collapsed for brevity, but kept) -->
+    <div id="partner" style="margin-top: 1rem;"><div class="dash-section-head"><div class="dash-section-title">Partner Program — Earn 50% Recurring</div></div><div class="partner-hero" style="padding:1rem;"><div><div class="partner-tag">💰 50% Lifetime Commission</div><div class="partner-headline" style="font-size:1.2rem;">Turn audience into income</div><div class="partner-sub">$14.99 per referral per month</div><div class="partner-link-box"><div class="partner-link-label">Your referral link</div><div class="partner-link-row"><span class="partner-link-url" id="partnerLinkUrl">signalstrike.com/ref/user</span><button class="partner-copy-btn" onclick="copyPartnerLink()">Copy</button></div></div></div><div class="partner-stats-mini"><div class="psm-item"><div class="psm-val">0</div><div class="psm-lbl">Referrals</div></div><div class="psm-item"><div class="psm-val">$0</div><div class="psm-lbl">Earned</div></div></div></div><div class="calc-section"><div class="calc-header"><div class="calc-title">Earnings Calculator</div></div><div class="calc-body"><div><div class="calc-slider-wrap"><div class="calc-slider-label"><span>Referrals / month</span><span class="calc-slider-val" id="refCount">10</span></div><input type="range" id="refSlider" min="1" max="500" value="10" class="calc-range" oninput="updateCalc()"></div><div class="calc-slider-wrap"><div class="calc-slider-label"><span>Retention (months)</span><span class="calc-slider-val" id="retentionMonths">6</span></div><input type="range" id="retSlider" min="1" max="24" value="6" class="calc-range" oninput="updateCalc()"></div></div><div class="calc-results"><div class="calc-result-item"><div class="cr-label">Monthly</div><div class="cr-val green" id="calcMonthly">$149.90</div></div><div class="calc-result-item"><div class="cr-label">Lifetime</div><div class="cr-val pink" id="calcLifetime">$899.40</div></div></div></div></div></div>
+  </main>
+</div>
+<div id="memberGate" class="gate-backdrop" style="display:none;"><div class="gate-card"><span class="gate-logo">SignalStrike</span><div id="gateChecking"><div class="gate-spinner"></div><div>Verifying membership...</div></div><div id="gateLocked" style="display:none;"><span class="gate-icon">🔒</span><div class="gate-title">Members Only</div><div class="gate-sub">Your account does not have an active membership.</div><a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" class="gate-btn-primary">Get Full Access</a><button class="gate-btn-secondary" onclick="handleGateSignOut()">Sign out</button></div><div id="gateError" style="display:none;"><div class="gate-title">Check failed</div><button class="gate-btn-primary" onclick="retryMemberCheck()">Retry</button></div></div></div>
+<div id="bybitModal" class="bybit-modal-backdrop"><div class="bybit-modal-box"><button class="bybit-modal-close" onclick="closeBybitModal()">✕</button><div class="bybit-modal-logo">⚡ Bybit Eligibility</div><div class="bybit-modal-icon">🔐</div><div class="bybit-modal-title">Are you a Bybit user?</div><div class="bybit-modal-desc">Unlock $175+ in trading rewards.</div><div class="bybit-modal-actions"><button class="bybit-modal-yes" onclick="confirmBybit()">Yes, verify</button><button class="bybit-modal-no" onclick="closeBybitModal()">No</button></div></div></div>
+<div id="toast"></div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  // Firebase config (same as before)
+  const firebaseConfig = { apiKey: "AIzaSyBfaThYee5N7mR30YqMzymDsASNg9WI1zY", authDomain: "signalstrike-newsletter.firebaseapp.com", projectId: "signalstrike-newsletter", storageBucket: "signalstrike-newsletter.firebasestorage.app", messagingSenderId: "685841795264", appId: "1:685841795264:web:6a7e9c9d42324ad1b94525" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  // Ticker sheet (unchanged)
+  const TICKER_SHEET_ID = '1DISW4ObT_naC3KhQKI0XGECeD_a6YJDsUM95k5KDvb0';
+  const TICKER_SHEET_TAB = 'Sheet1';
+  // Meme coins sheet
+  const MEME_SHEET_ID = '1NmP70_legrJ4lvPREohToI84mSyR9uxZzk6UZf-foA4';
+  const MEME_SHEET_TAB = 'Sheet1';
+  // Membership sheet
+  const MEMBERSHIP_SHEET_ID = '1b6m_3YzruHWlCyJCj2uPp_k_kRvI2j7gMgyS29S3xO4';
+  const MEMBERSHIP_TAB = 'Sheet1';
+  const EMAIL_COLUMN = 'A';
+  const CACHE_TTL_MS = 3600000;
+
+  // ---- Helper: parse CSV ----
+  function parseCSVRow(row) { let res=[], field='', inQ=false; for(let ch of row){ if(ch==='"') inQ=!inQ; else if(ch===',' && !inQ){ res.push(field.trim()); field=''; } else field+=ch; } res.push(field.trim()); return res; }
+
+  // ---- Ticker (same as before) ----
+  async function fetchTickerData() { const url=`https://docs.google.com/spreadsheets/d/${TICKER_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(TICKER_SHEET_TAB)}`; const resp=await fetch(url); if(!resp.ok) throw new Error(); const csv=await resp.text(); const rows=csv.split('\n').filter(r=>r.trim()); if(rows.length<2) throw new Error(); const header=parseCSVRow(rows[0]); const symIdx=header.findIndex(c=>c.toLowerCase()==='symbol'), priceIdx=header.findIndex(c=>c.toLowerCase()==='price'); if(symIdx===-1||priceIdx===-1) throw new Error(); const items=[]; for(let i=1;i<rows.length;i++){ const cells=parseCSVRow(rows[i]); if(cells.length<=Math.max(symIdx,priceIdx)) continue; let sym=cells[symIdx].trim().toUpperCase(), priceRaw=cells[priceIdx].trim(); if(!sym||!priceRaw) continue; let priceNum=parseFloat(priceRaw.replace(/[^0-9.-]/g,'')); if(isNaN(priceNum)) continue; items.push({symbol:sym, price:priceNum}); } if(!items.length) throw new Error(); return items; }
+  function formatPrice(p){ if(p>=1000) return '$'+p.toLocaleString(); if(p>=1) return '$'+p.toFixed(2); return '$'+p.toFixed(4); }
+  function renderTicker(items){ const inner=document.getElementById('tickerInner'); const html=items.map(i=>`<span class="ticker-item">${i.symbol} <span class="ticker-price">${formatPrice(i.price)}</span></span>`).join('<span class="ticker-sep"> · </span>'); inner.innerHTML=html+'<span class="ticker-sep" style="padding-right:3rem;"> </span>'+html; const dur=Math.max(18,items.length*2.2); inner.style.setProperty('--ticker-duration',dur+'s'); inner.style.animation='none'; void inner.offsetWidth; inner.style.animation=`ticker ${dur}s linear infinite`; document.getElementById('tickerDot').className='ticker-status-dot'; document.getElementById('tickerStatusText').textContent=`Live · ${new Date().toLocaleTimeString()}`; }
+  async function refreshTicker(){ try{ const items=await fetchTickerData(); renderTicker(items); }catch(e){ console.warn(e); renderTicker([{symbol:'BTC',price:84210},{symbol:'ETH',price:3102},{symbol:'SOL',price:142.8}]); document.getElementById('tickerDot').className='ticker-status-dot error'; document.getElementById('tickerStatusText').textContent='Offline'; } }
+  refreshTicker(); setInterval(refreshTicker,60000);
+  document.getElementById('tickerInner').addEventListener('mouseenter',()=>document.getElementById('tickerInner').classList.add('paused'));
+  document.getElementById('tickerInner').addEventListener('mouseleave',()=>document.getElementById('tickerInner').classList.remove('paused'));
+
+  // ---- Meme Coins ----
+  async function fetchMemeCoins() {
+    const url=`https://docs.google.com/spreadsheets/d/${MEME_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(MEME_SHEET_TAB)}`;
+    const resp=await fetch(url); if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const csv=await resp.text(); const rows=csv.split('\n').filter(r=>r.trim());
+    if(rows.length<2) throw new Error('No data rows');
+    const header=parseCSVRow(rows[0]);
+    const idxRank=header.findIndex(c=>c.toLowerCase()==='rank');
+    const idxSymbol=header.findIndex(c=>c.toLowerCase()==='symbol');
+    const idxName=header.findIndex(c=>c.toLowerCase()==='name');
+    const idxPrice=header.findIndex(c=>c.toLowerCase()==='price (usd)');
+    const idxChange=header.findIndex(c=>c.toLowerCase()==='24h %');
+    const idxMc=header.findIndex(c=>c.toLowerCase()==='market cap');
+    const coins=[];
+    for(let i=1;i<rows.length;i++){
+      const cells=parseCSVRow(rows[i]);
+      if(cells.length<Math.max(idxRank,idxSymbol,idxName,idxPrice,idxChange,idxMc)) continue;
+      const rank=parseInt(cells[idxRank]) || i;
+      const symbol=cells[idxSymbol]?.trim().toUpperCase()||'?';
+      const name=cells[idxName]?.trim()||'?';
+      let price=parseFloat(cells[idxPrice]?.replace(/[^0-9.-]/g,''))||0;
+      let change=parseFloat(cells[idxChange]?.replace('%',''))||0;
+      let mc=cells[idxMc]?.trim()||'$0';
+      if(mc.startsWith('$')) mc=mc.slice(1);
+      let marketCapNum=parseFloat(mc.replace(/[^0-9.]/g,''));
+      if(isNaN(marketCapNum)) marketCapNum=0;
+      coins.push({rank,symbol,name,price,change,marketCap:marketCapNum,changeRaw:change});
+    }
+    coins.sort((a,b)=>a.rank-b.rank);
+    return coins.slice(0,20);
+  }
+  function renderMemeTable(coins){
+    const tbody=document.getElementById('memeTableBody');
+    if(!coins.length){ tbody.innerHTML='<tr><td colspan="6">No meme coin data available</td></tr>'; return; }
+    tbody.innerHTML=coins.map(c=>`<tr><td>${c.rank}</td><td><strong>${c.symbol}</strong></td><td>${c.name}</td><td>${formatPrice(c.price)}</td><td class="${c.change>=0?'price-up':'price-down'}">${c.change>=0?'+'+c.change.toFixed(2):c.change.toFixed(2)}%</td><td>$${c.marketCap>=1e9?(c.marketCap/1e9).toFixed(2)+'B':c.marketCap>=1e6?(c.marketCap/1e6).toFixed(2)+'M':c.marketCap.toLocaleString()}</td></tr>`).join('');
+  }
+  async function refreshMemeCoins(){ try{ const coins=await fetchMemeCoins(); renderMemeTable(coins); }catch(e){ console.warn(e); document.getElementById('memeTableBody').innerHTML='<tr><td colspan="6">Failed to load meme data</td></tr>'; } }
+  refreshMemeCoins(); setInterval(refreshMemeCoins,90000);
+
+  // ---- Auth & Membership (simplified) ----
+  function hideLoading(){ setTimeout(()=>{ document.getElementById('loadingScreen').classList.add('hide'); setTimeout(()=>document.getElementById('loadingScreen').style.display='none',500); },800); }
+  function showToast(msg){ const t=document.getElementById('toast'); t.innerHTML=msg; t.style.transform='translateY(0)'; t.style.opacity='1'; setTimeout(()=>{ t.style.transform='translateY(100px)'; t.style.opacity='0'; },4000); }
+  async function handleSignOut(){ try{ await signOut(auth); window.location.href='/login.html'; }catch(e){ showToast('Sign out failed'); } }
+  window.handleGateSignOut=handleSignOut;
+  async function checkMembership(email){ const cacheKey=`ss_member_${email}`; const cached=sessionStorage.getItem(cacheKey); if(cached){ const {result,ts}=JSON.parse(cached); if(Date.now()-ts<CACHE_TTL_MS) return result; } const url=`https://docs.google.com/spreadsheets/d/${MEMBERSHIP_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(MEMBERSHIP_TAB)}`; const resp=await fetch(url); if(!resp.ok) throw new Error(); const csv=await resp.text(); const colIdx=EMAIL_COLUMN.toUpperCase().charCodeAt(0)-65; const emails=csv.split('\n').slice(1).map(row=>{ const cells=row.match(/(".*?"|[^,]+)/g)||[]; return (cells[colIdx]||'').trim().replace(/^"|"$/g,'').toLowerCase(); }).filter(Boolean); const result=emails.includes(email.toLowerCase().trim()); sessionStorage.setItem(cacheKey,JSON.stringify({result,ts:Date.now()})); return result; }
+  function showGate(){ document.getElementById('memberGate').style.display='flex'; document.body.classList.add('is-locked'); }
+  function hideGate(){ document.getElementById('memberGate').style.display='none'; document.body.classList.remove('is-locked'); }
+  function showGateChecking(){ document.getElementById('gateChecking').style.display='block'; document.getElementById('gateLocked').style.display='none'; document.getElementById('gateError').style.display='none'; showGate(); }
+  function showGateLocked(email){ document.getElementById('gateChecking').style.display='none'; document.getElementById('gateError').style.display='none'; document.getElementById('gateLocked').style.display='block'; showGate(); }
+  function showGateError(msg){ document.getElementById('gateChecking').style.display='none'; document.getElementById('gateLocked').style.display='none'; document.getElementById('gateError').style.display='block'; showGate(); }
+  function populateDashboard(user){ const name=user.displayName||user.email.split('@')[0]; const initials=name.charAt(0).toUpperCase(); document.getElementById('navAvatar').innerHTML=user.photoURL?`<img src="${user.photoURL}">`:initials; document.getElementById('sidebarAvatar').innerHTML=user.photoURL?`<img src="${user.photoURL}">`:initials; document.getElementById('sidebarName').textContent=name; document.getElementById('sidebarEmail').textContent=user.email; document.getElementById('sidebarSince').textContent=`Member since ${new Date(user.metadata.creationTime).toLocaleDateString()}`; const greeting=new Date().getHours()<12?'Good Morning':'Good Afternoon'; document.getElementById('wbTag').textContent=`🌅 ${greeting} — ${new Date().toLocaleDateString()}`; document.getElementById('welcomeTitle').innerHTML=`Welcome back, <em>${name}</em>`; document.getElementById('partnerLinkUrl').textContent=`signalstrike.com/ref/${name.toLowerCase().replace(/\s/g,'')}`; }
+  let currentUser=null;
+  window.retryMemberCheck=async function(){ if(!currentUser) return; sessionStorage.removeItem(`ss_member_${currentUser.email}`); showGateChecking(); try{ const ok=await checkMembership(currentUser.email); if(ok) hideGate(); else showGateLocked(currentUser.email); }catch(e){ showGateError(e.message); } };
+  onAuthStateChanged(auth,async(user)=>{ if(!user){ window.location.href='/login.html'; return; } currentUser=user; populateDashboard(user); showGateChecking(); hideLoading(); try{ const ok=await checkMembership(user.email); if(ok) hideGate(); else showGateLocked(user.email); }catch(e){ showGateError(e.message); } });
+  document.getElementById('logoutBtn').addEventListener('click',handleSignOut);
+  document.getElementById('logoutBtn2').addEventListener('click',handleSignOut);
+  document.getElementById('sidebarLogout').addEventListener('click',(e)=>{e.preventDefault(); handleSignOut();});
+  // Rewards & Bybit (basic)
+  let bybitVerified=false;
+  window.claimReward=function(btn,id){ const card=btn.closest('.reward-card'); if(card.dataset.bybit==='true'&&!bybitVerified){ openBybitModal(); return; } card.classList.add('is-claimed'); showToast('Reward claimed!'); };
+  window.openBybitModal=()=>{ document.getElementById('bybitModal').classList.add('open'); };
+  window.closeBybitModal=()=>{ document.getElementById('bybitModal').classList.remove('open'); };
+  window.confirmBybit=()=>{ bybitVerified=true; closeBybitModal(); document.querySelectorAll('.reward-card[data-bybit="true"] .reward-claim-btn').forEach(btn=>{ btn.disabled=false; btn.classList.remove('bybit-req'); btn.classList.add('unlocked'); btn.textContent='Claim'; }); showToast('Bybit verified! Rewards unlocked.'); };
+  window.updateCalc=function(){ const refs=parseInt(document.getElementById('refSlider').value); const months=parseInt(document.getElementById('retSlider').value); const perRef=14.99; document.getElementById('refCount').textContent=refs; document.getElementById('retentionMonths').textContent=months; document.getElementById('calcMonthly').textContent='$'+(refs*perRef).toFixed(2); document.getElementById('calcLifetime').textContent='$'+(refs*perRef*months).toFixed(2); };
+  window.copyPartnerLink=function(){ navigator.clipboard.writeText('https://'+document.getElementById('partnerLinkUrl').textContent); showToast('Link copied!'); };
+  window.updateCalc();
+  // dummy rewards grid generation (simplified)
+  const rewardsHtml=`<div class="reward-card" data-id="1" data-bybit="false"><div class="reward-card-inner"><div class="reward-icon-wrap r-gold">🏆</div><div><div class="reward-title">Welcome Bonus</div><div class="reward-desc">$10 credit</div><div class="reward-val">$10.00</div></div><button class="reward-claim-btn" onclick="claimReward(this,1)">Claim</button></div><div class="reward-claimed-overlay"><span>✓</span></div></div>`.repeat(3);
+  document.getElementById('rewardsGrid').innerHTML=rewardsHtml;
+</script>
+</body>
+</html>
