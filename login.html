@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign Up / Login — SignalStrike</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff4d6d;
+    --yellow: #ffd60a;
+    --black: #0a0a0a;
+    --cream: #fffbf5;
+    --gray: #f5f0e8;
+    --mid: #c8c0b0;
+    --green-light: #22c55e;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--black);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: var(--yellow);
+    border-bottom: 2px solid var(--black);
+    overflow: hidden; white-space: nowrap; padding: 9px 0;
+    flex-shrink: 0;
+  }
+  .ticker-inner {
+    display: inline-flex; gap: 3rem;
+    animation: ticker 30s linear infinite;
+  }
+  .ticker-item {
+    font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700;
+    color: var(--black); text-transform: uppercase; letter-spacing: 0.08em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .up { color: #15532e; font-weight: 800; }
+  .dn { color: #7f1d1d; font-weight: 800; }
+  @keyframes ticker { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* ── MAIN LAYOUT ── */
+  .page-wrap {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 40px);
+  }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    background: var(--cream);
+    color: var(--black);
+    border-right: 2px solid var(--black);
+    padding: 4rem 3.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .left-bg-deco {
+    position: absolute;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18rem;
+    color: rgba(0,0,0,0.04);
+    line-height: 1;
+    bottom: -2rem;
+    right: -2rem;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.5rem;
+    letter-spacing: -0.03em;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 3.5rem;
+    text-decoration: none;
+    color: var(--black);
+  }
+  .logo span { color: var(--pink); }
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--green-light);
+    border: 2px solid var(--black);
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+  .left-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--yellow); border: 2px solid var(--black);
+    padding: 5px 14px; font-family: 'Syne', sans-serif;
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 1.5rem; width: fit-content;
+  }
+
+  .left-h {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 3.5vw, 4rem);
+    line-height: 1.0; letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+  }
+  .left-h em { font-style: italic; color: var(--pink); }
+
+  .left-sub {
+    font-size: 0.95rem; color: #555; line-height: 1.7;
+    max-width: 400px; margin-bottom: 2.5rem;
+  }
+
+  .social-proof {
+    display: flex; gap: 2rem; flex-wrap: wrap;
+    border-top: 2px solid var(--black); padding-top: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .sp-stat .num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem; line-height: 1; color: var(--black);
+  }
+  .sp-stat .num span { color: var(--pink); }
+  .sp-stat .lbl {
+    font-family: 'Syne', sans-serif; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.1em; color: #888;
+    margin-top: 3px;
+  }
+
+  .feature-pills { display: flex; flex-direction: column; gap: 10px; }
+  .feature-pill {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    border: 2px solid var(--black);
+    background: var(--gray);
+    font-size: 0.85rem; font-family: 'DM Sans', sans-serif;
+    line-height: 1.4;
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  .feature-pill:nth-child(1) { animation-delay: 0.1s; }
+  .feature-pill:nth-child(2) { animation-delay: 0.2s; }
+  .feature-pill:nth-child(3) { animation-delay: 0.3s; }
+  .feature-pill:nth-child(4) { animation-delay: 0.4s; }
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .pill-icon {
+    width: 32px; height: 32px; background: var(--yellow);
+    border: 2px solid var(--black);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .pill-text strong { display: block; font-weight: 600; font-size: 0.82rem; }
+  .pill-text span { font-size: 0.75rem; color: #777; }
+
+  /* ── RIGHT PANEL (AUTH CARD) ── */
+  .right-panel {
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .right-bg-deco {
+    position: absolute;
+    font-family: 'DM Serif Display', serif;
+    font-size: 22rem;
+    color: rgba(255,255,255,0.03);
+    line-height: 1;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .auth-card {
+    background: var(--cream);
+    border: 2px solid rgba(255,255,255,0.1);
+    width: 100%; max-width: 440px;
+    padding: 2.5rem;
+    box-shadow: 10px 10px 0 var(--pink);
+    position: relative; z-index: 2;
+    animation: cardIn 0.6s ease forwards;
+    opacity: 0; transform: translateY(24px);
+  }
+  @keyframes cardIn { to { opacity:1; transform:translateY(0); } }
+
+  .auth-card-tag {
+    background: var(--pink); color: white;
+    font-family: 'Syne', sans-serif; font-size: 0.68rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 4px 12px; display: inline-block; margin-bottom: 1.25rem;
+  }
+
+  .auth-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem; line-height: 1.1; color: var(--black);
+    margin-bottom: 0.5rem;
+  }
+
+  .auth-sub {
+    font-size: 0.85rem; color: #666; margin-bottom: 2rem; line-height: 1.6;
+  }
+
+  /* ── DIVIDER ── */
+  .auth-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.25rem;
+    font-family: 'Syne', sans-serif; font-size: 0.7rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #999;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: ''; flex: 1; height: 2px; background: #e5e0d8;
+  }
+
+  /* ── SOCIAL BUTTONS ── */
+  .social-btn {
+    width: 100%;
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 18px;
+    border: 2px solid var(--black);
+    background: white;
+    font-family: 'Syne', sans-serif; font-size: 0.85rem;
+    font-weight: 700; color: var(--black);
+    cursor: pointer; margin-bottom: 10px;
+    transition: all 0.2s;
+    box-shadow: 3px 3px 0 var(--black);
+    text-align: left;
+    text-transform: none;
+    letter-spacing: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .social-btn::after {
+    content: '→';
+    position: absolute; right: 18px; top: 50%;
+    transform: translateY(-50%) translateX(4px);
+    opacity: 0; transition: all 0.2s;
+    font-size: 1rem;
+  }
+  .social-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--black);
+  }
+  .social-btn:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+  .social-btn:active { transform: translate(0,0); box-shadow: 3px 3px 0 var(--black); }
+
+  .social-btn.google:hover { background: #fff8f0; border-color: var(--black); }
+  .social-btn.facebook:hover { background: #f0f4ff; border-color: var(--black); }
+  .social-btn.twitter:hover { background: #f5f5f5; border-color: var(--black); }
+
+  .btn-icon {
+    width: 28px; height: 28px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+
+  /* Google icon SVG colors */
+  .google-svg { width: 18px; height: 18px; }
+
+  /* Email form toggle */
+  .email-section { margin-top: 0; }
+  .email-toggle {
+    width: 100%; padding: 11px 18px;
+    border: 2px dashed var(--mid);
+    background: transparent; color: #888;
+    font-family: 'Syne', sans-serif; font-size: 0.78rem;
+    font-weight: 600; cursor: pointer;
+    transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 0;
+  }
+  .email-toggle:hover { border-color: var(--black); color: var(--black); background: var(--gray); }
+
+  .email-form {
+    display: none;
+    margin-top: 1rem;
+    animation: formIn 0.3s ease;
+  }
+  .email-form.show { display: block; }
+  @keyframes formIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+  .form-label {
+    display: block;
+    font-family: 'Syne', sans-serif; font-size: 0.7rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--black); margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%; border: 2px solid var(--black);
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    background: white; outline: none; margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--pink); }
+
+  .btn-email-submit {
+    width: 100%; background: var(--pink); color: white;
+    border: 2px solid var(--black); padding: 13px 18px;
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer;
+    transition: all 0.2s; box-shadow: 3px 3px 0 var(--black);
+  }
+  .btn-email-submit:hover { background: var(--black); transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--pink); }
+
+  /* ── TRUST LINE ── */
+  .trust-line {
+    margin-top: 1.5rem; padding-top: 1.25rem;
+    border-top: 2px solid #e5e0d8;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; color: #999;
+    font-family: 'Syne', sans-serif; line-height: 1.5;
+  }
+  .trust-line .lock { font-size: 0.9rem; }
+  .trust-link { color: var(--pink); text-decoration: none; font-weight: 700; }
+  .trust-link:hover { text-decoration: underline; }
+
+  /* ── LOADING STATE ── */
+  .btn-loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white; border-radius: 50%;
+    animation: spin 0.7s linear infinite; margin-right: 8px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 2000;
+    background: var(--black); color: var(--cream);
+    border: 2px solid var(--black);
+    padding: 1rem 1.5rem;
+    font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 600;
+    box-shadow: 5px 5px 0 var(--pink);
+    transform: translateY(100px); opacity: 0;
+    transition: all 0.4s;
+    max-width: 320px; line-height: 1.5;
+  }
+
+  /* ── ALREADY LOGGED IN STATE ── */
+  .logged-in-state {
+    display: none;
+    text-align: center;
+  }
+  .user-avatar {
+    width: 64px; height: 64px;
+    border: 2px solid var(--black);
+    background: var(--yellow);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem;
+    color: var(--black);
+    margin: 0 auto 1rem;
+    overflow: hidden;
+  }
+  .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .welcome-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem; color: var(--black);
+    margin-bottom: 0.5rem;
+  }
+  .welcome-email {
+    font-size: 0.82rem; color: #888;
+    font-family: 'Syne', sans-serif;
+    margin-bottom: 1.5rem;
+  }
+  .btn-dashboard {
+    display: block; width: 100%;
+    background: var(--black); color: var(--cream);
+    border: 2px solid var(--black); padding: 13px 18px;
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer;
+    text-align: center; text-decoration: none;
+    box-shadow: 3px 3px 0 var(--pink);
+    transition: all 0.2s; margin-bottom: 10px;
+  }
+  .btn-dashboard:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--pink); background: var(--pink); }
+  .btn-signout {
+    background: none; border: none; color: #aaa;
+    font-family: 'Syne', sans-serif; font-size: 0.75rem;
+    cursor: pointer; text-decoration: underline;
+    margin-top: 0.5rem;
+  }
+  .btn-signout:hover { color: var(--pink); }
+
+  /* ── FOOTER STRIP ── */
+  .auth-footer {
+    background: var(--black);
+    border-top: 2px solid rgba(255,255,255,0.08);
+    padding: 1rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .auth-footer-left {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem;
+    color: #444; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .auth-footer-right {
+    font-size: 0.72rem; color: #555;
+    font-family: 'Syne', sans-serif;
+    display: flex; gap: 1.5rem;
+  }
+  .auth-footer-right a { color: #555; text-decoration: none; }
+  .auth-footer-right a:hover { color: var(--yellow); }
+  .disc { color: var(--pink); font-weight: 700; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .page-wrap { grid-template-columns: 1fr; }
+    .left-panel { display: none; }
+    .right-panel { min-height: 100vh; padding: 2rem 1.25rem; }
+    .auth-card { box-shadow: 6px 6px 0 var(--pink); }
+    .auth-footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span></span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span></span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span></span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span></span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span></span>
+    <span class="ticker-item">AVAX <span class="dn">▼ -0.42%</span></span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span></span>
+    <span class="ticker-item">BTC <span class="up">▲ +2.47%</span></span>
+    <span class="ticker-item">ETH <span class="up">▲ +1.89%</span></span>
+    <span class="ticker-item">SOL <span class="dn">▼ -0.73%</span></span>
+    <span class="ticker-item">RENDER <span class="up">▲ +7.44%</span></span>
+    <span class="ticker-item">LINK <span class="up">▲ +4.15%</span></span>
+    <span class="ticker-item">AVAX <span class="dn">▼ -0.42%</span></span>
+    <span class="ticker-item">DOGE <span class="up">▲ +5.12%</span></span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="page-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="left-bg-deco">₿</div>
+
+    <a href="index.html" class="logo">
+      Signal<span>Strike</span>
+      <span class="logo-dot"></span>
+    </a>
+
+    <div class="left-badge">⚡ AI-Powered · Daily Signals</div>
+
+    <h1 class="left-h">
+      Your edge<br>starts <em>here.</em>
+    </h1>
+
+    <p class="left-sub">
+      Join 14,800+ traders who read SignalStrike every morning.
+      AI signals. Whale alerts. DeFi alpha. All before the market opens.
+    </p>
+
+    <div class="social-proof">
+      <div class="sp-stat">
+        <div class="num">97.2<span>%</span></div>
+        <div class="lbl">Signal Accuracy</div>
+      </div>
+      <div class="sp-stat">
+        <div class="num">14.8<span>k+</span></div>
+        <div class="lbl">Subscribers</div>
+      </div>
+      <div class="sp-stat">
+        <div class="num">4.2<span>hr</span></div>
+        <div class="lbl">Avg Lead Time</div>
+      </div>
+    </div>
+
+    <div class="feature-pills">
+      <div class="feature-pill">
+        <div class="pill-icon">🤖</div>
+        <div class="pill-text">
+          <strong>Daily AI Signal Brief — 6AM EST</strong>
+          <span>Top setups with confidence scores & entry zones</span>
+        </div>
+      </div>
+      <div class="feature-pill">
+        <div class="pill-icon">🐋</div>
+        <div class="pill-text">
+          <strong>Whale Wallet Tracker</strong>
+          <span>Know when $1M+ wallets are moving before prices react</span>
+        </div>
+      </div>
+      <div class="feature-pill">
+        <div class="pill-icon">🔬</div>
+        <div class="pill-text">
+          <strong>500+ Altcoin Coverage</strong>
+          <span>Weekly deep dives with institutional-grade analysis</span>
+        </div>
+      </div>
+      <div class="feature-pill">
+        <div class="pill-icon">⚡</div>
+        <div class="pill-text">
+          <strong>Real-time Flash Alerts</strong>
+          <span>Breaking events pushed directly to your inbox</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="right-bg-deco">✦</div>
+
+    <div class="auth-card" id="authCard">
+
+      <!-- DEFAULT: SIGN IN VIEW -->
+      <div id="signInView">
+        <div class="auth-card-tag">🚀 Join Now!</div>
+        <h2 class="auth-title">Create your account</h2>
+        <p class="auth-sub">Sign in once — access your issues, signal history & AI dashboard instantly.</p>
+
+        <div class="auth-divider">Sign in with</div>
+
+        <!-- Google -->
+        <button class="social-btn google" id="googleBtn" onclick="signInWithGoogle()">
+          <span class="btn-icon">
+            <svg class="google-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+          </span>
+          Continue with Google
+        </button>
+        <!-- FB and X -->
+
+        <div>
+  <button id="facebook-login-btn">Login with Facebook</button>
+  <button id="x-login-btn">Login with X (Twitter)</button>
+       </div>
+        <div class="trust-line">
+          <span class="lock">🔒</span>
+          <span>Secure sign-in via Firebase. We never share your data.
+          By joining you agree to our <a href="#" class="trust-link">Terms</a> &
+          <a href="#" class="trust-link">Privacy Policy</a>.</span>
+        </div>
+      </div>
+
+      <!-- FB and X ends -->
+
+      <!-- LOGGED IN VIEW -->
+      <div class="logged-in-state" id="loggedInView">
+        <div class="user-avatar" id="userAvatar"></div>
+        <div class="welcome-name" id="welcomeName">Welcome back!</div>
+        <div class="welcome-email" id="welcomeEmail"></div>
+        <a href="/dashboard.html" class="btn-dashboard">Go to Dashboard →</a>
+        <div style="text-align:center;">
+          <button class="btn-signout" onclick="handleSignOut()">Sign out</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER STRIP -->
+<div class="auth-footer">
+  <div class="auth-footer-left">© 2026 SignalStrike · signalstrike.online</div>
+  <div class="auth-footer-right">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Refund Policy</a>
+    <span class="disc">NOT FINANCIAL ADVICE · DYOR</span>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script type="module">
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    sendSignInLinkToEmail,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBfaThYee5N7mR30YqMzymDsASNg9WI1zY",
+    authDomain: "signalstrike-newsletter.firebaseapp.com",
+    projectId: "signalstrike-newsletter",
+    storageBucket: "signalstrike-newsletter.firebasestorage.app",
+    messagingSenderId: "685841795264",
+    appId: "1:685841795264:web:6a7e9c9d42324ad1b94525",
+    measurementId: "G-CW6DKSN76S"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Auth state observer
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      showLoggedInState(user);
+    } else {
+      showSignInState();
+    }
+  });
+
+  function showLoggedInState(user) {
+    document.getElementById('signInView').style.display = 'none';
+    document.getElementById('loggedInView').style.display = 'block';
+
+    const avatarEl = document.getElementById('userAvatar');
+    if (user.photoURL) {
+      avatarEl.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+    } else {
+      const initials = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+      avatarEl.textContent = initials;
+    }
+
+    const displayName = user.displayName || user.email?.split('@')[0] || 'Trader';
+    document.getElementById('welcomeName').textContent = `Welcome, ${displayName}!`;
+    document.getElementById('welcomeEmail').textContent = user.email || '';
+  }
+
+  function showSignInState() {
+    document.getElementById('signInView').style.display = 'block';
+    document.getElementById('loggedInView').style.display = 'none';
+  }
+
+  function setLoading(btnId, loading, text = '') {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    if (loading) {
+      btn.classList.add('btn-loading');
+      btn.innerHTML = `<span class="spinner"></span> Signing in…`;
+    } else {
+      btn.classList.remove('btn-loading');
+      if (text) btn.innerHTML = text;
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerHTML = msg;
+    t.style.transform = 'translateY(0)';
+    t.style.opacity = '1';
+    setTimeout(() => {
+      t.style.transform = 'translateY(100px)';
+      t.style.opacity = '0';
+    }, 5000);
+  }
+
+  window.signInWithGoogle = async function() {
+    const provider = new GoogleAuthProvider();
+    setLoading('googleBtn', true);
+    try {
+      await signInWithPopup(auth, provider);
+      showToast('✓ Signed in! Redirecting to dashboard…');
+      setTimeout(() => { window.location.href = '/dashboard.html'; }, 1200);
+    } catch (error) {
+      setLoading('googleBtn', false,
+        `<span class="btn-icon"><svg class="google-svg" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></span>Continue with Google`
+      );
+      if (error.code !== 'auth/popup-closed-by-user') {
+        showToast('⚠ Google sign-in failed: ' + error.message);
+      }
+    }
+  };
+
+  window.signInWithEmail = async function() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email || !email.includes('@')) {
+      showToast('⚠ Please enter a valid email address.');
+      return;
+    }
+    const actionCodeSettings = {
+      url: window.location.origin + '/dashboard.html',
+      handleCodeInApp: true,
+    };
+    try {
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem('emailForSignIn', email);
+      showToast(`✉ Magic link sent to <strong>${email}</strong>! Check your inbox.`);
+      document.getElementById('emailInput').value = '';
+    } catch (error) {
+      showToast('⚠ Failed to send link: ' + error.message);
+    }
+  };
+
+  window.handleSignOut = async function() {
+    try {
+      await signOut(auth);
+      showToast('👋 Signed out successfully.');
+    } catch (error) {
+      showToast('⚠ Sign out failed: ' + error.message);
+    }
+  };
+
+  window.toggleEmailForm = function(btn) {
+    const form = document.getElementById('emailForm');
+    form.classList.toggle('show');
+    btn.textContent = form.classList.contains('show')
+      ? '✕ Hide Email Form'
+      : '✉ Or continue with Email';
+  };
+</script>
+</body>
+</html>
