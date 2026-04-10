@@ -633,6 +633,51 @@
     }
   });
 
+  import { getAuth, signInWithPopup, FacebookAuthProvider, TwitterAuthProvider } from "firebase/auth";
+
+// Make sure you already have this (from your Google setup)
+const auth = getAuth();
+
+// ==================== FACEBOOK LOGIN ====================
+const facebookLoginBtn = document.getElementById('facebook-login-btn');
+
+facebookLoginBtn.addEventListener('click', () => {
+  const provider = new FacebookAuthProvider();
+
+  // Optional: Request extra permissions (e.g., email is usually included by default)
+  // provider.addScope('email'); // or 'user_birthday', etc.
+
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // User signed in successfully
+      const user = result.user;
+      console.log('Facebook login successful!', user);
+      // Redirect or update UI as needed
+    })
+    .catch((error) => {
+      console.error('Facebook login error:', error);
+      // Common error: auth/account-exists-with-different-credential
+      // (handle by linking accounts if you want — see note below)
+    });
+});
+
+// ==================== X (TWITTER) LOGIN ====================
+const xLoginBtn = document.getElementById('x-login-btn');
+
+xLoginBtn.addEventListener('click', () => {
+  const provider = new TwitterAuthProvider();
+
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const user = result.user;
+      console.log('X/Twitter login successful!', user);
+      // Redirect or update UI
+    })
+    .catch((error) => {
+      console.error('X/Twitter login error:', error);
+    });
+});
+
   function showLoggedInState(user) {
     document.getElementById('signInView').style.display = 'none';
     document.getElementById('loggedInView').style.display = 'block';
