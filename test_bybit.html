@@ -169,8 +169,8 @@
       tbody.innerHTML = '<tr><td colspan="4" style="padding:2rem;text-align:center;">Loading verification data...</td></tr>';
 
       try {
-        const membersUrl = `https://docs.google.com/spreadsheets/d/${1FQHHe-F3I4wx_SISxiOKuxo4UQWrBYiFDVqmuZ9zxx8}/gviz/tq?tqx=out:csv&sheet=Members`;
-        const bybitUrl = `https://docs.google.com/spreadsheets/d/${1FQHHe-F3I4wx_SISxiOKuxo4UQWrBYiFDVqmuZ9zxx8}/gviz/tq?tqx=out:csv&sheet=Bybit_Referrals`;
+        const membersUrl = `https://docs.google.com/spreadsheets/d/${VERIFICATION_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Members`;
+        const bybitUrl = `https://docs.google.com/spreadsheets/d/${VERIFICATION_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Bybit_Referrals`;
 
         const [membersRes, bybitRes] = await Promise.all([fetch(membersUrl), fetch(bybitUrl)]);
         const membersCsv = await membersRes.text();
