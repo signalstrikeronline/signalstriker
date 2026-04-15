@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>TradeFlow Framework | Secure Access</title>
+  <!-- Tailwind CSS v3 + basic interceptor -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase 9+ SDKs (modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // =============== FIREBASE CONFIGURATION ===============
+    // 🔴 REPLACE WITH YOUR OWN FIREBASE PROJECT CREDENTIALS 🔴
+    // Enable Authentication (Google sign-in) and Firestore Database
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",            // Replace with your actual API key
+      authDomain: "YOUR_AUTH_DOMAIN",    // e.g., "yourapp.firebaseapp.com"
+      projectId: "YOUR_PROJECT_ID",      // your project id
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    
+    // Initialize Firebase (with fallback to prevent crash if not configured)
+    let app, auth, db;
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+    } catch (e) {
+      console.warn("Firebase init error, check config:", e);
+    }
+
+    // ---------- DOM Elements ----------
+    const loginContainer = document.getElementById("loginContainer");
+    const appContent = document.getElementById("appContent");
+    const frameworkArea = document.getElementById("frameworkArea");
+    const accessModal = document.getElementById("accessModal");
+    const userEmailSpan = document.getElementById("userEmail");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const googleLoginBtn = document.getElementById("googleLoginBtn");
+    const modalMessage = document.getElementById("modalMessage");
+    
+    // Spreadsheet data stores (simulate Excel/CSV)
+    let bybitUidList = [];       // array of strings (UIDs)
+    let membershipEmailList = []; // array of emails (lowercase)
+    
+    // UI references for spreadsheet upload & verification
+    const bybitUidInput = document.getElementById("bybitUidInput");
+    const verifyBybitBtn = document.getElementById("verifyBybitBtn");
+    const bybitPartnerLink = document.getElementById("bybitPartnerLink");
+    const bybitUploadInput = document.getElementById("bybitUploadInput");
+    const bybitUploadStatus = document.getElementById("bybitUploadStatus");
+    const bybitCountSpan = document.getElementById("bybitCount");
+    
+    const membershipVerifyBtn = document.getElementById("membershipVerifyBtn");
+    const gumroadPurchaseBtn = document.getElementById("gumroadPurchaseBtn");
+    const membershipUploadInput = document.getElementById("membershipUploadInput");
+    const membershipUploadStatus = document.getElementById("membershipUploadStatus");
+    const membershipCountSpan = document.getElementById("membershipCount");
+    
+    // Default demo spreadsheets (embedded examples to showcase functionality)
+    const DEFAULT_BYBIT_UIDS = ["12345678", "87654321", "11223344", "55667788", "BYBIT-DEMO-001"];
+    const DEFAULT_MEMBERSHIP_EMAILS = ["premium@example.com", "trader@test.com", "founder@tradeflow.io"];
+    
+    // Helper: parse CSV text -> array of trimmed strings (non-empty, first row optional header)
+    function parseCsvToArray(csvText, hasHeader = false) {
+      const lines = csvText.split(/\r?\n/);
+      let startIdx = hasHeader ? 1 : 0;
+      const result = [];
+      for (let i = startIdx; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (line === "") continue;
+        // handle simple CSV without quotes: just take first column or whole line if single column
+        let value = line;
+        if (line.includes(',')) {
+          const parts = line.split(',');
+          value = parts[0].trim();
+        }
+        if (value !== "") result.push(value);
+      }
+      return result;
+    }
+    
+    // Load default demo data (acts as "spreadsheet" seed)
+    function loadDefaultSpreadsheets() {
+      bybitUidList = [...DEFAULT_BYBIT_UIDS];
+      membershipEmailList = [...DEFAULT_MEMBERSHIP_EMAILS];
+      updateCounters();
+      modalMessage.innerHTML = "✅ Demo spreadsheets loaded (Bybit UIDs & membership emails). Upload your own CSV/Excel files to replace.";
+    }
+    
+    // Update UI counters
+    function updateCounters() {
+      bybitCountSpan.innerText = bybitUidList.length;
+      membershipCountSpan.innerText = membershipEmailList.length;
+    }
+    
+    // Upload handler: parse uploaded CSV file (Excel spreadsheet export)
+    function setupUploadHandler(uploadInput, targetArray, updateFunc, type) {
+      uploadInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const content = evt.target.result;
+          let parsed = parseCsvToArray(content, true); // assume first row might be header
+          if (parsed.length === 0) parsed = parseCsvToArray(content, false);
+          if (type === "bybit") {
+            bybitUidList = parsed;
+            updateCounters();
+            bybitUploadStatus.innerText = `✅ Loaded ${bybitUidList.length} UIDs from spreadsheet.`;
+            modalMessage.innerHTML = `📊 Bybit UID spreadsheet updated: ${bybitUidList.length} entries.`;
+          } else if (type === "membership") {
+            membershipEmailList = parsed.map(e => e.toLowerCase());
+            updateCounters();
+            membershipUploadStatus.innerText = `✅ Loaded ${membershipEmailList.length} emails from spreadsheet.`;
+            modalMessage.innerHTML = `📧 Membership spreadsheet updated: ${membershipEmailList.length} emails.`;
+          }
+          // reset file input so reupload same file triggers again
+          uploadInput.value = "";
+        };
+        reader.onerror = () => {
+          modalMessage.innerHTML = "❌ Failed to read spreadsheet file.";
+        };
+        reader.readAsText(file, "UTF-8");
+      });
+    }
+    
+    // Grant access to the framework (Firestore record + UI)
+    async function grantAccess(userId, email, method) {
+      if (!db || !auth) return false;
+      try {
+        const userDocRef = doc(db, "users", userId);
+        await setDoc(userDocRef, {
+          hasAccess: true,
+          accessMethod: method,
+          email: email,
+          grantedAt: new Date().toISOString()
+        }, { merge: true });
+        return true;
+      } catch (err) {
+        console.error("Firestore error:", err);
+        // fallback: local storage for demo if firestore rules not set
+        localStorage.setItem(`access_${userId}`, "true");
+        return true;
+      }
+    }
+    
+    // Check if user already has access from Firestore
+    async function checkExistingAccess(userId) {
+      if (!db || !auth) {
+        // fallback to localStorage if firestore not configured
+        const localFlag = localStorage.getItem(`access_${userId}`);
+        return localFlag === "true";
+      }
+      try {
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().hasAccess === true) {
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.warn("Firestore read error, fallback to local storage", e);
+        return localStorage.getItem(`access_${userId}`) === "true";
+      }
+    }
+    
+    // Show framework & hide modal, update UI
+    function showFramework() {
+      accessModal.classList.add("hidden");
+      frameworkArea.classList.remove("hidden");
+      appContent.classList.remove("hidden");
+    }
+    
+    // Display modal and reset messages
+    function showAccessModal() {
+      accessModal.classList.remove("hidden");
+      modalMessage.innerHTML = "🔐 Verify your access: Bybit UID (free) or Membership (monthly). Upload spreadsheets to validate.";
+      frameworkArea.classList.add("hidden");
+    }
+    
+    // Verify Bybit UID (Free access via spreadsheet)
+    async function verifyBybitAccess(user, uidFromInput) {
+      const uid = uidFromInput.trim();
+      if (!uid) {
+        modalMessage.innerHTML = "⚠️ Please enter your Bybit UID.";
+        return false;
+      }
+      // Check against loaded spreadsheet data (bybitUidList)
+      const found = bybitUidList.some(existingUid => existingUid.toString() === uid);
+      if (found) {
+        const success = await grantAccess(user.uid, user.email, "Bybit Free (UID verified)");
+        if (success) {
+          modalMessage.innerHTML = "🎉 Bybit UID verified! Access granted to Framework.";
+          showFramework();
+          return true;
+        } else {
+          modalMessage.innerHTML = "❌ Could not save access. Please try again.";
+        }
+      } else {
+        modalMessage.innerHTML = `❌ UID ${uid} not found in Bybit spreadsheet. Make sure you signed up via partner link and your UID is added by admin, or upload correct CSV.`;
+      }
+      return false;
+    }
+    
+    // Verify membership via email (spreadsheet)
+    async function verifyMembership(user) {
+      const userEmail = user.email.toLowerCase();
+      const found = membershipEmailList.some(email => email.toLowerCase() === userEmail);
+      if (found) {
+        const success = await grantAccess(user.uid, user.email, "Membership ($29.99/month - Gumroad)");
+        if (success) {
+          modalMessage.innerHTML = "💎 Membership verified! Welcome to the framework.";
+          showFramework();
+          return true;
+        } else {
+          modalMessage.innerHTML = "❌ Storage error. Contact support.";
+        }
+      } else {
+        modalMessage.innerHTML = `❌ Email ${user.email} not found in membership spreadsheet. After purchasing on Gumroad, admin will add your email to the Excel sheet. Then click "Verify Membership" again.`;
+      }
+      return false;
+    }
+    
+    // Firebase Google Sign-In
+    async function signInWithGoogle() {
+      if (!auth) {
+        alert("Firebase not configured. Please set valid firebaseConfig.");
+        return;
+      }
+      const provider = new GoogleAuthProvider();
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        console.log("Signed in:", user.email);
+        // After login, check access status
+        await handleUserLogin(user);
+      } catch (error) {
+        console.error("Google sign-in error:", error);
+        alert("Login failed: " + error.message);
+      }
+    }
+    
+    // Handle post-login logic: check access, show modal or framework
+    async function handleUserLogin(user) {
+      if (!user) return;
+      userEmailSpan.innerText = user.email;
+      loginContainer.classList.add("hidden");
+      const hasAccess = await checkExistingAccess(user.uid);
+      if (hasAccess) {
+        showFramework();
+      } else {
+        showAccessModal();
+      }
+    }
+    
+    // Logout function
+    async function handleLogout() {
+      if (auth) await signOut(auth);
+      loginContainer.classList.remove("hidden");
+      appContent.classList.add("hidden");
+      frameworkArea.classList.add("hidden");
+      accessModal.classList.add("hidden");
+      // clear input fields
+      if (bybitUidInput) bybitUidInput.value = "";
+      modalMessage.innerHTML = "";
+    }
+    
+    // Monitor auth state
+    function initAuthListener() {
+      if (!auth) return;
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          await handleUserLogin(user);
+        } else {
+          loginContainer.classList.remove("hidden");
+          appContent.classList.add("hidden");
+          frameworkArea.classList.add("hidden");
+          accessModal.classList.add("hidden");
+        }
+      });
+    }
+    
+    // Setup event listeners for verification, partner link, Gumroad
+    function bindUIEvents() {
+      googleLoginBtn.addEventListener("click", signInWithGoogle);
+      logoutBtn.addEventListener("click", handleLogout);
+      
+      // Bybit verification
+      verifyBybitBtn.addEventListener("click", async () => {
+        const user = auth?.currentUser;
+        if (!user) { alert("Please login first."); return; }
+        const uidValue = bybitUidInput.value;
+        await verifyBybitAccess(user, uidValue);
+      });
+      
+      // Partner link (opens new tab)
+      bybitPartnerLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.open("https://partner.bybit.com/b/SIGNALSTRIKE", "_blank");
+        modalMessage.innerHTML = "🔗 Opened Bybit partner link. After signing up, please enter your new Bybit UID and click Verify.";
+      });
+      
+      // Membership verification
+      membershipVerifyBtn.addEventListener("click", async () => {
+        const user = auth?.currentUser;
+        if (!user) { alert("Please login first."); return; }
+        await verifyMembership(user);
+      });
+      
+      // Gumroad purchase link (recurring $29.99)
+      gumroadPurchaseBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        // Replace with your actual Gumroad product link for recurring membership
+        // For demonstration, we open a generic checkout (placeholder). Admin will later add email to spreadsheet.
+        modalMessage.innerHTML = "🛒 Redirecting to Gumroad checkout (recurring $29.99/month). After successful payment, admin adds your email to spreadsheet → click 'Verify Membership'.";
+        window.open("https://signalstrike.gumroad.com/l/tradeflow-membership", "_blank");
+        // If product not live, alert alternative:
+        setTimeout(() => {
+          modalMessage.innerHTML = "💡 After Gumroad payment, make sure the email used matches your login email. Then press 'Verify Membership' to get instant access.";
+        }, 2000);
+      });
+      
+      // Spreadsheet upload handlers
+      setupUploadHandler(bybitUploadInput, bybitUidList, updateCounters, "bybit");
+      setupUploadHandler(membershipUploadInput, membershipEmailList, updateCounters, "membership");
+    }
+    
+    // Initialize demo data & load default spreadsheets, UI counters
+    function initSpreadsheetData() {
+      loadDefaultSpreadsheets();
+      // Show upload status hints
+      bybitUploadStatus.innerHTML = "📂 Upload CSV (UID column)";
+      membershipUploadStatus.innerHTML = "📂 Upload CSV (email column)";
+    }
+    
+    // Add extra manual refresh to force modal if needed
+    window.refreshAccess = async () => {
+      const user = auth?.currentUser;
+      if (user) {
+        const hasAccess = await checkExistingAccess(user.uid);
+        if (hasAccess) showFramework();
+        else showAccessModal();
+      }
+    };
+    
+    // Startup
+    if (auth && db) {
+      initAuthListener();
+      bindUIEvents();
+      initSpreadsheetData();
+    } else {
+      // Show firebase configuration error message
+      document.body.innerHTML = `<div class="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+        <div class="bg-red-900/30 border border-red-500 rounded-xl p-6 max-w-md text-white text-center">
+          <h2 class="text-2xl font-bold mb-2">⚠️ Firebase not configured</h2>
+          <p class="mb-4">Please replace the <code class="bg-black/50 px-1 rounded">firebaseConfig</code> object with your own Firebase project credentials.<br>
+          Enable Authentication (Google provider) & Firestore.</p>
+          <p class="text-sm text-gray-300">After config, refresh the page.</p>
+        </div>
+      </div>`;
+    }
+  </script>
+  <style>
+    /* smooth modal transitions */
+    .modal-backdrop {
+      transition: opacity 0.2s ease;
+    }
+    #accessModal:not(.hidden) + .modal-backdrop {
+      display: block;
+    }
+    /* custom scroll for framework */
+    .framework-card {
+      transition: all 0.2s;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-gray-800 min-h-screen font-sans antialiased">
+
+  <!-- Login Section (visible before auth) -->
+  <div id="loginContainer" class="flex items-center justify-center min-h-screen px-4">
+    <div class="max-w-md w-full bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20 text-center">
+      <div class="mb-6">
+        <div class="mx-auto w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-white">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <h1 class="text-3xl font-extrabold text-white mb-2">TradeFlow Framework</h1>
+      <p class="text-gray-300 mb-6">Premium trading signals & strategy vault</p>
+      <button id="googleLoginBtn" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-3 px-4 rounded-xl transition shadow-md">
+        <svg class="w-5 h-5" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+        </svg>
+        Sign in with Google
+      </button>
+      <p class="text-xs text-gray-400 mt-6">Secure access • Bybit Free or Monthly Membership</p>
+    </div>
+  </div>
+
+  <!-- Main App Container (hidden until auth) -->
+  <div id="appContent" class="hidden">
+    <!-- Header with user & logout -->
+    <header class="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">TradeFlow</span>
+          <span class="text-xs bg-slate-700 px-2 py-0.5 rounded-full text-slate-300">v2.0</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-300 hidden sm:inline" id="userEmail">user@example.com</span>
+          <button id="logoutBtn" class="bg-red-600/80 hover:bg-red-700 px-4 py-1.5 rounded-lg text-sm font-medium transition">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Protected Framework Content (hidden until access granted) -->
+    <div id="frameworkArea" class="hidden max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div class="bg-slate-800/40 rounded-2xl border border-slate-700 p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-bold text-white">📈 Elite Trading Framework</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 text-gray-200">
+          <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700">
+            <h3 class="text-xl font-semibold text-cyan-300 mb-2">🔥 Premium Signals</h3>
+            <p>Daily high-probability trade setups, risk management models, and live market commentary. Backtested strategies with 70%+ win rate.</p>
+          </div>
+          <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700">
+            <h3 class="text-xl font-semibold text-cyan-300 mb-2">📊 Institutional Toolkit</h3>
+            <p>Access to proprietary indicators, order flow analysis, volatility matrices, and multi-timeframe confluence scanner.</p>
+          </div>
+          <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700">
+            <h3 class="text-xl font-semibold text-cyan-300 mb-2">🤝 Community & Live Sessions</h3>
+            <p>Weekly Zoom webinars, trade reviews, and direct mentorship from veteran traders.</p>
+          </div>
+          <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-700">
+            <h3 class="text-xl font-semibold text-cyan-300 mb-2">📅 Strategic Updates</h3>
+            <p>Real-time macro insights, crypto/fx correlations, and adaptive position sizing framework.</p>
+          </div>
+        </div>
+        <div class="mt-8 p-4 bg-cyan-900/30 rounded-xl border border-cyan-700/50 text-center">
+          <p class="text-cyan-200">✔ Access granted — you are now viewing the complete framework. Updated daily.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCESS MODAL POPUP (firewall) -->
+  <div id="accessModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 backdrop-blur-md bg-black/70 transition-all" style="display: flex; align-items: center; justify-content: center;">
+    <div class="bg-slate-800 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-slate-600 animate-fade-in">
+      <div class="sticky top-0 bg-slate-800/95 backdrop-blur-sm p-5 border-b border-slate-700">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-2">🔓 Unlock Framework Access</h2>
+        <p id="modalMessage" class="text-sm text-gray-300 mt-1">Choose a verification method</p>
+      </div>
+      <div class="p-5 space-y-8">
+        <!-- Option 1: Bybit Free Access -->
+        <div class="bg-slate-900/50 rounded-xl p-5 border border-slate-700">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="bg-blue-600 text-xs font-bold px-2 py-1 rounded">FREE</span>
+            <h3 class="text-xl font-semibold text-white">Bybit Free Access</h3>
+          </div>
+          <p class="text-gray-300 text-sm mb-4">Verify your Bybit UID via spreadsheet OR sign up using partner link below.</p>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-1">Bybit UID</label>
+              <input type="text" id="bybitUidInput" placeholder="Enter UID (e.g., 12345678)" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:ring-cyan-500">
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button id="verifyBybitBtn" class="bg-cyan-600 hover:bg-cyan-700 px-5 py-2 rounded-lg font-medium transition">✓ Verify UID</button>
+              <a href="#" id="bybitPartnerLink" class="bg-yellow-600/80 hover:bg-yellow-700 px-5 py-2 rounded-lg font-medium text-center inline-block transition">🔗 Sign up via Partner Link</a>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-700">
+              <p class="text-xs text-gray-400 mb-1">📂 Upload Bybit UIDs (Excel/CSV):</p>
+              <div class="flex items-center gap-2">
+                <input type="file" id="bybitUploadInput" accept=".csv,.xlsx,.xls,.txt" class="text-sm text-gray-300 file:bg-slate-600 file:border-0 file:rounded-md file:px-3 file:py-1">
+                <span id="bybitCount" class="text-xs bg-slate-700 px-2 py-0.5 rounded-full">0</span>
+              </div>
+              <p id="bybitUploadStatus" class="text-xs text-cyan-300 mt-1"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Membership $29.99 -->
+        <div class="bg-slate-900/50 rounded-xl p-5 border border-slate-700">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="bg-purple-600 text-xs font-bold px-2 py-1 rounded">PREMIUM</span>
+            <h3 class="text-xl font-semibold text-white">Membership $29.99 / month</h3>
+          </div>
+          <p class="text-gray-300 text-sm mb-4">Recurring payment via Gumroad. After purchase, admin adds your email to spreadsheet → verify.</p>
+          <div class="flex flex-wrap gap-3 mb-4">
+            <button id="gumroadPurchaseBtn" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-medium transition shadow">💳 Purchase on Gumroad</button>
+            <button id="membershipVerifyBtn" class="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg font-medium transition">✅ Verify Membership</button>
+          </div>
+          <div class="pt-2 border-t border-slate-700">
+            <p class="text-xs text-gray-400 mb-1">📂 Upload Membership Emails CSV (admin use):</p>
+            <div class="flex items-center gap-2">
+              <input type="file" id="membershipUploadInput" accept=".csv,.xlsx,.xls" class="text-sm text-gray-300 file:bg-slate-600 file:border-0 file:rounded-md file:px-3 file:py-1">
+              <span id="membershipCount" class="text-xs bg-slate-700 px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <p id="membershipUploadStatus" class="text-xs text-cyan-300 mt-1"></p>
+          </div>
+        </div>
+        <div class="text-center text-gray-400 text-xs border-t border-slate-700 pt-4">
+          ⚡ Spreadsheets act as verification source. Upload CSV files (UID or email columns). Default demo data included.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop hidden fixed inset-0 bg-black/40 z-40"></div>
+
+  <script>
+    // ensure modal flex behavior
+    const modal = document.getElementById("accessModal");
+    if(modal) modal.classList.add("flex");
+  </script>
+</body>
+</html>
