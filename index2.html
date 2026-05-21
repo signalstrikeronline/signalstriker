@@ -63,7 +63,6 @@ nav{
 .nav-links a:hover{color:var(--text);background:var(--surface2);}
 .btn-nav-ghost{padding:8px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border2);transition:all 0.2s;display:flex;align-items:center;gap:5px;}
 .btn-nav-ghost:hover{background:var(--surface2);}
-/* Bybit nav button */
 .btn-nav-bybit{
   padding:8px 14px;border-radius:8px;font-size:0.78rem;font-weight:800;
   color:#000;background:var(--bybit);border:none;transition:all 0.2s;
@@ -71,7 +70,6 @@ nav{
 }
 .btn-nav-bybit:hover{background:#ffb800;transform:translateY(-1px);}
 .btn-nav-bybit .free-tag{background:#000;color:var(--bybit);font-size:0.58rem;font-weight:900;padding:2px 5px;border-radius:4px;letter-spacing:0.06em;text-transform:uppercase;}
-/* Paid nav button */
 .btn-nav-paid{padding:8px 14px;border-radius:8px;font-size:0.78rem;font-weight:700;color:#fff;background:var(--pink);border:none;transition:all 0.2s;white-space:nowrap;}
 .btn-nav-paid:hover{background:#ff6b85;transform:translateY(-1px);}
 
@@ -141,7 +139,7 @@ nav{
   display:flex;align-items:center;justify-content:center;gap:7px;
   background:#000;color:var(--bybit);
   border-radius:10px;padding:12px 16px;
-  font-size:0.85rem;font-weight:800;letter-spacing:-0.01em;
+  font-size:0.85rem;font-weight:800;
   border:none;cursor:pointer;transition:all 0.2s;
   text-decoration:none;
 }
@@ -577,6 +575,93 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
   nav{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));}
   footer{padding-bottom:max(24px,env(safe-area-inset-bottom));}
 }
+
+/* ===== UNIVERSAL MODAL POPUP ===== */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  visibility: hidden; opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s ease;
+}
+.modal-overlay.active { visibility: visible; opacity: 1; }
+.modal-container {
+  background: var(--bg); max-width: 720px; width: calc(100% - 32px);
+  border-radius: 32px; border: 2px solid var(--black);
+  box-shadow: 16px 16px 0 var(--black); position: relative;
+  padding: 28px 28px 36px; transform: scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+.modal-overlay.active .modal-container { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 20px; right: 24px; width: 34px; height: 34px;
+  background: var(--surface); border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 1.2rem;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--surface2); color: var(--pink); transform: rotate(90deg); }
+.modal-badge {
+  display: inline-block; background: var(--yellow); border: 1px solid var(--black);
+  border-radius: 30px; padding: 5px 14px; font-size: 0.7rem; font-weight: 800;
+  letter-spacing: 0.1em; color: var(--black); margin-bottom: 18px;
+}
+.modal-title {
+  font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800;
+  letter-spacing: -0.02em; margin-bottom: 12px;
+}
+.modal-title .accent { color: var(--pink); }
+.modal-sub {
+  font-size: 0.9rem; color: var(--text2); line-height: 1.5;
+  margin-bottom: 24px; border-left: 3px solid var(--bybit); padding-left: 14px;
+}
+.modal-dual { display: flex; gap: 20px; flex-wrap: wrap; margin: 16px 0 12px; }
+.modal-option {
+  flex: 1; background: var(--surface); border-radius: 24px; padding: 20px 18px;
+  transition: all 0.2s; border: 1px solid var(--border2);
+}
+.modal-option.highlight {
+  background: linear-gradient(145deg, #fff3e0, var(--bybit)08);
+  border: 2px solid var(--bybit); position: relative;
+  box-shadow: 0 8px 20px rgba(247,166,0,0.15);
+}
+.rec-flag {
+  position: absolute; top: -12px; left: 20px; background: var(--black);
+  color: var(--bybit); font-size: 0.6rem; font-weight: 800;
+  padding: 3px 12px; border-radius: 30px; letter-spacing: 0.08em;
+}
+.modal-option h3 {
+  font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800;
+  margin: 8px 0 4px; color: var(--text);
+}
+.modal-price {
+  font-size: 1rem; font-weight: 700; background: var(--green-dim);
+  display: inline-block; padding: 2px 12px; border-radius: 40px;
+  margin: 8px 0 10px; color: var(--green);
+}
+.modal-option .highlight-price { background: var(--bybit); color: #000; }
+.modal-desc { font-size: 0.78rem; color: var(--text2); line-height: 1.55; margin: 12px 0; }
+.modal-cta {
+  display: block; width: 100%; text-align: center; padding: 12px;
+  border-radius: 14px; font-weight: 800; font-size: 0.85rem;
+  margin-top: 12px; transition: all 0.2s; cursor: pointer;
+}
+.cta-bybit-modal {
+  background: var(--bybit); color: #000; border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
+}
+.cta-bybit-modal:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--black); background: #ffb800; }
+.cta-paid-modal { background: var(--pink); color: white; border: none; }
+.cta-paid-modal:hover { background: #ff6b85; transform: translateY(-2px); }
+.modal-note {
+  font-size: 0.7rem; text-align: center; margin-top: 28px;
+  color: var(--text3); border-top: 1px solid var(--border2); padding-top: 18px;
+}
+@media (max-width: 600px) {
+  .modal-dual { flex-direction: column; }
+  .modal-title { font-size: 1.6rem; }
+  .modal-container { padding: 20px 16px; }
+}
 </style>
 </head>
 <body>
@@ -593,8 +678,8 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
   </div>
   <div class="nav-right">
     <a href="login.html" class="btn-nav-ghost">🔐 Members</a>
-    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="btn-nav-bybit">Get FREE via Bybit <span class="free-tag">FREE</span></a>
-    <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-nav-paid">$29.99/mo</a>
+    <a href="#" class="btn-nav-bybit modal-trigger">Get FREE via Bybit <span class="free-tag">FREE</span></a>
+    <a href="#" class="btn-nav-paid modal-trigger">$29.99/mo</a>
     <div class="ham" id="hamBtn" onclick="toggleMobileMenu()"><span></span><span></span><span></span></div>
   </div>
 </nav>
@@ -607,8 +692,8 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
   <a href="#testimonials" onclick="closeMobileMenu()">Reviews</a>
   <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
   <div class="mobile-menu-ctas">
-    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="mob-bybit">🆓 Free via Bybit</a>
-    <a href="https://signalstrike.online/pay.html" target="_blank" class="mob-paid">$29.99/mo</a>
+    <a href="#" class="mob-bybit modal-trigger">🆓 Free via Bybit</a>
+    <a href="#" class="mob-paid modal-trigger">$29.99/mo</a>
   </div>
 </div>
 
@@ -647,25 +732,21 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
     <h1 class="hero-h1 outfit">The crypto newsletter that <span class="accent">trades smarter</span> than you</h1>
     <p class="hero-sub">Real-time AI signal scanning. Institutional-grade analysis. On-chain whale alerts. Delivered every morning before the market opens — so you never miss a move again.</p>
 
-    <!-- DUAL CTA BLOCK -->
+    <!-- DUAL CTA BLOCK (triggers modal) -->
     <div class="dual-cta-wrap reveal">
-      <!-- Bybit — Recommended -->
-      <div class="cta-card-bybit">
+      <div class="cta-card-bybit modal-trigger">
         <div class="rec-badge">⭐ Recommended</div>
         <div class="cta-label">Best Value</div>
         <div class="cta-headline">Get It Free</div>
         <div class="cta-sub">Sign up to Bybit via our link — SignalStrike Pro is on us. No monthly fee, ever.</div>
-        <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="btn-bybit-full">🆓 Get FREE via Bybit →</a>
+        <div class="btn-bybit-full">🆓 Get FREE via Bybit →</div>
       </div>
-
       <div class="cta-divider">OR</div>
-
-      <!-- Paid -->
-      <div class="cta-card-paid">
+      <div class="cta-card-paid modal-trigger">
         <div class="cta-label">Direct Subscription</div>
         <div class="cta-headline">$29.99<span style="font-size:1rem;font-weight:500;color:var(--text2)">/mo</span></div>
         <div class="cta-sub">No exchange required. Subscribe directly and cancel anytime.</div>
-        <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-paid-full">Subscribe Now →</a>
+        <div class="btn-paid-full">Subscribe Now →</div>
       </div>
     </div>
 
@@ -696,8 +777,8 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
       </div>
       <div class="sp-footer">
         <div class="sp-footer-text">🔒 Full analysis, entry/exit zones &amp; confidence scores — unlock below</div>
-        <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="sp-unlock-bybit">🆓 Free via Bybit ⭐</a>
-        <a href="https://signalstrike.online/pay.html" target="_blank" class="sp-unlock-paid">$29.99/mo</a>
+        <a href="#" class="sp-unlock-bybit modal-trigger">🆓 Free via Bybit ⭐</a>
+        <a href="#" class="sp-unlock-paid modal-trigger">$29.99/mo</a>
       </div>
     </div>
   </div>
@@ -758,11 +839,11 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
           <div class="dash-signal-row"><div class="dash-coin">⬡ Render</div><div class="signal-chip chip-buy">AI PLAY</div><div class="dash-pct-blur"></div></div>
           <div class="dash-unlock-footer">
             <div class="dash-unlock-row">
-              <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="dash-unlock-bybit">
+              <a href="#" class="dash-unlock-bybit modal-trigger">
                 <span class="dash-rec-tag">⭐ Recommended</span>
                 🆓 Unlock FREE via Bybit
               </a>
-              <a href="https://signalstrike.online/pay.html" target="_blank" class="dash-unlock-paid">$29.99/mo</a>
+              <a href="#" class="dash-unlock-paid modal-trigger">$29.99/mo</a>
             </div>
             <div class="dash-unlock-note">Sign up to Bybit via our link — get SignalStrike Pro at no cost</div>
           </div>
@@ -833,8 +914,8 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
           <li><span class="bul">→</span><span><strong>Regulatory Radar</strong> — Global policy moves simplified and made actionable.</span></li>
         </ul>
         <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
-          <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="btn-bybit-full" style="flex:1;min-width:160px;">🆓 Get FREE via Bybit</a>
-          <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-paid-full" style="flex:1;min-width:120px;">$29.99/mo →</a>
+          <a href="#" class="btn-bybit-full modal-trigger" style="flex:1;min-width:160px;">🆓 Get FREE via Bybit</a>
+          <a href="#" class="btn-paid-full modal-trigger" style="flex:1;min-width:120px;">$29.99/mo →</a>
         </div>
       </div>
     </div>
@@ -900,8 +981,6 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
     <h2 class="section-title outfit">Two Ways to <span class="accent">Get Access</span></h2>
     <p class="section-sub">Choose what works for you — get it free via Bybit, or subscribe directly. Same newsletter, same signals, same alpha.</p>
     <div class="pricing-grid">
-
-      <!-- Bybit — Hero card -->
       <div class="pricing-card-bybit reveal">
         <div class="pricing-recommended-badge">⭐ Recommended — Best Value</div>
         <div class="pricing-name">Free via Bybit</div>
@@ -921,11 +1000,9 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
           <li><span class="check-icon">✓</span>Full Archive (280+ issues)</li>
           <li><span class="check-icon">✓</span>AI Signal Dashboard</li>
         </ul>
-        <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="btn-full-bybit">🆓 Get FREE via Bybit →</a>
+        <a href="#" class="btn-full-bybit modal-trigger">🆓 Get FREE via Bybit →</a>
         <div class="guarantee-note" style="color:#5a3e00;">Free Bybit account · No payment info required</div>
       </div>
-
-      <!-- Paid -->
       <div class="pricing-card-paid reveal">
         <div class="pricing-name">Direct Subscription</div>
         <div class="pricing-desc">Prefer not to use an exchange? Subscribe directly. Everything included, cancel anytime.</div>
@@ -944,7 +1021,7 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
           <li><span class="check-icon">✓</span>Full Archive (280+ issues)</li>
           <li><span class="check-icon">✓</span>AI Signal Dashboard</li>
         </ul>
-        <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-full-paid">Subscribe Now →</a>
+        <a href="#" class="btn-full-paid modal-trigger">Subscribe Now →</a>
         <div class="guarantee-note">14-Day Money Back Guarantee · Cancel Anytime</div>
       </div>
     </div>
@@ -973,8 +1050,8 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
   <h2 class="outfit">Stop Reacting.<br><em style="font-style:italic;color:var(--pink);">Start Striking.</em></h2>
   <p>14,800+ traders already read SignalStrike every morning. The next big move is being mapped right now.</p>
   <div class="cta-dual">
-    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="btn-cta-bybit">🆓 Get FREE via Bybit <span class="free-pill">RECOMMENDED</span></a>
-    <a href="https://signalstrike.online/pay.html" target="_blank" class="btn-cta-paid">Subscribe for $29.99/mo →</a>
+    <a href="#" class="btn-cta-bybit modal-trigger">🆓 Get FREE via Bybit <span class="free-pill">RECOMMENDED</span></a>
+    <a href="#" class="btn-cta-paid modal-trigger">Subscribe for $29.99/mo →</a>
   </div>
   <div class="cta-sub">Free via Bybit · Or $29.99/mo · Cancel Anytime · AI-Powered · 14,800+ Traders</div>
 </div>
@@ -987,12 +1064,38 @@ footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var
       <p class="footer-desc">The AI-powered crypto intelligence newsletter trusted by 14,800+ traders. Daily signals. Whale alerts. DeFi alpha. Free via Bybit or $29.99/mo direct.</p>
       <div class="footer-social"><div class="social-btn">𝕏</div><div class="social-btn">in</div><div class="social-btn">📱</div><div class="social-btn">💬</div></div>
     </div>
-    <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#sample">Sample Issue</a><a href="#ai">AI Technology</a><a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank">Get Free via Bybit</a></div>
+    <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#sample">Sample Issue</a><a href="#ai">AI Technology</a><a href="#" class="modal-trigger">Get Free via Bybit</a></div>
     <div class="footer-col"><h4>Company</h4><a href="#">About Us</a><a href="#">Signal Track Record</a><a href="#">Press Kit</a><a href="#">Blog</a><a href="#">Contact</a></div>
     <div class="footer-col"><h4>Legal</h4><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Disclaimer</a><a href="#">Refund Policy</a></div>
   </div>
   <div class="footer-bottom"><span>© 2026 SignalStrike · signalstrike.online · All rights reserved</span><span class="disclaimer">NOT FINANCIAL ADVICE · DYOR</span></div>
 </footer>
+
+<!-- UNIVERSAL MODAL -->
+<div id="universalModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-close" id="closeModalBtn">✕</div>
+    <div class="modal-badge">⚡ SAVE $29.99 / MONTH</div>
+    <div class="modal-title outfit">Unlock <span class="accent">SignalStrike Pro</span> — choose your path</div>
+    <div class="modal-sub">Join 14,800+ traders who get AI signals, whale alerts & deep dives daily.</div>
+    <div class="modal-dual">
+      <div class="modal-option highlight">
+        <div class="rec-flag">⭐ RECOMMENDED</div>
+        <h3 class="outfit">Free via Bybit</h3>
+        <div class="modal-price highlight-price">$0 / month</div>
+        <div class="modal-desc">Sign up for a free Bybit account through our referral link — you get full SignalStrike Pro access at no cost. No deposit required, no trading minimum.</div>
+        <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="modal-cta cta-bybit-modal" id="modalBybitBtn">🆓 Get FREE Access →</a>
+      </div>
+      <div class="modal-option">
+        <h3 class="outfit">Direct Subscription</h3>
+        <div class="modal-price">$29.99 / month</div>
+        <div class="modal-desc">Prefer to subscribe directly? Same premium newsletter, cancel anytime. 14-day money-back guarantee.</div>
+        <a href="https://signalstrike.online/pay.html" target="_blank" class="modal-cta cta-paid-modal" id="modalPaidBtn">Subscribe $29.99/mo →</a>
+      </div>
+    </div>
+    <div class="modal-note">🔒 The free Bybit option gives you the exact same signals + whale alerts + daily brief. Save $360/year.</div>
+  </div>
+</div>
 
 <script>
 function toggleMobileMenu(){
@@ -1040,6 +1143,20 @@ window.addEventListener('scroll',()=>{
   const nav=document.querySelector('nav');
   nav.style.background=window.scrollY>20?'rgba(255,251,245,0.97)':'rgba(255,251,245,0.92)';
 },{passive:true});
+
+// Modal handling
+function showModal() { document.getElementById('universalModal').classList.add('active'); }
+function hideModal() { document.getElementById('universalModal').classList.remove('active'); }
+document.querySelectorAll('.modal-trigger').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    showModal();
+  });
+});
+document.getElementById('closeModalBtn').addEventListener('click', hideModal);
+document.getElementById('universalModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('universalModal')) hideModal();
+});
 </script>
 </body>
 </html>
