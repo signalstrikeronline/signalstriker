@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SignalStrike — Ultimate Crypto Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFEF2;
+    --bg2: #FFF9E6;
+    --pink: #FF90E8;
+    --pink-dark: #d966c8;
+    --lime: #A8FF78;
+    --lime-dark: #5dcf2a;
+    --yellow: #FFE194;
+    --yellow-dark: #e8c300;
+    --black: #111111;
+    --white: #FFFFFF;
+    --border: 2px solid #111111;
+    --shadow: 4px 4px 0px #111111;
+    --shadow-sm: 3px 3px 0px #111111;
+    --shadow-lg: 6px 6px 0px #111111;
+    --radius: 6px;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-display: 'DM Serif Display', serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--bg);
+    color: var(--black);
+    min-height: 100vh;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  /* LOADING */
+  #loadingScreen {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--pink);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1.5rem;
+    transition: opacity 0.4s ease;
+  }
+  #loadingScreen.hide { opacity: 0; pointer-events: none; }
+  .load-logo { font-family: var(--font-display); font-size: 2.8rem; font-weight: 400; color: var(--black); font-style: italic; border: 3px solid var(--black); padding: 0.25rem 1.5rem; background: var(--white); box-shadow: var(--shadow-lg);}
+  .load-bar { width: 220px; height: 4px; background: var(--black); border: 2px solid var(--black); overflow: hidden; }
+  .load-fill { height: 100%; background: var(--lime); width: 0%; animation: loadIn 1.2s ease forwards; }
+  @keyframes loadIn { to { width: 100%; } }
+
+  /* TOP NAV */
+  .topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--pink); border-bottom: var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 1.5rem; font-style: italic; color: var(--black); text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: 400;}
+  .nav-dot { width: 10px; height: 10px; background: var(--lime); border: 2px solid var(--black); border-radius: 50%; animation: pulse-dot 2s infinite; flex-shrink: 0; box-shadow: 2px 2px 0 var(--black);}
+  @keyframes pulse-dot { 0%,100%{transform:scale(1);} 50%{transform:scale(0.7);} }
+  .nav-center { display: flex; align-items: center; gap: 0.25rem; }
+  .nav-tab { font-family: var(--font-body); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--black); padding: 6px 14px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; background: none; text-decoration: none; border-radius: var(--radius);}
+  .nav-tab:hover { background: rgba(0,0,0,0.08); }
+  .nav-tab.active { background: var(--black); color: var(--pink); border-color: var(--black); }
+  .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+  .nav-member-badge { display: flex; align-items: center; gap: 6px; background: var(--yellow); border: 2px solid var(--black); padding: 4px 12px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; box-shadow: var(--shadow-sm); color: var(--black);}
+  .nav-avatar { width: 36px; height: 36px; background: var(--lime); border: 2px solid var(--black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; color: var(--black); cursor: pointer; overflow: hidden; box-shadow: var(--shadow-sm);}
+  .btn-logout { background: var(--white); border: 2px solid var(--black); color: var(--black); font-family: var(--font-body); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 5px 14px; cursor: pointer; transition: all 0.15s; border-radius: var(--radius); box-shadow: var(--shadow-sm);}
+  .btn-logout:hover { background: var(--black); color: var(--white); box-shadow: none; transform: translate(3px,3px); }
+
+  /* TICKER */
+  .ticker-wrap { background: var(--black); border-bottom: var(--border); overflow: hidden; white-space: nowrap; padding: 7px 0; position: relative; }
+  .ticker-status { position: absolute; right: 0; top: 0; bottom: 0; display: flex; align-items: center; background: var(--black); padding: 0 10px; z-index: 2; border-left: 1px solid #333;}
+  .ticker-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); margin-right: 5px; animation: pulse-dot 2s infinite; }
+  .ticker-inner { display: inline-flex; gap: 3rem; animation: ticker 40s linear infinite; will-change: transform; }
+  .ticker-item { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 400; color: var(--yellow); text-transform: uppercase; letter-spacing: 0.06em; display: inline-flex; align-items: center; gap: 8px; }
+  .ticker-price { color: #ddd; font-weight: 500; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; }
+  .up { color: var(--lime); font-weight: 700; }
+  .dn { color: var(--pink); font-weight: 700; }
+  @keyframes ticker { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+  /* LAYOUT */
+  .dash-wrap { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 60px - 34px); }
+  .sidebar { border-right: var(--border); padding: 1.5rem 0; position: sticky; top: 94px; height: calc(100vh - 94px); overflow-y: auto; background: var(--bg);}
+  .sidebar-member-card { margin: 0 1.25rem 1.5rem; background: var(--yellow); border: var(--border); padding: 1.1rem; border-radius: var(--radius); box-shadow: var(--shadow);}
+  .smc-avatar { width: 40px; height: 40px; background: var(--pink); border: 2px solid var(--black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; margin-bottom: 0.65rem; overflow: hidden; box-shadow: var(--shadow-sm);}
+  .smc-name { font-weight: 700; font-size: 0.88rem; margin-bottom: 1px; }
+  .content { padding: 2.5rem 2rem; max-width: 960px; }
+  .dash-section { margin-bottom: 3rem; animation: fadeUp 0.4s ease forwards; }
+  .dash-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: var(--border);}
+  .dash-section-title { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; display: flex; align-items: center; gap: 8px;}
+  .welcome-banner { background: var(--lime); border: var(--border); padding: 2rem 2.5rem; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; border-radius: var(--radius); box-shadow: var(--shadow-lg);}
+  .signal-grid { display: grid; grid-template-columns: repeat(3,1fr); border: var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);}
+  .signal-cell { padding: 1.25rem; border-right: 2px solid var(--black); border-bottom: 2px solid var(--black); background: var(--white);}
+  .reward-card { background: var(--white); border: var(--border); border-radius: var(--radius); transition: all 0.2s; box-shadow: var(--shadow);}
+  .reward-card-inner { padding: 1rem; }
+  .reward-claim-btn { width: 100%; padding: 7px 0; background: var(--lime); border: 2px solid var(--black); font-family: var(--font-mono); font-weight: 700; cursor: pointer; border-radius: var(--radius);}
+  .rewards-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; }
+  .bybit-banner { background: var(--yellow); border: var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; box-shadow: var(--shadow);}
+  .bybit-verify-btn { background: var(--black); color: var(--yellow); border: 2px solid var(--black); padding: 8px 18px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; cursor: pointer; border-radius: var(--radius);}
+  .btn-read { background: var(--pink); border: 2px solid var(--black); padding: 8px 22px; font-weight: 700; cursor: pointer; border-radius: var(--radius); box-shadow: var(--shadow-sm);}
+  
+  /* FORCED MODAL (Non-closable) */
+  .forced-modal-backdrop {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .forced-modal-backdrop.active { display: flex; }
+  .forced-modal {
+    background: var(--white);
+    border: 3px solid var(--black);
+    border-radius: var(--radius);
+    max-width: 520px;
+    width: 100%;
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    position: relative;
+    animation: fadeUp 0.35s ease;
+  }
+  .forced-modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .forced-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-style: italic;
+    color: var(--black);
+    margin-bottom: 0.75rem;
+  }
+  .forced-modal-desc {
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 1.8rem;
+  }
+  .forced-perks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+  .forced-perk {
+    background: var(--bg2);
+    border: 2px solid var(--black);
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .forced-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 2px solid var(--black);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    text-align: center;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .forced-btn-primary { background: var(--lime); color: var(--black); }
+  .forced-btn-primary:hover { box-shadow: none; transform: translate(4px,4px); }
+  .forced-btn-secondary { background: var(--pink); color: var(--black); }
+  .forced-btn-secondary:hover { box-shadow: none; transform: translate(4px,4px); }
+  .forced-note {
+    font-size: 0.7rem;
+    color: #777;
+    font-family: var(--font-mono);
+    margin-top: 0.75rem;
+  }
+  body.modal-locked { overflow: hidden; pointer-events: auto; }
+  .forced-modal-backdrop * { user-select: none; }
+  
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+  @media (max-width: 700px) { .dash-wrap { grid-template-columns: 1fr; } .sidebar { display: none; } .rewards-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <div class="load-logo">SignalStrike</div>
+  <div class="load-bar"><div class="load-fill"></div></div>
+</div>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="#" class="nav-logo">SignalStrike <span class="nav-dot"></span></a>
+  <div class="nav-center">
+    <span class="nav-tab active">Dashboard</span>
+    <a href="#archive" class="nav-tab">Archive</a>
+    <a href="#signals" class="nav-tab">Signals</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-member-badge">⚡ Pro Member</div>
+    <div class="nav-avatar" id="navAvatar">JD</div>
+    <button class="btn-logout" id="logoutBtn">Sign Out</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="tickerInner"></div>
+  <div class="ticker-status"><div class="ticker-status-dot" id="tickerDot"></div><span class="ticker-status-text" id="tickerStatusText">Live</span></div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="dash-wrap">
+  <aside class="sidebar">
+    <div class="sidebar-member-card">
+      <div class="smc-avatar" id="sidebarAvatar">JD</div>
+      <div class="smc-name" id="sidebarName">Crypto Wolf</div>
+      <div class="smc-email" id="sidebarEmail">trader@signalstrike.com</div>
+      <div class="smc-since"><span class="smc-dot"></span><span id="sidebarSince">Member since 2025</span></div>
+    </div>
+    <div class="sidebar-section"><div class="sidebar-label">Core</div><a href="#rewards" class="sidebar-link">🎁 Rewards</a><a href="#today" class="sidebar-link active">📬 Today's Brief</a><a href="#signals" class="sidebar-link">📡 AI Signals</a><a href="#whales" class="sidebar-link">🐋 Whale Radar</a></div>
+  </aside>
+
+  <main class="content">
+    <div class="welcome-banner">
+      <div><div class="wb-tag" id="wbTag">🌅 Live Intelligence</div><div class="wb-title" id="welcomeTitle">Welcome, <em>Elite Trader</em></div><div class="wb-sub">Real-time AI signals + whale movements. Unlock exclusive rewards now.</div></div>
+      <div class="wb-stats"><div class="wb-stat"><div class="num">97.2%</div><div class="lbl">Accuracy</div></div><div class="wb-stat"><div class="num">285+</div><div class="lbl">Issues</div></div></div>
+    </div>
+
+    <!-- REWARDS SECTION -->
+    <div class="dash-section" id="rewards">
+      <div class="dash-section-head"><div class="dash-section-title">🎁 Member Rewards</div><button class="bybit-verify-btn" id="bybitCheckBtn" onclick="openBybitModal()">⚡ Verify Bybit</button></div>
+      <div class="bybit-banner" id="bybitBanner"><div class="bybit-banner-icon">🔒</div><div><div class="bybit-banner-title">Unlock Bybit Rewards</div><div class="bybit-banner-sub">Exclusive coin set + NFT print require Bybit verification.</div></div><button class="bybit-verify-btn" onclick="openBybitModal()">Verify Now →</button></div>
+      <div class="rewards-grid" id="rewardsGrid">
+        <div class="reward-card" data-id="1"><div class="reward-card-inner"><div>🔐 Ledger Nano X</div><button class="reward-claim-btn" onclick="alertDemoReward()">Claim</button></div></div>
+        <div class="reward-card" data-id="2"><div class="reward-card-inner"><div>📺 BTC Price Ticker</div><button class="reward-claim-btn" onclick="alertDemoReward()">Claim</button></div></div>
+        <div class="reward-card" data-id="3" data-bybit="true"><div class="reward-card-inner"><div>🪙 Custom Engraved Coin Set <span style="color:#d966c8;">(Bybit req.)</span></div><button class="reward-claim-btn bybit-req" id="bybitRewardBtn3" onclick="handleBybitReward()">🔒 Locked</button></div></div>
+        <div class="reward-card" data-id="4"><div class="reward-card-inner"><div>👕 Crypto Hoodie</div><button class="reward-claim-btn" onclick="alertDemoReward()">Claim</button></div></div>
+        <div class="reward-card" data-id="5" data-bybit="true"><div class="reward-card-inner"><div>🖼️ NFT Art Print (Framed)</div><button class="reward-claim-btn bybit-req" id="bybitRewardBtn5" onclick="handleBybitReward()">🔒 Locked</button></div></div>
+        <div class="reward-card" data-id="6"><div class="reward-card-inner"><div>🥈 Silver Bitcoin Round</div><button class="reward-claim-btn" onclick="alertDemoReward()">Claim</button></div></div>
+      </div>
+    </div>
+
+    <!-- TODAY'S ISSUE -->
+    <div class="dash-section" id="today"><div class="dash-section-head"><div class="dash-section-title">🔥 Today's Issue #285</div></div><div class="issue-card" style="background:var(--white); border:var(--border); padding:1.5rem;"><strong>BTC:</strong> Holding $84K support · AI confidence 89% · Target $92K<br/><strong>SOL:</strong> Whale accumulation +$47M · Breakout setup<br/><strong>RENDER:</strong> Dev activity +340% · AI narrative strong<br/><a href="#" class="btn-read" style="display:inline-block; margin-top:1rem;">Read Full Issue →</a></div></div>
+
+    <!-- AI SIGNALS -->
+    <div class="dash-section" id="signals"><div class="dash-section-head"><div class="dash-section-title">📡 AI Signals — Live</div></div><div class="signal-grid"><div class="signal-cell"><div>₿ Bitcoin</div><div class="sc-pct up">+2.47%</div><div>Entry $82.5K–$85K · 88% conf.</div></div><div class="signal-cell"><div>◎ Solana</div><div class="sc-pct up">+4.1%</div><div>Breakout · 91% conf.</div></div><div class="signal-cell"><div>⬡ AVAX</div><div class="sc-pct dn">-0.7%</div><div>Reduce exposure</div></div><div class="signal-cell"><div>🔗 Chainlink</div><div class="sc-pct up">+4.15%</div><div>Smart money acc.</div></div><div class="signal-cell"><div>⬡ Render</div><div class="sc-pct up">+7.44%</div><div>AI play · 93% conf.</div></div><div class="signal-cell"><div>Ξ Ethereum</div><div class="sc-pct up">+1.89%</div><div>Watch $3,200</div></div></div></div>
+
+    <!-- WHALE RADAR -->
+    <div class="dash-section" id="whales"><div class="dash-section-head"><div class="dash-section-title">🐋 Whale Radar</div></div><div class="whale-row" style="background:var(--white); border:var(--border); margin-bottom:0.5rem; padding:1rem;"><span>🐋 12,400 ETH moved to Binance · potential sell pressure</span></div><div class="whale-row" style="background:var(--white); border:var(--border); padding:1rem;"><span>🟢 $8.2M LINK accumulated over 3 days · whale conviction</span></div></div>
+
+    <!-- ARCHIVE -->
+    <div class="dash-section" id="archive"><div class="dash-section-head"><div class="dash-section-title">📂 Archive Highlights</div></div><a href="#" class="archive-row" style="display:block; border:var(--border); padding:0.8rem; margin-bottom:0.5rem;">#285 SOL Breakout · AI Narrative</a><a href="#" class="archive-row" style="display:block; border:var(--border); padding:0.8rem;">#284 BTC Consolidation · LINK accumulation</a></div>
+  </main>
+</div>
+
+<!-- BYBIT MODAL (Optional, can be opened by user) -->
+<div id="bybitModal" class="bybit-modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:11000; align-items:center; justify-content:center;"><div style="background:white; border:var(--border); padding:2rem; max-width:400px; border-radius:var(--radius);"><h3>🔐 Bybit Rewards</h3><p>Sign up via partner link to unlock coin set + NFT print.</p><a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="forced-btn-primary" style="display:block; text-align:center; margin:1rem 0;">Create Bybit Account →</a><button onclick="closeBybitModal()" style="padding:0.5rem;">Close</button></div></div>
+
+<!-- FORCED NON-CLOSABLE MODAL (APPEARS AFTER 10 SECONDS) -->
+<div id="mandatoryModal" class="forced-modal-backdrop">
+  <div class="forced-modal">
+    <div class="forced-modal-icon">⚡🔒</div>
+    <div class="forced-modal-title">Verify &amp; Unlock</div>
+    <div class="forced-modal-desc">
+      <strong>Bybit Rewards + Full Access</strong> — To continue using SignalStrike's premium signals and claim exclusive rewards, choose one option below. This step is required.
+    </div>
+    <div class="forced-perks">
+      <div class="forced-perk">🪙 Engraved Metal Coin Set</div>
+      <div class="forced-perk">🖼️ NFT Limited Art Print</div>
+      <div class="forced-perk">🎁 $175 Bybit Bonus Package</div>
+      <div class="forced-perk">📡 AI Whale Alerts</div>
+    </div>
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" id="partnerSignupBtn" class="forced-btn forced-btn-primary">
+      🚀 Sign up with Bybit (Partner Link)
+    </a>
+    <a href="https://gumroad.com/checkout?product=qtwuz&quantity=1" target="_blank" id="paymentSubscribeBtn" class="forced-btn forced-btn-secondary">
+      💳 Pay $29.99 Monthly Membership
+    </a>
+    <div class="forced-note">⚠️ No close button — you must pick one option to continue. After choosing, the modal will close and you get full access.</div>
+  </div>
+</div>
+
+<div id="toast" style="position:fixed; bottom:2rem; right:2rem; background:black; color:lime; padding:0.8rem 1.2rem; border-radius:6px; z-index:11000; display:none;"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBfaThYee5N7mR30YqMzymDsASNg9WI1zY",
+    authDomain: "signalstrike-newsletter.firebaseapp.com",
+    projectId: "signalstrike-newsletter",
+    storageBucket: "signalstrike-newsletter.firebasestorage.app",
+    messagingSenderId: "685841795264",
+    appId: "1:685841795264:web:6a7e9c9d42324ad1b94525"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Helper UI
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  }
+  window.alertDemoReward = () => showToast("🎁 Reward claimed! (Demo mode — full rewards after verification)");
+  window.handleBybitReward = () => { showToast("🔒 Bybit verification required. Use the 'Verify Bybit' button."); openBybitModal(); };
+  window.openBybitModal = () => { const m = document.getElementById('bybitModal'); m.style.display = 'flex'; };
+  window.closeBybitModal = () => { document.getElementById('bybitModal').style.display = 'none'; };
+  document.getElementById('bybitModal')?.addEventListener('click', (e) => { if(e.target === document.getElementById('bybitModal')) closeBybitModal(); });
+
+  // FORCED MODAL LOGIC: NO CLOSE, ESCAPE DISABLED, BACKDROP CLICK DOES NOTHING
+  let modalActionTaken = sessionStorage.getItem('mandatoryModalActionTaken') === 'true';
+  let modalActive = false;
+  const mandatoryModal = document.getElementById('mandatoryModal');
+  const partnerBtn = document.getElementById('partnerSignupBtn');
+  const paymentBtn = document.getElementById('paymentSubscribeBtn');
+  
+  function disableModalClosing() {
+    // Remove any potential close mechanisms, override escape
+    const blockClose = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+    window.addEventListener('keydown', blockClose);
+    mandatoryModal.addEventListener('click', (e) => {
+      if (e.target === mandatoryModal) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+    // Also disable any close button inside modal (none exists, but safe)
+    mandatoryModal.querySelectorAll('[data-close]').forEach(btn => btn.remove());
+  }
+  
+  function closeMandatoryModal() {
+    if (!mandatoryModal) return;
+    mandatoryModal.classList.remove('active');
+    document.body.classList.remove('modal-locked');
+    window.removeEventListener('keydown', disableModalClosing);
+    modalActive = false;
+  }
+  
+  function showMandatoryModal() {
+    if (modalActionTaken) return;
+    if (modalActive) return;
+    mandatoryModal.classList.add('active');
+    document.body.classList.add('modal-locked');
+    modalActive = true;
+    disableModalClosing();
+  }
+  
+  // When user picks either option, we set flag and close modal permanently for this session
+  function onUserChoice() {
+    if (modalActionTaken) return;
+    modalActionTaken = true;
+    sessionStorage.setItem('mandatoryModalActionTaken', 'true');
+    closeMandatoryModal();
+    showToast("✅ Access granted! You may now use all features & claim Bybit rewards.");
+    // optionally refresh reward bybit check UI
+    unlockBybitRewardsDemo();
+  }
+  
+  function unlockBybitRewardsDemo() {
+    const btn3 = document.getElementById('bybitRewardBtn3');
+    const btn5 = document.getElementById('bybitRewardBtn5');
+    if (btn3) { btn3.textContent = "Claim Now ✓"; btn3.classList.remove('bybit-req'); btn3.style.background = "var(--lime)"; btn3.disabled = false; btn3.onclick = () => showToast("🎁 Coin set claimed! Our team will contact you."); }
+    if (btn5) { btn5.textContent = "Claim Art Print ✓"; btn5.classList.remove('bybit-req'); btn5.style.background = "var(--lime)"; btn5.disabled = false; btn5.onclick = () => showToast("🖼️ NFT art print claimed! Check your email."); }
+    const banner = document.getElementById('bybitBanner');
+    if (banner) { banner.classList.add('verified'); banner.querySelector('.bybit-banner-icon').textContent = '✅'; banner.querySelector('.bybit-banner-title').textContent = 'Bybit Unlocked'; }
+    const verifyBtn = document.getElementById('bybitCheckBtn');
+    if (verifyBtn) verifyBtn.textContent = '✓ Verified';
+    showToast("🔥 Bybit rewards unlocked! You can now claim exclusive perks.");
+  }
+  
+  // Attach action to the partner and payment links
+  partnerBtn.addEventListener('click', (e) => {
+    // allow navigation to partner link, close modal, store flag
+    setTimeout(() => onUserChoice(), 50);
+  });
+  paymentBtn.addEventListener('click', (e) => {
+    setTimeout(() => onUserChoice(), 50);
+  });
+  
+  // Load delay 10 seconds exactly
+  setTimeout(() => {
+    if (!modalActionTaken) {
+      showMandatoryModal();
+    }
+  }, 10000);
+  
+  // Ticker data fetch (demo live)
+  async function fetchDummyTicker() {
+    const tickers = ["BTC $84,210 ▲ +2.1%", "ETH $3,102 ▲ +1.4%", "SOL $142.80 ▲ +4.2%", "DOGE $0.178 ▲ +3%", "RENDER $7.48 ▲ +7.4%"];
+    const inner = document.getElementById('tickerInner');
+    inner.innerHTML = tickers.map(t => `<span class="ticker-item">${t}</span>`).join(' · ') + ' · ' + tickers.map(t => `<span class="ticker-item">${t}</span>`).join(' · ');
+    document.getElementById('tickerDot').className = 'ticker-status-dot';
+    document.getElementById('tickerStatusText').textContent = `Live · ${new Date().toLocaleTimeString()}`;
+  }
+  fetchDummyTicker();
+  setInterval(fetchDummyTicker, 30000);
+  
+  // Firebase auth with NO membership gate (full access for demo, modal is the requirement)
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      // if not logged in, redirect (but for demo we just show guest state)
+      const guestEmail = "guest@signalstrike.com";
+      document.getElementById('sidebarName').textContent = "Crypto Enthusiast";
+      document.getElementById('sidebarEmail').textContent = guestEmail;
+      document.getElementById('navAvatar').textContent = "CE";
+      document.getElementById('sidebarAvatar').textContent = "CE";
+      document.getElementById('sidebarSince').textContent = "Demo mode";
+      document.getElementById('welcomeTitle').innerHTML = "Welcome, <em>Analyst</em>";
+      document.getElementById('wbTag').textContent = "⚡ Live Preview Mode";
+      return;
+    }
+    const displayName = user.displayName || user.email.split('@')[0];
+    const email = user.email;
+    document.getElementById('sidebarName').textContent = displayName;
+    document.getElementById('sidebarEmail').textContent = email;
+    document.getElementById('navAvatar').textContent = displayName.charAt(0).toUpperCase();
+    document.getElementById('sidebarAvatar').textContent = displayName.charAt(0).toUpperCase();
+    document.getElementById('sidebarSince').textContent = `Member since ${new Date(user.metadata.creationTime).toLocaleDateString()}`;
+    document.getElementById('welcomeTitle').innerHTML = `Welcome back, <em>${displayName}</em>`;
+  });
+  
+  document.getElementById('logoutBtn')?.addEventListener('click', () => { signOut(auth).then(() => location.reload()); });
+  
+  // Style adjustments for forced modal: overrides
+  const styleOverride = document.createElement('style');
+  styleOverride.textContent = `
+    .forced-modal-backdrop.active { display: flex !important; }
+    body.modal-locked { overflow: hidden; }
+    .bybit-req { background: #eee; border-color: #ccc; color: #888; cursor: not-allowed; }
+    .bybit-req.unlocked { background: var(--lime); cursor: pointer; color: black; }
+  `;
+  document.head.appendChild(styleOverride);
+  
+  // initialize loading hide
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loadingScreen')?.classList.add('hide');
+      setTimeout(() => { if(document.getElementById('loadingScreen')) document.getElementById('loadingScreen').style.display = 'none'; }, 500);
+    }, 1000);
+  });
+  
+  // Backward compatibility: any existing membership gate removed (no sheet checks)
+  console.log("✅ SignalStrike ready — mandatory verification modal appears after 10 seconds (non-closable)");
+</script>
+</body>
+</html>
