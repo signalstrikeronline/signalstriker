@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>SignalStrike — Command Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+  :root {
+    --amber: #f59e0b;
+    --amber-bright: #fcd34d;
+    --amber-glow: rgba(245,158,11,0.15);
+    --amber-dim: #92400e;
+    --red: #ef4444;
+    --green: #10b981;
+    --cyan: #06b6d4;
+    --purple: #8b5cf6;
+    --bg: #030303;
+    --bg2: #0a0a0a;
+    --bg3: #111111;
+    --border: rgba(245,158,11,0.2);
+    --text-dim: #6b7280;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: #e5e7eb;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Noise grain */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  .font-mono { font-family: 'Share Tech Mono', monospace; }
+  .font-display { font-family: 'Orbitron', monospace; }
+
+  /* Glowing amber text */
+  .glow-amber {
+    color: var(--amber);
+    text-shadow: 0 0 10px rgba(245,158,11,0.8), 0 0 20px rgba(245,158,11,0.4);
+  }
+  .glow-text-sm {
+    text-shadow: 0 0 8px rgba(245,158,11,0.6);
+  }
+
+  /* Header bar */
+  .header-bar {
+    background: linear-gradient(180deg, rgba(245,158,11,0.08) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .header-bar::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    animation: scanH 3s ease-in-out infinite;
+  }
+  @keyframes scanH {
+    0%, 100% { opacity: 0.4; transform: scaleX(0.6); }
+    50% { opacity: 1; transform: scaleX(1); }
+  }
+
+  /* Logo pulse */
+  .logo-icon {
+    width: 36px; height: 36px;
+    border: 2px solid var(--amber);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(245,158,11,0.4), inset 0 0 8px rgba(245,158,11,0.1);
+    animation: logoPulse 2s ease-in-out infinite;
+  }
+  @keyframes logoPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(245,158,11,0.4), inset 0 0 6px rgba(245,158,11,0.1); }
+    50% { box-shadow: 0 0 20px rgba(245,158,11,0.7), inset 0 0 12px rgba(245,158,11,0.2); }
+  }
+
+  /* Status indicator */
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px #10b981;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Ticker tape */
+  .ticker-wrap {
+    overflow: hidden;
+    background: rgba(245,158,11,0.05);
+    border-bottom: 1px solid rgba(245,158,11,0.1);
+    border-top: 1px solid rgba(245,158,11,0.1);
+    padding: 5px 0;
+  }
+  .ticker-inner {
+    display: flex;
+    gap: 48px;
+    animation: ticker 18s linear infinite;
+    white-space: nowrap;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .ticker-item { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); }
+  .ticker-item.up { color: var(--green); }
+  .ticker-item.down { color: var(--red); }
+
+  /* Section title */
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245,158,11,0.3));
+  }
+  .section-label::after {
+    background: linear-gradient(90deg, rgba(245,158,11,0.3), transparent);
+  }
+
+  /* TOOL CARD */
+  .tool-card {
+    position: relative;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--amber-glow);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .tool-card:hover::before,
+  .tool-card:active::before { opacity: 1; }
+  .tool-card::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--card-accent, var(--amber));
+    box-shadow: 0 0 8px var(--card-accent, var(--amber));
+  }
+
+  /* Active press */
+  .tool-card:active {
+    transform: scale(0.98);
+    border-color: var(--amber);
+  }
+
+  .tool-card .card-icon {
+    width: 38px; height: 38px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .tool-card .card-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--amber-bright);
+  }
+  .tool-card .card-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #d1d5db;
+    margin-top: 1px;
+  }
+  .tool-card .card-desc {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .card-arrow {
+    color: var(--amber);
+    opacity: 0.5;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .tool-card:hover .card-arrow,
+  .tool-card:active .card-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+
+  /* Badge */
+  .card-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+    border: 1px solid;
+    flex-shrink: 0;
+  }
+
+  /* Featured / hero card */
+  .tool-card-hero {
+    background: linear-gradient(135deg, #0a0a0a 0%, #0f0800 100%);
+    border-color: rgba(245,158,11,0.4);
+    box-shadow: 0 0 24px rgba(245,158,11,0.1);
+  }
+
+  /* Bottom nav */
+  .bottom-bar {
+    background: rgba(10,10,10,0.95);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+
+  /* Animated background grid */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Intro animation */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.4s ease forwards; opacity: 0; }
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.1s; }
+  .delay-3 { animation-delay: 0.15s; }
+  .delay-4 { animation-delay: 0.2s; }
+  .delay-5 { animation-delay: 0.25s; }
+  .delay-6 { animation-delay: 0.3s; }
+  .delay-7 { animation-delay: 0.35s; }
+  .delay-8 { animation-delay: 0.4s; }
+  .delay-9 { animation-delay: 0.45s; }
+  .delay-10 { animation-delay: 0.5s; }
+  .delay-11 { animation-delay: 0.55s; }
+  .delay-12 { animation-delay: 0.6s; }
+
+  /* Corner decoration */
+  .corner-tl, .corner-br {
+    position: absolute;
+    width: 10px; height: 10px;
+  }
+  .corner-tl {
+    top: -1px; left: -1px;
+    border-top: 2px solid var(--amber);
+    border-left: 2px solid var(--amber);
+  }
+  .corner-br {
+    bottom: -1px; right: -1px;
+    border-bottom: 2px solid var(--amber);
+    border-right: 2px solid var(--amber);
+  }
+
+  /* Horizontal rule */
+  .h-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245,158,11,0.3), transparent);
+  }
+
+  /* Main card accent colors */
+  .accent-amber { --card-accent: #f59e0b; }
+  .accent-green { --card-accent: #10b981; }
+  .accent-cyan { --card-accent: #06b6d4; }
+  .accent-purple { --card-accent: #8b5cf6; }
+  .accent-red { --card-accent: #ef4444; }
+  .accent-blue { --card-accent: #3b82f6; }
+  .accent-yellow { --card-accent: #eab308; }
+  .accent-pink { --card-accent: #ec4899; }
+  .accent-teal { --card-accent: #14b8a6; }
+  .accent-orange { --card-accent: #f97316; }
+
+  /* Ripple on tap */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(245,158,11,0.25);
+    transform: scale(0);
+    animation: rippleAnim 0.5s ease-out;
+    pointer-events: none;
+  }
+  @keyframes rippleAnim {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* Blinking cursor in header */
+  .cursor-blink {
+    display: inline-block;
+    width: 2px; height: 14px;
+    background: var(--amber);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: cursorBlink 1s step-end infinite;
+  }
+  @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+</style>
+<!-- X (Twitter) Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="🔴 Breaking News">
+    <meta name="twitter:description" content="Blockchain Intelligence">
+    <meta name="twitter:image" content="https://signalstrike.online/airdrop/3.png">
+    <meta name="twitter:url" content="https://signalstrike.online">
+  
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<div class="relative z-10 flex flex-col min-h-screen max-w-sm mx-auto">
+
+  <!-- HEADER -->
+  <header class="header-bar px-4 py-3 flex items-center justify-between fade-up delay-1">
+    <div class="flex items-center gap-3">
+      <div class="logo-icon">
+        <!-- SVG lightning bolt -->
+        <svg width="18" height="20" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11 1L2 13H9L7 21L16 9H9L11 1Z" fill="#f59e0b" stroke="#fcd34d" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="font-display text-xs font-black tracking-widest glow-amber">SIGNAL<span style="color:#fcd34d">STRIKE</span></div>
+        <div class="font-mono text-xs" style="color: var(--text-dim); font-size:8px; letter-spacing:0.15em;">COMMAND CENTER <span class="cursor-blink"></span></div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="status-dot"></div>
+      <span class="font-mono" style="font-size:9px; color:var(--green); letter-spacing:0.1em;">LIVE</span>
+      <div style="width:1px; height:16px; background:var(--border);"></div>
+      <!-- SVG signal bars -->
+      <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="10" width="3" height="4" rx="1" fill="#f59e0b" opacity="1"/>
+        <rect x="4.5" y="7" width="3" height="7" rx="1" fill="#f59e0b" opacity="0.8"/>
+        <rect x="9" y="4" width="3" height="10" rx="1" fill="#f59e0b" opacity="0.6"/>
+        <rect x="13.5" y="0" width="2.5" height="14" rx="1" fill="#f59e0b" opacity="0.3"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap fade-up delay-2">
+    <div class="ticker-inner">
+      <span class="ticker-item up">BTC $107,234 ▲2.1%</span>
+      <span class="ticker-item up">ETH $3,891 ▲1.8%</span>
+      <span class="ticker-item down">SOL $168.4 ▼0.7%</span>
+      <span class="ticker-item up">BNB $692 ▲0.9%</span>
+      <span class="ticker-item up">DOGE $0.182 ▲3.4%</span>
+      <span class="ticker-item down">XRP $2.14 ▼1.1%</span>
+      <span class="ticker-item up">AVAX $39.7 ▲2.6%</span>
+      <span class="ticker-item up">MATIC $0.94 ▲0.5%</span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item up">BTC $107,234 ▲2.1%</span>
+      <span class="ticker-item up">ETH $3,891 ▲1.8%</span>
+      <span class="ticker-item down">SOL $168.4 ▼0.7%</span>
+      <span class="ticker-item up">BNB $692 ▲0.9%</span>
+      <span class="ticker-item up">DOGE $0.182 ▲3.4%</span>
+      <span class="ticker-item down">XRP $2.14 ▼1.1%</span>
+      <span class="ticker-item up">AVAX $39.7 ▲2.6%</span>
+      <span class="ticker-item up">MATIC $0.94 ▲0.5%</span>
+    </div>
+  </div>
+
+  <!-- HERO SUMMARY -->
+  <div class="px-4 pt-5 pb-3 fade-up delay-3">
+    <div class="relative" style="background: linear-gradient(135deg, rgba(245,158,11,0.07), rgba(245,158,11,0.02)); border:1px solid rgba(245,158,11,0.25); border-radius:8px; padding:14px 16px;">
+      <div class="corner-tl"></div>
+      <div class="corner-br"></div>
+      <div class="font-display" style="font-size:9px; letter-spacing:0.25em; color:var(--text-dim); margin-bottom:4px;">MISSION BRIEF</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700; color:#f3f4f6; line-height:1.3;">
+        Select your intelligence module.<br/>
+        <span style="color:var(--amber);">Deploy the edge.</span>
+      </div>
+      <div style="margin-top:8px; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--text-dim); line-height:1.6;">
+        10 TOOLS &nbsp;·&nbsp; REAL-TIME DATA &nbsp;·&nbsp; BYBIT POWERED
+      </div>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="px-4 pb-3 fade-up delay-4">
+    <div class="section-label">INTELLIGENCE MODULES</div>
+  </div>
+
+  <!-- TOOLS GRID -->
+  <div class="px-4 flex flex-col gap-3 pb-6" id="toolsGrid">
+
+    <!-- 1: NewsLerter -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card tool-card-hero accent-amber fade-up delay-4" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.3);">
+          <!-- Newspaper SVG -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+            <path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name">NEWSLERTER</div>
+          <div class="card-sub">News Alerts</div>
+          <div class="card-desc">Breaking news & critical market updates</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#ef4444; border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);">LIVE</div>
+          <div class="card-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 2: Signal Hunter -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-green fade-up delay-5" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            <path d="M11 8v6M8 11h6"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#34d399;">SIGNAL HUNTER</div>
+          <div class="card-sub">Trading Signals</div>
+          <div class="card-desc">Buy/sell signals & opportunities</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#10b981; border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.08);">BUY/SELL</div>
+          <div class="card-arrow" style="color:#10b981;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 3: Trend Digger -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-cyan fade-up delay-6" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(6,182,212,0.1); border-color:rgba(6,182,212,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+            <polyline points="16 7 22 7 22 13"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#67e8f9;">TREND DIGGER</div>
+          <div class="card-sub">Market Trends</div>
+          <div class="card-desc">Emerging trends & narratives</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#06b6d4; border-color:rgba(6,182,212,0.3); background:rgba(6,182,212,0.08);">TRENDS</div>
+          <div class="card-arrow" style="color:#06b6d4;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 4: Alpha Scout -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-purple fade-up delay-7" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(139,92,246,0.1); border-color:rgba(139,92,246,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#c4b5fd;">ALPHA SCOUT</div>
+          <div class="card-sub">Early Alpha</div>
+          <div class="card-desc">Hidden gems & early-stage plays</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#8b5cf6; border-color:rgba(139,92,246,0.3); background:rgba(139,92,246,0.08);">ALPHA</div>
+          <div class="card-arrow" style="color:#8b5cf6;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 5: Pulse Tracker -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-red fade-up delay-8" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#fca5a5;">PULSE TRACKER</div>
+          <div class="card-sub">Market Pulse</div>
+          <div class="card-desc">Live sentiment & real-time overview</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08);">LIVE</div>
+          <div class="card-arrow" style="color:#ef4444;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 6: Whale Watcher -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-blue fade-up delay-9" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Whale shape simplified -->
+            <path d="M3 12c0-5 4-8 9-8s9 3 9 8c0 2-1 4-3 5H6c-2-1-3-3-3-5Z"/>
+            <path d="M3 12C1 10 1 7 3 6"/>
+            <circle cx="15" cy="10" r="1" fill="#3b82f6"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#93c5fd;">WHALE WATCHER</div>
+          <div class="card-sub">Big Money Moves</div>
+          <div class="card-desc">Track institutional & whale activity</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#3b82f6; border-color:rgba(59,130,246,0.3); background:rgba(59,130,246,0.08);">ON-CHAIN</div>
+          <div class="card-arrow" style="color:#3b82f6;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 7: Moon Radar -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-yellow fade-up delay-10" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(234,179,8,0.1); border-color:rgba(234,179,8,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#fde047;">MOON RADAR</div>
+          <div class="card-sub">Bullish Signals</div>
+          <div class="card-desc">High-upside setups & moonshot targets</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#eab308; border-color:rgba(234,179,8,0.3); background:rgba(234,179,8,0.08);">BULLISH</div>
+          <div class="card-arrow" style="color:#eab308;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 8: Dip Hunter -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-orange fade-up delay-11" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(249,115,22,0.1); border-color:rgba(249,115,22,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/>
+            <polyline points="16 17 22 17 22 11"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#fdba74;">DIP HUNTER</div>
+          <div class="card-sub">Correction Opportunities</div>
+          <div class="card-desc">Buy-the-dip setups & discount zones</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#f97316; border-color:rgba(249,115,22,0.3); background:rgba(249,115,22,0.08);">DCA</div>
+          <div class="card-arrow" style="color:#f97316;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 9: Narrative Finder -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-pink fade-up delay-12" onclick="addRipple(event)">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(236,72,153,0.1); border-color:rgba(236,72,153,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#f9a8d4;">NARRATIVE FINDER</div>
+          <div class="card-sub">Story & Hype Cycles</div>
+          <div class="card-desc">Spot narratives before they go viral</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#ec4899; border-color:rgba(236,72,153,0.3); background:rgba(236,72,153,0.08);">HYPE</div>
+          <div class="card-arrow" style="color:#ec4899;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- 10: Crypto Forge -->
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       class="tool-card accent-teal fade-up delay-12" onclick="addRipple(event)" style="margin-bottom:4px;">
+      <div class="flex items-center gap-3 relative z-10">
+        <div class="card-icon" style="background:rgba(20,184,166,0.1); border-color:rgba(20,184,166,0.25);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="card-name" style="color:#5eead4;">CRYPTO FORGE</div>
+          <div class="card-sub">Daily Insights</div>
+          <div class="card-desc">Complete daily intelligence briefing</div>
+        </div>
+        <div class="flex flex-col items-end gap-1">
+          <div class="card-badge" style="color:#14b8a6; border-color:rgba(20,184,166,0.3); background:rgba(20,184,166,0.08);">DAILY</div>
+          <div class="card-arrow" style="color:#14b8a6;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- FOOTER CTA -->
+  <div class="px-4 pb-4 fade-up delay-12">
+    <div class="h-rule mb-4"></div>
+    <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" rel="noopener"
+       style="display:block; background:linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); border:1px solid rgba(245,158,11,0.35); border-radius:8px; padding:14px 20px; text-align:center; text-decoration:none;" onclick="addRipple(event)">
+      <div class="font-display glow-amber" style="font-size:11px; letter-spacing:0.15em;">TRADE ON BYBIT</div>
+      <div class="font-mono" style="font-size:9px; color:var(--text-dim); margin-top:3px; letter-spacing:0.1em;">POWERED BY SIGNALSTRIKE · PARTNER LINK</div>
+    </a>
+    <div class="font-mono text-center mt-4" style="font-size:8px; color:var(--text-dim); letter-spacing:0.12em; line-height:1.8;">
+      © 2025 SIGNALSTRIKE &nbsp;·&nbsp; ALL SIGNALS INFORMATIONAL ONLY<br/>
+      NOT FINANCIAL ADVICE &nbsp;·&nbsp; TRADE AT YOUR OWN RISK
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Ripple effect on card tap
+  function addRipple(e) {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.cssText = `width:${size}px;height:${size}px;left:${x - size/2}px;top:${y - size/2}px;`;
+    card.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  }
+
+  // Add touch feedback
+  document.querySelectorAll('.tool-card').forEach(card => {
+    card.addEventListener('touchstart', () => card.style.opacity = '0.85', {passive:true});
+    card.addEventListener('touchend', () => card.style.opacity = '1', {passive:true});
+  });
+</script>
+</body>
+</html>
