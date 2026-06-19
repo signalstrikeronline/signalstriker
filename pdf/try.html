@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SignalStrike.online — Blueprint Exam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --amber: #F5A623;
+    --teal: #00C9B1;
+    --charcoal: #0D0F14;
+    --card: #161A22;
+    --card2: #1C2130;
+    --off-white: #E8E8E0;
+    --muted: #8A8F9E;
+    --success: #22c55e;
+    --success-bg: rgba(34,197,94,0.1);
+    --danger: #ef4444;
+    --danger-bg: rgba(239,68,68,0.1);
+    --info: #3b82f6;
+    --info-bg: rgba(59,130,246,0.1);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245,158,11,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--charcoal);
+    color: var(--off-white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 99;
+    background: rgba(13,15,20,0.97);
+    border-bottom: 1px solid rgba(245,166,35,0.2);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 58px;
+  }
+  .nav-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 800; letter-spacing: .04em; }
+  .nav-logo .a { color: var(--amber); }
+  .nav-logo .t { color: var(--teal); }
+  .nav-tag { font-size: .75rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+
+  /* ── WRAPPER ── */
+  .wrap { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+  /* ── HEADER ── */
+  .exam-header { margin-bottom: 2rem; }
+  .exam-header h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 2.4rem; font-weight: 800; text-transform: uppercase; margin-bottom: .3rem; }
+  .exam-header h1 span { color: var(--amber); }
+  .exam-header p { font-size: .88rem; color: var(--muted); line-height: 1.7; }
+
+  /* ── PROGRESS ── */
+  .progress-bg { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; margin: 1.25rem 0 1.5rem; }
+  .progress-fill { height: 4px; background: var(--amber); border-radius: 99px; transition: width .4s ease; }
+
+  /* ── STAT CARDS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 2rem; }
+  .stat { background: var(--card); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: .85rem 1rem; }
+  .stat-label { font-size: .72rem; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 3px; }
+  .stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--off-white); }
+
+  /* ── SECTION DIVIDER ── */
+  .sec-div { font-size: .75rem; font-weight: 600; color: var(--amber); letter-spacing: .12em; text-transform: uppercase; margin: 2.5rem 0 1rem; display: flex; align-items: center; gap: 10px; }
+  .sec-div::after { content: ''; flex: 1; height: 1px; background: rgba(245,166,35,0.2); }
+
+  /* ── QUESTION CARD ── */
+  .qcard {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1.1rem;
+  }
+  .q-meta { display: flex; align-items: center; gap: 8px; margin-bottom: .75rem; }
+  .q-num { font-size: .72rem; color: var(--muted); }
+  .q-badge { font-size: .7rem; font-weight: 600; padding: 2px 9px; border-radius: 99px; letter-spacing: .04em; }
+  .badge-psych  { background: var(--info-bg);    color: #60a5fa; }
+  .badge-candle { background: var(--warning-bg); color: var(--warning); }
+  .badge-trend  { background: var(--success-bg); color: var(--success); }
+  .badge-sr     { background: var(--danger-bg);  color: var(--danger); }
+  .badge-ma     { background: rgba(255,255,255,0.06); color: var(--muted); }
+  .q-text { font-size: .95rem; line-height: 1.65; color: var(--off-white); font-weight: 500; margin-bottom: 1.1rem; }
+
+  /* ── OPTIONS ── */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .875rem;
+    color: var(--off-white);
+    line-height: 1.5;
+    background: rgba(255,255,255,0.02);
+    transition: background .15s, border-color .15s;
+    user-select: none;
+  }
+  .opt:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+  .opt .letter { font-weight: 600; min-width: 18px; color: var(--muted); flex-shrink: 0; }
+  .opt.correct { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+  .opt.correct .letter { color: var(--success); }
+  .opt.wrong   { border-color: var(--danger);  background: var(--danger-bg);  color: var(--danger); }
+  .opt.wrong .letter { color: var(--danger); }
+  .opt.revealed { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+  .opt.revealed .letter { color: var(--success); }
+  .opt.disabled { pointer-events: none; }
+
+  /* ── FILL IN ── */
+  .fill-row { display: flex; gap: 8px; align-items: stretch; }
+  .fill-row input {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: var(--off-white);
+    font-family: 'Inter', sans-serif;
+    font-size: .875rem;
+    padding: 9px 14px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .fill-row input:focus { border-color: var(--amber); }
+  .fill-row input:disabled { opacity: .5; }
+  .check-btn {
+    background: rgba(245,166,35,0.12);
+    border: 1px solid rgba(245,166,35,0.3);
+    color: var(--amber);
+    font-family: 'Inter', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s;
+    white-space: nowrap;
+  }
+  .check-btn:hover { background: rgba(245,166,35,0.2); }
+  .check-btn:disabled { opacity: .4; cursor: default; }
+
+  /* ── FEEDBACK ── */
+  .feedback {
+    margin-top: .85rem;
+    font-size: .83rem;
+    line-height: 1.65;
+    padding: 10px 14px;
+    border-radius: 8px;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.good { background: var(--success-bg); color: var(--success); border: 1px solid rgba(34,197,94,0.2); }
+  .feedback.bad  { background: var(--danger-bg);  color: var(--danger);  border: 1px solid rgba(239,68,68,0.2); }
+  .feedback strong { font-weight: 600; }
+
+  /* ── SUBMIT ── */
+  .submit-btn {
+    width: 100%; padding: 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    background: var(--amber); color: #000;
+    border: none; border-radius: 10px;
+    cursor: pointer; margin-top: 2rem;
+    transition: background .15s, transform .1s;
+  }
+  .submit-btn:hover { background: #ffbb44; transform: translateY(-1px); }
+
+  /* ── RESULTS ── */
+  .results {
+    display: none;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 2.5rem;
+    text-align: center;
+    margin-top: 2rem;
+  }
+  .results.show { display: block; }
+  .score-ring { width: 110px; height: 110px; margin: 0 auto 1.25rem; position: relative; }
+  .score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 9; }
+  .ring-fill  { fill: none; stroke: var(--amber); stroke-width: 9; stroke-linecap: round;
+                stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 1.1s ease; }
+  .ring-pct {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 700;
+    color: var(--off-white);
+  }
+  .result-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: .4rem; }
+  .result-sub { font-size: .88rem; color: var(--muted); margin-bottom: 1.75rem; line-height: 1.6; }
+  .breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.75rem; text-align: left; }
+  .bd-item { background: var(--card2); border-radius: 8px; padding: .85rem 1rem; font-size: .85rem; }
+  .bd-item .bd-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .retry-btn {
+    padding: 11px 32px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    background: transparent;
+    border: 1px solid rgba(245,166,35,0.4);
+    color: var(--amber);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .retry-btn:hover { background: rgba(245,166,35,0.1); }
+
+  @media (max-width: 520px) {
+    .breakdown { grid-template-columns: 1fr; }
+    .fill-row { flex-direction: column; }
+    nav { padding: 0 1rem; }
+    .wrap { padding: 1.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Signal<span class="a">Strike</span><span class="t">.online</span></div>
+  <div class="nav-tag">Blueprint Exam</div>
+</nav>
+
+<div class="wrap">
+
+  <div class="exam-header">
+    <h1>Blueprint <span>Exam</span></h1>
+    <p>20 questions across all five modules. Answer each question, then hit Submit to see your full score and section breakdown.</p>
+  </div>
+
+  <div class="progress-bg"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-label">Total</div><div class="stat-val" id="s-total">20</div></div>
+    <div class="stat"><div class="stat-label">Answered</div><div class="stat-val" id="s-ans">0</div></div>
+    <div class="stat"><div class="stat-label">Remaining</div><div class="stat-val" id="s-rem">20</div></div>
+  </div>
+
+  <div id="quiz-body"></div>
+
+  <button class="submit-btn" id="sub-btn" onclick="submitExam()">Submit Exam</button>
+
+  <div class="results" id="results">
+    <div class="score-ring">
+      <svg viewBox="0 0 100 100">
+        <circle class="ring-track" cx="50" cy="50" r="45"/>
+        <circle class="ring-fill" id="ring" cx="50" cy="50" r="45"/>
+      </svg>
+      <div class="ring-pct" id="ring-pct">0%</div>
+    </div>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-sub" id="r-sub"></div>
+    <div class="breakdown" id="breakdown"></div>
+    <button class="retry-btn" onclick="resetExam()">Retake Exam</button>
+  </div>
+
+</div>
+
+<script>
+const Q = [
+  {
+    sec:"Psychology", badge:"badge-psych",
+    q:"According to the blueprint, what is the single most consistent driver of market price movements across all of history?",
+    type:"mc",
+    opts:["Institutional liquidity cycles","Human psychology — specifically fear and greed","Macroeconomic inflation data","News media sentiment algorithms"],
+    ans:1,
+    fb:"Correct. The guide opens by stating that human psychology — particularly fear and greed — has been the one constant behind every market throughout history.",
+    fbw:"The blueprint emphasises that human psychology — fear and greed — is the consistent driver across every market in history."
+  },
+  {
+    sec:"Psychology", badge:"badge-psych",
+    q:"When friends and family who have never shown interest in crypto start asking how to invest, this is described as a signal of what?",
+    type:"mc",
+    opts:["An impending market bottom and buying opportunity","Peak fear — the market is about to crash","Widespread FOMO suggesting the market may be near a top","Institutional accumulation beginning"],
+    ans:2,
+    fb:"Correct. Mass FOMO spreading to non-traders is listed as a sign of peak euphoric sentiment — historically a top signal, not a buying opportunity.",
+    fbw:"The guide frames widespread non-trader FOMO as a sign of peak euphoria — a potential market top, not a bottom."
+  },
+  {
+    sec:"Psychology", badge:"badge-psych",
+    q:"What does the blueprint recommend you check within yourself to identify whether peak fear may be setting in?",
+    type:"mc",
+    opts:["Your on-chain wallet balance","Whether you feel overwhelmingly bearish for no clear chart-based reason","Your profit/loss statement for the month","Whether your moving averages have crossed"],
+    ans:1,
+    fb:"Correct. Checking your own emotional state — particularly feeling bearish for no real reason — is suggested as a way to detect generalised peak fear.",
+    fbw:"The blueprint points to your own emotions as a sentiment gauge — specifically, feeling overwhelmingly bearish without a clear chart-based reason."
+  },
+  {
+    sec:"Psychology", badge:"badge-psych",
+    q:"Complete the SignalStrike mantra: \"Extreme fear precedes financial _____, while extreme greed precedes financial _____\"",
+    type:"fill",
+    answers:["opportunity, risk","opportunity risk","opportunity","risk"],
+    fb:"Spot on. Extreme fear precedes financial opportunity; extreme greed precedes financial risk.",
+    fbw:"The mantra is: extreme fear precedes financial opportunity, while extreme greed precedes financial risk."
+  },
+  {
+    sec:"Candlesticks", badge:"badge-candle",
+    q:"On a green (bullish) candlestick, where is the opening price located?",
+    type:"mc",
+    opts:["At the top of the candle wick","At the top of the candle body","At the bottom of the candle body","At the bottom of the candle wick"],
+    ans:2,
+    fb:"Correct. On a green candle, the bottom of the body is the open and the top of the body is the close — price rose during the session.",
+    fbw:"On a green candle the open is at the bottom of the body. The candle closed higher than it opened — that's why it's green."
+  },
+  {
+    sec:"Candlesticks", badge:"badge-candle",
+    q:"A candlestick with a small body and long wicks extending in both directions signals what type of market condition?",
+    type:"mc",
+    opts:["Strong bullish momentum","Strong bearish momentum","Indecision — a tug-of-war between buyers and sellers","An imminent breakout in either direction"],
+    ans:2,
+    fb:"Correct. Small body + long wicks in both directions = indecision. Price moved substantially both ways but closed near the open — no clear winner.",
+    fbw:"The blueprint describes a small body with long wicks as representing indecision and volatility — neither side gained decisive control."
+  },
+  {
+    sec:"Candlesticks", badge:"badge-candle",
+    q:"The blueprint states that a monthly trend has what relationship to a daily pattern?",
+    type:"mc",
+    opts:["They carry equal weight","A daily pattern is more accurate because it contains more data points","A monthly trend takes priority over a daily pattern every time","Daily patterns should always be used for final trade decisions"],
+    ans:2,
+    fb:"Exactly right. The guide is explicit: longer timeframes carry more weight — a monthly trend trumps a daily pattern every time.",
+    fbw:"The guide states clearly that longer timeframes carry more weight. A monthly trend always takes priority over a daily pattern."
+  },
+  {
+    sec:"Candlesticks", badge:"badge-candle",
+    q:"A red candlestick with a long lower wick indicates what market dynamic?",
+    type:"mc",
+    opts:["Bears are fully in control with no buying interest","Sellers pushed price significantly lower but buyers stepped in and rejected the move","Buyers are accumulating at the highs","Indecision with no clear direction"],
+    ans:1,
+    fb:"Correct. The long lower wick on a red candle shows bears drove price down hard, but bulls defended and pushed back — showing buying interest at lower prices.",
+    fbw:"A red candle with a long lower wick tells you bears tried to push lower but bulls defended that territory and rejected the downward move."
+  },
+  {
+    sec:"Trends", badge:"badge-trend",
+    q:"An uptrend is formally defined in the blueprint as a series of what?",
+    type:"mc",
+    opts:["Higher highs and higher lows","Lower highs and lower lows","Equal highs and higher lows","Higher highs and equal lows"],
+    ans:0,
+    fb:"Correct. Higher highs and higher lows is the definition of an uptrend — each peak and each pullback exceeds the previous equivalent level.",
+    fbw:"An uptrend is defined by higher highs and higher lows — both the peaks and the pullbacks are stepping upward over time."
+  },
+  {
+    sec:"Trends", badge:"badge-trend",
+    q:"What type of chart pattern is a Bullish Rectangle, and what typically follows a breakout above its resistance?",
+    type:"mc",
+    opts:["A bearish reversal pattern — price typically falls sharply","A bullish continuation pattern — the prior uptrend typically resumes","A neutral pattern — price can go either way","A topping pattern — it signals the end of an uptrend"],
+    ans:1,
+    fb:"Correct. The Bullish Rectangle is a continuation pattern. Sideways consolidation is a recharge, and a breakout above resistance typically resumes the uptrend.",
+    fbw:"A Bullish Rectangle is a bullish continuation pattern. The range is a pause and a breakout above range resistance typically resumes the prior uptrend."
+  },
+  {
+    sec:"Trends", badge:"badge-trend",
+    q:"A Rising Wedge is described as what type of pattern, and why is it deceptive?",
+    type:"mc",
+    opts:["A bullish continuation pattern — it looks bearish but resolves upward","A neutral pattern — it gives no clear directional signal","A bearish reversal pattern — it makes higher highs and higher lows yet breaks down sharply","A support and resistance pattern — price bounces indefinitely"],
+    ans:2,
+    fb:"Correct. The Rising Wedge is deceptive because it technically shows higher highs and higher lows (looking bullish) yet it is a bearish reversal that breaks down hard.",
+    fbw:"The Rising Wedge is bearish. It's deceptive because it shows higher highs and higher lows, yet when price breaks channel support the result is often a sharp sell-off."
+  },
+  {
+    sec:"Trends", badge:"badge-trend",
+    q:"When drawing trendlines, the blueprint recommends connecting which part of candlesticks — and why?",
+    type:"mc",
+    opts:["The wick tips — they represent the true extremes of price","The candle bodies — to reduce noise from temporary spike wicks","The midpoints of each candle — to average out volatility","Either wicks or bodies — both give the same result"],
+    ans:1,
+    fb:"Correct. Connecting candle bodies, not wicks, reduces noise from temporary price spikes and produces cleaner, more reliable trendlines.",
+    fbw:"The guide recommends connecting candle bodies, not wicks. Wick tips are often spike noise; body closes reflect actual conviction."
+  },
+  {
+    sec:"Trends", badge:"badge-trend",
+    q:"To confirm that a trendline has genuinely been broken, what does the blueprint say you should wait for?",
+    type:"mc",
+    opts:["Price to touch the trendline three times","A volume spike above average","The next candle to close beyond the trendline, then a retest from the other side","Two consecutive candles to close beyond the trendline"],
+    ans:2,
+    fb:"Correct. The 4-step process states: wait for a candle close beyond the trendline, then watch for a retest from the other side confirming the flip.",
+    fbw:"Confirmation is: close beyond the trendline, then wait for a retest from the new side — resistance flipping to support or vice versa."
+  },
+  {
+    sec:"Support & Resistance", badge:"badge-sr",
+    q:"The blueprint describes support and resistance as what two things within a trading range?",
+    type:"mc",
+    opts:["The average and median price of the range","The floor and ceiling of a price range","The open and close of the range period","The 50 EMA and 200 EMA levels"],
+    ans:1,
+    fb:"Correct. Support is the floor (buyers defend it) and resistance is the ceiling (sellers dominate at it) — the two boundaries of any horizontal consolidation.",
+    fbw:"Support is the floor and resistance is the ceiling of a price range — the lower and upper boundaries of horizontal consolidation."
+  },
+  {
+    sec:"Support & Resistance", badge:"badge-sr",
+    q:"The recommended sell strategy at range high resistance involves three stages. What percentage is sold at resistance, slightly above resistance, and at the FOMO wick highs?",
+    type:"mc",
+    opts:["33% / 33% / 34%","25% / 50% / 25%","50% / 30% / 20%","60% / 25% / 15%"],
+    ans:2,
+    fb:"Correct. Sell 50% at resistance, 30% slightly above into FOMO wicks, and the final 20% at the wick highs. This averaging-out improves your overall exit price.",
+    fbw:"The guide specifies 50% at resistance, 30% slightly above into FOMO wicks, and 20% at the wick extreme highs."
+  },
+  {
+    sec:"Support & Resistance", badge:"badge-sr",
+    q:"What is a 'false breakout' and why does it happen?",
+    type:"mc",
+    opts:["A valid breakout that fails due to low trading volume","Price briefly exceeding support or resistance before reversing back inside the range, trapping latecomers who chased the move","A trendline break not confirmed by a retest","A breakout on a lower timeframe not confirmed on a higher one"],
+    ans:1,
+    fb:"Correct. A false breakout occurs when price briefly pierces a boundary then reverses, trapping the crowd who bought or sold the 'breakout'.",
+    fbw:"A false breakout is when price moves briefly beyond support or resistance then reverses inside — trapping the crowd who chased the move."
+  },
+  {
+    sec:"Support & Resistance", badge:"badge-sr",
+    q:"What are 'stink bids' as defined in the glossary?",
+    type:"fill",
+    answers:["extremely low buy orders","low limit buy orders","very low buy orders","low buy orders placed below market"],
+    fb:"Correct. Stink bids are extremely low limit buy orders placed well below market price, designed to fill during panic-driven capitulation spikes.",
+    fbw:"Stink bids are extremely low limit buy orders placed well below the current market price, hoping to fill during panic capitulation spikes."
+  },
+  {
+    sec:"Moving Averages", badge:"badge-ma",
+    q:"What is the key difference between a Simple Moving Average (SMA) and an Exponential Moving Average (EMA)?",
+    type:"mc",
+    opts:["The SMA uses closing prices while the EMA uses opening prices","The EMA gives more weight to recent prices, making it faster and more responsive than the SMA","The SMA is more accurate over short timeframes; the EMA is better for longer timeframes","They are calculated identically — the only difference is the name"],
+    ans:1,
+    fb:"Correct. The EMA weights recent prices more heavily, making it faster to respond to current price action — ideal for volatile crypto markets.",
+    fbw:"The key distinction is that the EMA weights recent prices more heavily than older ones, making it more responsive to new market information than the equal-weighted SMA."
+  },
+  {
+    sec:"Moving Averages", badge:"badge-ma",
+    q:"On the daily chart, which two EMAs does the blueprint recommend plotting?",
+    type:"mc",
+    opts:["10 EMA and 20 EMA","21 EMA and 50 EMA","50 EMA and 200 EMA","100 EMA and 200 EMA"],
+    ans:2,
+    fb:"Correct. The blueprint recommends the 50 EMA for short-term trend confirmation and the 200 EMA for macro trend identification on the daily chart.",
+    fbw:"The daily chart setup uses the 50 EMA (short-term trend) and the 200 EMA (macro trend)."
+  },
+  {
+    sec:"Moving Averages", badge:"badge-ma",
+    q:"On the weekly chart, which two EMAs are recommended, and what does holding above the rising 21 EMA confirm?",
+    type:"mc",
+    opts:["50 EMA and 200 EMA — holding above the 50 EMA confirms a long-term bull market","21 EMA and 50 EMA — holding above the rising 21 EMA confirms the short-term uptrend is intact","10 EMA and 21 EMA — holding above the 10 EMA confirms momentum continuation","21 EMA and 100 EMA — the 100 EMA is the macro support level to watch"],
+    ans:1,
+    fb:"Correct. The weekly setup uses the 21 EMA and 50 EMA. Price holding above the rising 21 EMA confirms short-term bullish structure; the 50 EMA is the deeper macro support.",
+    fbw:"The weekly chart uses the 21 EMA and 50 EMA. Price holding above the rising 21 EMA confirms the short-term uptrend structure is intact."
+  }
+];
+
+const LETTERS = ['A','B','C','D'];
+let answered = {};
+
+function renderQuiz() {
+  const body = document.getElementById('quiz-body');
+  body.innerHTML = '';
+  let prevSec = null;
+  Q.forEach((q, i) => {
+    if (q.sec !== prevSec) {
+      prevSec = q.sec;
+      const div = document.createElement('div');
+      div.className = 'sec-div';
+      div.textContent = q.sec;
+      body.appendChild(div);
+    }
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    card.id = 'q' + i;
+    let html = `<div class="q-meta">
+      <span class="q-num">Q${i+1} of ${Q.length}</span>
+      <span class="q-badge ${q.badge}">${q.sec}</span>
+    </div>
+    <div class="q-text">${q.q}</div>`;
+    if (q.type === 'mc') {
+      html += `<div class="options" id="opts${i}">`;
+      q.opts.forEach((o, j) => {
+        html += `<div class="opt" id="o${i}_${j}" onclick="pick(${i},${j})">
+          <span class="letter">${LETTERS[j]}</span><span>${o}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    } else {
+      html += `<div class="fill-row">
+        <input type="text" id="fi${i}" placeholder="Type your answer…" onkeydown="if(event.key==='Enter')chkFill(${i})"/>
+        <button class="check-btn" id="fb-btn${i}" onclick="chkFill(${i})">Check</button>
+      </div>`;
+    }
+    html += `<div class="feedback" id="fb${i}"></div>`;
+    card.innerHTML = html;
+    body.appendChild(card);
+  });
+  updateStats();
+}
+
+function pick(qi, oi) {
+  if (answered[qi] !== undefined) return;
+  answered[qi] = oi;
+  const q = Q[qi];
+  const opts = document.querySelectorAll(`#opts${qi} .opt`);
+  opts.forEach((o, j) => {
+    o.classList.add('disabled');
+    if (j === q.ans) o.classList.add('correct');
+    else if (j === oi) o.classList.add('wrong');
+  });
+  showFb(qi, oi === q.ans);
+  updateStats();
+}
+
+function chkFill(qi) {
+  if (answered[qi] !== undefined) return;
+  const val = (document.getElementById('fi'+qi).value||'').trim().toLowerCase();
+  const q = Q[qi];
+  const ok = q.answers.some(a => val.includes(a.toLowerCase().split(' ')[0]));
+  answered[qi] = ok ? 'ok' : 'bad';
+  document.getElementById('fi'+qi).disabled = true;
+  document.getElementById('fb-btn'+qi).disabled = true;
+  showFb(qi, ok);
+  updateStats();
+}
+
+function showFb(qi, ok) {
+  const fb = document.getElementById('fb'+qi);
+  fb.className = 'feedback show ' + (ok ? 'good' : 'bad');
+  const q = Q[qi];
+  fb.innerHTML = `<strong>${ok ? 'Correct.' : 'Not quite.'}</strong> ${ok ? q.fb : q.fbw}`;
+}
+
+function updateStats() {
+  const ans = Object.keys(answered).length;
+  document.getElementById('s-ans').textContent = ans;
+  document.getElementById('s-rem').textContent = Q.length - ans;
+  document.getElementById('prog').style.width = Math.round(ans / Q.length * 100) + '%';
+}
+
+function submitExam() {
+  const left = Q.length - Object.keys(answered).length;
+  if (left > 0 && !confirm(`${left} question${left>1?'s are':' is'} unanswered. Submit anyway?`)) return;
+
+  let correct = 0;
+  const bySection = {};
+  Q.forEach((q, i) => {
+    if (!bySection[q.sec]) bySection[q.sec] = {c:0,t:0};
+    bySection[q.sec].t++;
+    const a = answered[i];
+    const ok = (q.type==='mc' && a===q.ans) || (q.type==='fill' && a==='ok');
+    if (ok) { correct++; bySection[q.sec].c++; }
+    if (a === undefined) {
+      if (q.type === 'mc') {
+        const opts = document.querySelectorAll(`#opts${i} .opt`);
+        opts.forEach((o,j) => { o.classList.add('disabled'); if(j===q.ans) o.classList.add('revealed'); });
+      }
+      showFb(i, false);
+    }
+  });
+
+  const pct = Math.round(correct / Q.length * 100);
+  document.getElementById('sub-btn').style.display = 'none';
+
+  const res = document.getElementById('results');
+  res.classList.add('show');
+  document.getElementById('ring-pct').textContent = pct + '%';
+  const circ = 2 * Math.PI * 45;
+  const offset = circ - (circ * pct / 100);
+  const ring = document.getElementById('ring');
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 80);
+  ring.style.strokeDasharray = circ;
+  ring.style.stroke = pct >= 80 ? 'var(--success)' : pct >= 60 ? 'var(--warning)' : 'var(--danger)';
+
+  const tiers = [
+    ['Keep Studying', `${correct}/${Q.length} correct — revisit the sections you missed and try again.`],
+    ['Getting There', `${correct}/${Q.length} correct — a few sections need another read-through.`],
+    ['Solid Effort', `${correct}/${Q.length} correct — good foundation. Review the sections you dropped.`],
+    ['Strong Result', `${correct}/${Q.length} correct — you've absorbed the material well.`],
+    ['Blueprint Mastered', `${correct}/${Q.length} correct — excellent. You've internalised the SignalStrike framework.`]
+  ];
+  const tier = pct < 40 ? 0 : pct < 60 ? 1 : pct < 70 ? 2 : pct < 85 ? 3 : 4;
+  document.getElementById('r-title').textContent = tiers[tier][0];
+  document.getElementById('r-sub').textContent = tiers[tier][1];
+
+  const bd = document.getElementById('breakdown');
+  bd.innerHTML = Object.entries(bySection).map(([s,v]) => {
+    const sp = Math.round(v.c/v.t*100);
+    return `<div class="bd-item"><div class="bd-label">${s}</div>${v.c}/${v.t} correct — ${sp}%</div>`;
+  }).join('');
+
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetExam() {
+  answered = {};
+  document.getElementById('sub-btn').style.display = '';
+  document.getElementById('results').classList.remove('show');
+  renderQuiz();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
