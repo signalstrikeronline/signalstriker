@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SignalStrike.online — Technical Analysis Blueprint</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --amber: #F5A623;
+    --teal: #00C9B1;
+    --charcoal: #0D0F14;
+    --card: #161A22;
+    --card2: #1C2130;
+    --off-white: #E8E8E0;
+    --muted: #8A8F9E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--charcoal); color: var(--off-white); font-family: 'Inter', sans-serif; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: rgba(13,15,20,0.96); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(245,166,35,0.2);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+  }
+  .nav-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.25rem; font-weight: 800; letter-spacing: .04em; }
+  .nav-logo span { color: var(--amber); }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { font-size: .8rem; font-weight: 500; color: var(--muted); text-decoration: none; letter-spacing: .06em; text-transform: uppercase; transition: color .2s; }
+  .nav-links a:hover { color: var(--amber); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 80px 2rem 2rem; position: relative; overflow: hidden; text-align: center;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(245,166,35,0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(0,201,177,0.05) 0%, transparent 60%);
+  }
+  .hero-eyebrow {
+    font-size: .75rem; letter-spacing: .18em; text-transform: uppercase; color: var(--amber);
+    font-weight: 600; margin-bottom: 1.2rem; position: relative; z-index: 1;
+  }
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif; font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 800; line-height: .95; text-transform: uppercase; position: relative; z-index: 1;
+    letter-spacing: -.01em;
+  }
+  .hero-title .accent { color: var(--amber); }
+  .hero-subtitle {
+    font-size: 1rem; color: var(--muted); max-width: 480px; margin: 1.5rem auto 0;
+    line-height: 1.7; position: relative; z-index: 1;
+  }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: .5rem; margin-top: 2.5rem;
+    background: var(--amber); color: #000; font-weight: 700; font-size: .85rem;
+    letter-spacing: .08em; text-transform: uppercase; padding: .85rem 2rem; border-radius: 4px;
+    text-decoration: none; transition: background .2s, transform .15s; position: relative; z-index: 1;
+  }
+  .hero-cta:hover { background: #ffbb44; transform: translateY(-2px); }
+
+  /* Animated candlestick canvas */
+  #candle-canvas { position: absolute; bottom: 0; left: 0; right: 0; height: 220px; z-index: 0; opacity: .35; }
+
+  /* ── SECTION WRAPPER ── */
+  .section { padding: 5rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+  .section-header {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;
+  }
+  .section-num {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 4rem; font-weight: 800;
+    color: rgba(245,166,35,0.15); line-height: 1; min-width: 70px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800; text-transform: uppercase; letter-spacing: .02em; line-height: 1.05;
+  }
+  .section-title .amber { color: var(--amber); }
+  .section-divider { height: 3px; background: linear-gradient(90deg, var(--amber), transparent); margin-bottom: 3rem; }
+
+  /* ── CARDS ── */
+  .card { background: var(--card); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 1.75rem; }
+  .card-teal { border-left: 3px solid var(--teal); }
+  .card-amber { border-left: 3px solid var(--amber); }
+  .card-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.15rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .75rem; color: var(--amber); }
+  .card-body { font-size: .88rem; line-height: 1.75; color: var(--muted); }
+  .card-body strong { color: var(--off-white); }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  @media (max-width: 700px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: linear-gradient(135deg, rgba(245,166,35,0.1), rgba(0,201,177,0.06));
+    border: 1px solid rgba(245,166,35,0.25); border-radius: 10px;
+    padding: 2rem 2.5rem; text-align: center; margin: 2.5rem 0;
+  }
+  .callout p { font-size: 1.15rem; font-style: italic; line-height: 1.7; color: var(--off-white); }
+  .callout p strong { color: var(--amber); }
+
+  /* ── TAGS ── */
+  .tag {
+    display: inline-block; background: rgba(245,166,35,0.12); color: var(--amber);
+    font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    padding: .25rem .65rem; border-radius: 3px; margin-bottom: .5rem;
+  }
+  .tag-teal { background: rgba(0,201,177,0.1); color: var(--teal); }
+
+  /* ── CANDLESTICK DIAGRAM (SVG inline) ── */
+  .diagram-box {
+    background: #111520; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;
+    padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .diagram-label { font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-align: center; margin-top: .75rem; }
+
+  /* ── ACTION STEPS ── */
+  .steps { counter-reset: step; display: flex; flex-direction: column; gap: 1rem; }
+  .step {
+    display: flex; align-items: flex-start; gap: 1rem;
+    background: var(--card2); border-radius: 8px; padding: 1.1rem 1.4rem;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .step-num {
+    background: var(--amber); color: #000; font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem; font-weight: 800; width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .step-text { font-size: .88rem; line-height: 1.65; color: var(--muted); }
+  .step-text strong { color: var(--off-white); }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight {
+    background: rgba(0,201,177,0.07); border: 1px solid rgba(0,201,177,0.2);
+    border-radius: 8px; padding: 1.25rem 1.5rem; font-size: .88rem; color: var(--teal); line-height: 1.7;
+  }
+  .highlight strong { color: var(--off-white); }
+
+  /* ── GLOSSARY ── */
+  .gloss-letter { font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; font-weight: 800; color: var(--amber); margin: 2rem 0 .75rem; }
+  .gloss-item { margin-bottom: 1rem; }
+  .gloss-item dt { font-weight: 600; color: var(--off-white); font-size: .9rem; margin-bottom: .2rem; }
+  .gloss-item dd { font-size: .84rem; color: var(--muted); line-height: 1.65; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--card); border-top: 1px solid rgba(245,166,35,0.15);
+    padding: 3rem 2rem; text-align: center;
+  }
+  footer .logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: .5rem; }
+  footer .logo span { color: var(--amber); }
+  footer p { font-size: .8rem; color: var(--muted); max-width: 420px; margin: .5rem auto 0; line-height: 1.7; }
+
+  /* ── TOC ── */
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .toc-item {
+    background: var(--card2); border-radius: 8px; padding: 1.25rem;
+    border: 1px solid rgba(255,255,255,0.05); text-decoration: none;
+    transition: border-color .2s, transform .15s;
+  }
+  .toc-item:hover { border-color: rgba(245,166,35,0.4); transform: translateY(-3px); }
+  .toc-icon { font-size: 1.5rem; margin-bottom: .6rem; }
+  .toc-name { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--off-white); }
+  .toc-desc { font-size: .75rem; color: var(--muted); margin-top: .3rem; line-height: 1.5; }
+
+  /* ── TREND VIZ ── */
+  .trend-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+  @media(max-width:600px){ .trend-row { grid-template-columns: 1fr; } }
+
+  /* ── MA TABLE ── */
+  .ma-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+  .ma-table th { background: rgba(245,166,35,0.1); color: var(--amber); font-family: 'Barlow Condensed', sans-serif; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; padding: .75rem 1rem; text-align: left; }
+  .ma-table td { padding: .75rem 1rem; color: var(--muted); border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+  .ma-table td strong { color: var(--off-white); }
+  .ma-table tr:last-child td { border-bottom: none; }
+  .ma-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── FULL-WIDTH BAND ── */
+  .band { background: var(--card); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 5rem 1.5rem; }
+  .band-inner { max-width: 1100px; margin: 0 auto; }
+
+  /* scroll fade-in */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity .55s ease, transform .55s ease; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  /* pill */
+  .pill { display: inline-flex; align-items: center; gap: .4rem; background: rgba(245,166,35,0.1); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); border-radius: 99px; font-size: .75rem; font-weight: 600; padding: .3rem .85rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Signal<span>Strike</span><span style="color:var(--teal);">.online</span></div>
+  <ul class="nav-links">
+    <li><a href="#psychology">Psychology</a></li>
+    <li><a href="#candlesticks">Candlesticks</a></li>
+    <li><a href="#trends">Trends</a></li>
+    <li><a href="#support">Support/Resistance</a></li>
+    <li><a href="#moving-averages">Moving Averages</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <canvas id="candle-canvas"></canvas>
+  <p class="hero-eyebrow">SignalStrike.online · Technical Analysis Blueprint</p>
+  <h1 class="hero-title">Read Charts.<br><span class="accent">Trade Smart.</span><br>Win Consistently.</h1>
+  <p class="hero-subtitle">The fundamental chart-reading framework every serious trader needs — from candlestick anatomy to moving average confirmation.</p>
+  <a href="#toc" class="hero-cta">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Start Learning
+  </a>
+</section>
+
+<!-- TABLE OF CONTENTS -->
+<div id="toc" class="band">
+  <div class="band-inner">
+    <p class="hero-eyebrow" style="text-align:center; margin-bottom:1rem;">What's Inside</p>
+    <h2 style="font-family:'Barlow Condensed',sans-serif; font-size:2.2rem; font-weight:800; text-transform:uppercase; text-align:center; margin-bottom:2.5rem;">Your Complete Roadmap</h2>
+    <div class="toc-grid">
+      <a href="#psychology" class="toc-item">
+        <div class="toc-icon">🧠</div>
+        <div class="toc-name">Fear & Greed Psychology</div>
+        <div class="toc-desc">Why emotion-driven trading destroys accounts — and how to spot it</div>
+      </a>
+      <a href="#candlesticks" class="toc-item">
+        <div class="toc-icon">🕯️</div>
+        <div class="toc-name">Candlestick Language</div>
+        <div class="toc-desc">Decode every candle's story: anatomy, patterns & timeframes</div>
+      </a>
+      <a href="#trends" class="toc-item">
+        <div class="toc-icon">📈</div>
+        <div class="toc-name">Trend Identification</div>
+        <div class="toc-desc">Uptrends, downtrends, channels & the power of trendlines</div>
+      </a>
+      <a href="#support" class="toc-item">
+        <div class="toc-icon">🎯</div>
+        <div class="toc-name">Support & Resistance</div>
+        <div class="toc-desc">Trade sideways ranges profitably using floors & ceilings</div>
+      </a>
+      <a href="#moving-averages" class="toc-item">
+        <div class="toc-icon">〰️</div>
+        <div class="toc-name">Moving Average Confirmation</div>
+        <div class="toc-desc">SMA vs EMA — the exact settings to use on every timeframe</div>
+      </a>
+      <a href="#glossary" class="toc-item">
+        <div class="toc-icon">📖</div>
+        <div class="toc-name">Glossary</div>
+        <div class="toc-desc">Every term defined — your go-to trading reference</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 1: PSYCHOLOGY
+═══════════════════════════════════════════ -->
+<section id="psychology">
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div>
+        <p class="tag">Foundation</p>
+        <h2 class="section-title">Fear &amp; Greed<br><span class="amber">Why Most Traders Fail</span></h2>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div style="max-width:720px; margin-bottom:2rem;">
+      <p style="font-size:.95rem; line-height:1.8; color:var(--muted); margin-bottom:1.2rem;">
+        From ancient spice routes to modern crypto exchanges, one force has driven every market throughout human history: <strong style="color:var(--off-white);">the psychology of the participants.</strong> Technical analysis is essentially a real-time map of that psychology — each candle capturing a moment of collective euphoria, panic, greed or despair.
+      </p>
+      <p style="font-size:.95rem; line-height:1.8; color:var(--muted);">
+        Every price movement distills down to a single truth: <strong style="color:var(--amber);">most market participants trade with emotions rather than evidence.</strong> When prices rise, greed whispers that they'll rise forever. When they fall, fear screams to sell everything — usually at exactly the wrong moment.
+      </p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:2rem;">
+      <div class="card card-amber">
+        <div class="card-title">📈 The Winning Trader's Curve</div>
+        <div class="card-body">
+          Makes <strong>systematic, data-driven decisions</strong>. Drawdowns exist, but the equity curve trends steadily upward because each trade follows a framework — not a feeling.
+          <!-- Simple SVG uptrend illustration -->
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;margin-top:1rem;">
+            <polyline points="10,80 30,70 50,65 70,55 90,60 110,45 130,35 150,25 170,20 190,10"
+              fill="none" stroke="#00C9B1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="190" cy="10" r="4" fill="#00C9B1"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card" style="border-left:3px solid #e53e3e;">
+        <div class="card-title" style="color:#e53e3e;">📉 The Emotional Trader's Curve</div>
+        <div class="card-body">
+          Makes decisions based on <strong>news sentiment, social pressure and gut reactions</strong>. Gains are given back quickly. Each cycle of hope followed by panic leaves the account smaller than before.
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;margin-top:1rem;">
+            <polyline points="10,15 30,25 50,20 70,35 90,30 110,50 130,55 150,65 170,75 190,88"
+              fill="none" stroke="#e53e3e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="190" cy="88" r="4" fill="#e53e3e"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Greed signals -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:1.5rem; font-weight:700; text-transform:uppercase; margin-bottom:1.2rem; color:var(--amber);">Greed — Signals of an Approaching Peak</h3>
+    <div class="steps" style="margin-bottom:2.5rem;">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Assess your recent performance.</strong> If you've been making outsized gains consistently and it all feels effortless, take note. That feeling is likely shared by a large portion of the market — and shared euphoria historically precedes sharp reversals.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Scan the headlines.</strong> Overwhelmingly bullish news flow, lofty price forecasts and celebrity endorsements are classic markers of peak market optimism. When mainstream media publishes "can't lose" narratives, caution is warranted.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Listen to the crowd.</strong> When friends, family or coworkers who've never shown interest in markets suddenly ask how to get in on crypto, that widespread FOMO often signals the crowd is arriving at the top — the last buyers before the inevitable shift.</div>
+      </div>
+    </div>
+
+    <!-- Fear signals -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:1.5rem; font-weight:700; text-transform:uppercase; margin-bottom:1.2rem; color:var(--teal);">Fear — Signals of an Approaching Bottom</h3>
+    <div class="steps" style="margin-bottom:2.5rem;">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Monitor news sentiment.</strong> Pervasive pessimism — collapsing headlines, bankruptcy rumours, universal bearishness — can actually signal that a price bottom is forming. Historic examples include the 2020 COVID crash and the 2022 FTX collapse: both followed by dramatic recoveries.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Check in with your own emotions.</strong> Are you overwhelmingly bearish for no clear chart-based reason? Are you getting caught up in the prevailing narrative? Peak fear often lives inside you before it's visible on a chart — and a bottom may be closer than you think.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p><strong>The SignalStrike Mantra:</strong> Extreme fear precedes financial opportunity. Extreme greed precedes financial risk. <strong>Know which side of the crowd you want to be on.</strong></p>
+    </div>
+
+    <!-- Action steps -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif; font-size:1.3rem; font-weight:700; text-transform:uppercase; color:var(--amber); margin:2rem 0 1rem;">⚡ Action Steps</h3>
+    <div class="grid-2">
+      <div class="highlight">
+        <strong>Spotting a near-term top (without charts)</strong><br><br>
+        ① Your account is up significantly and it feels easy<br>
+        ② Every news story is bullish<br>
+        ③ Friends and family are asking how to buy crypto
+      </div>
+      <div class="highlight" style="border-color:rgba(245,166,35,0.2); color:var(--amber);">
+        <strong style="color:var(--off-white);">Spotting a near-term bottom (without charts)</strong><br><br>
+        ① The news cycle is saturated with negativity<br>
+        ② You personally feel afraid to buy anything
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 2: CANDLESTICKS
+═══════════════════════════════════════════ -->
+<div class="band" id="candlesticks">
+  <div class="band-inner fade-in">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div>
+        <p class="tag tag-teal">Chart Reading</p>
+        <h2 class="section-title">Candlestick Language<br><span class="amber">Every Candle Tells a Story</span></h2>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="grid-2" style="align-items:start; gap:3rem; margin-bottom:2.5rem;">
+      <div>
+        <p style="font-size:.93rem; line-height:1.8; color:var(--muted); margin-bottom:1.5rem;">
+          Recognising chart patterns is the foundation of predicting market direction. And the fundamental building block of every pattern is the <strong style="color:var(--off-white);">candlestick</strong> — a single visual unit that captures the entire battle between buyers and sellers within any given timeframe.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num" style="background:var(--teal);">▲</div>
+            <div class="step-text"><strong>Green (Up) Candle</strong> — The close is <em>above</em> the open. Buyers won the session. The body represents the open-to-close range; the upper wick marks the session high; the lower wick marks the session low.</div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:#e53e3e;">▼</div>
+            <div class="step-text"><strong>Red (Down) Candle</strong> — The close is <em>below</em> the open. Sellers won. Same body/wick structure, but the top of the body is the open and the bottom is the close.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Candlestick anatomy SVG -->
+      <div class="diagram-box">
+        <svg viewBox="0 0 260 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;">
+          <!-- Green candle -->
+          <line x1="70" y1="20" x2="70" y2="55" stroke="#00C9B1" stroke-width="2"/>
+          <rect x="52" y="55" width="36" height="80" fill="#00C9B1" rx="2"/>
+          <line x1="70" y1="135" x2="70" y2="170" stroke="#00C9B1" stroke-width="2"/>
+          <!-- Labels green -->
+          <text x="115" y="25" fill="#8A8F9E" font-size="10" font-family="Inter">HIGH (Wick Top)</text>
+          <line x1="112" y1="22" x2="75" y2="22" stroke="#8A8F9E" stroke-width="1" marker-end="url(#arr)"/>
+          <text x="115" y="60" fill="#00C9B1" font-size="10" font-family="Inter">CLOSE (Body Top)</text>
+          <line x1="112" y1="58" x2="90" y2="58" stroke="#00C9B1" stroke-width="1"/>
+          <text x="115" y="140" fill="#00C9B1" font-size="10" font-family="Inter">OPEN (Body Bottom)</text>
+          <line x1="112" y1="138" x2="90" y2="135" stroke="#00C9B1" stroke-width="1"/>
+          <text x="115" y="172" fill="#8A8F9E" font-size="10" font-family="Inter">LOW (Wick Bottom)</text>
+          <line x1="112" y1="170" x2="75" y2="168" stroke="#8A8F9E" stroke-width="1"/>
+          <!-- Red candle -->
+          <line x1="190" y1="35" x2="190" y2="65" stroke="#e53e3e" stroke-width="2"/>
+          <rect x="172" y="65" width="36" height="70" fill="#e53e3e" rx="2"/>
+          <line x1="190" y1="135" x2="190" y2="165" stroke="#e53e3e" stroke-width="2"/>
+          <!-- Legend -->
+          <circle cx="52" cy="200" r="6" fill="#00C9B1"/>
+          <text x="63" y="204" fill="#8A8F9E" font-size="9" font-family="Inter">Green = Up candle</text>
+          <circle cx="152" cy="200" r="6" fill="#e53e3e"/>
+          <text x="163" y="204" fill="#8A8F9E" font-size="9" font-family="Inter">Red = Down candle</text>
+        </svg>
+        <p class="diagram-label">Candlestick Anatomy · SignalStrike.online</p>
+      </div>
+    </div>
+
+    <!-- What each candle tells you -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;text-transform:uppercase;margin-bottom:1.2rem;">What Each Candle Shape Means</h3>
+    <div class="grid-3" style="margin-bottom:2.5rem;">
+      <div class="card card-teal">
+        <div class="card-title">Large Body, Small Wicks</div>
+        <div class="card-body">One side dominated decisively. Large green body = strong buyer conviction. Large red body = sellers in full control with minimal pushback.</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--muted);">
+        <div class="card-title" style="color:var(--muted);">Small Body, Long Wicks</div>
+        <div class="card-body">Market indecision. Price moved significantly in both directions but ended near where it opened. Signals a tug-of-war with no clear victor yet.</div>
+      </div>
+      <div class="card" style="border-left:3px solid #e53e3e;">
+        <div class="card-title" style="color:#e53e3e;">Red Body, Long Lower Wick</div>
+        <div class="card-body">Bears pushed hard lower but bulls stepped in and rejected the move. The long tail shows buying interest at lower levels — a potential reversal signal.</div>
+      </div>
+    </div>
+
+    <!-- Timeframes -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;text-transform:uppercase;margin-bottom:1.2rem;">Timeframes That Matter</h3>
+    <table class="ma-table" style="margin-bottom:1.5rem;">
+      <thead>
+        <tr><th>Timeframe</th><th>Best Used For</th><th>Weight</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Monthly</strong></td><td>Long-term macro trend direction and major cycle identification</td><td><span class="pill">Highest</span></td></tr>
+        <tr><td><strong>Weekly</strong></td><td>Medium-term swing setups and key structural levels</td><td><span class="pill">High</span></td></tr>
+        <tr><td><strong>Daily</strong></td><td>Short-term sentiment, entry timing and confirmation</td><td><span class="pill" style="background:rgba(0,201,177,0.1);color:var(--teal);">Medium</span></td></tr>
+      </tbody>
+    </table>
+    <div class="highlight"><strong>Key Rule:</strong> Higher timeframes always take priority over lower ones. A compelling daily pattern means little if it contradicts the monthly trend.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 3: TRENDS & CHART PATTERNS
+═══════════════════════════════════════════ -->
+<section id="trends">
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div>
+        <p class="tag">Direction</p>
+        <h2 class="section-title">Trend Identification<br><span class="amber">Uptrends, Downtrends &amp; Patterns</span></h2>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <p style="font-size:.93rem;line-height:1.8;color:var(--muted);max-width:700px;margin-bottom:2rem;">
+      A trend is the general direction in which a price is travelling. Markets move in three directions: <strong style="color:var(--off-white);">up (bullish), down (bearish), or sideways (consolidation)</strong>. Understanding which trend you're in determines your entire strategy.
+    </p>
+
+    <div class="trend-row">
+      <!-- Uptrend card -->
+      <div class="card card-teal">
+        <div class="tag tag-teal" style="margin-bottom:.8rem;">Uptrend</div>
+        <h4 style="font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;text-transform:uppercase;margin-bottom:.8rem;">Higher Highs &amp; Higher Lows</h4>
+        <p class="card-body" style="margin-bottom:1rem;">Each rally peak surpasses the previous one, and each pullback holds above the prior low. Bullish psychology is building — buyers are increasingly willing to step in at higher levels.</p>
+        <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+          <!-- candles -->
+          <line x1="20" y1="90" x2="20" y2="105" stroke="#00C9B1" stroke-width="1.5"/>
+          <rect x="15" y="75" width="10" height="15" fill="#00C9B1" rx="1"/>
+          <line x1="20" y1="75" x2="20" y2="65" stroke="#00C9B1" stroke-width="1.5"/>
+          <line x1="45" y1="85" x2="45" y2="98" stroke="#e53e3e" stroke-width="1.5"/>
+          <rect x="40" y="70" width="10" height="15" fill="#e53e3e" rx="1"/>
+          <line x1="45" y1="70" x2="45" y2="60" stroke="#e53e3e" stroke-width="1.5"/>
+          <line x1="70" y1="68" x2="70" y2="80" stroke="#00C9B1" stroke-width="1.5"/>
+          <rect x="65" y="55" width="10" height="13" fill="#00C9B1" rx="1"/>
+          <line x1="70" y1="55" x2="70" y2="45" stroke="#00C9B1" stroke-width="1.5"/>
+          <line x1="95" y1="60" x2="95" y2="72" stroke="#e53e3e" stroke-width="1.5"/>
+          <rect x="90" y="48" width="10" height="12" fill="#e53e3e" rx="1"/>
+          <line x1="95" y1="48" x2="95" y2="38" stroke="#e53e3e" stroke-width="1.5"/>
+          <line x1="120" y1="50" x2="120" y2="62" stroke="#00C9B1" stroke-width="1.5"/>
+          <rect x="115" y="36" width="10" height="14" fill="#00C9B1" rx="1"/>
+          <line x1="120" y1="36" x2="120" y2="26" stroke="#00C9B1" stroke-width="1.5"/>
+          <line x1="145" y1="40" x2="145" y2="53" stroke="#e53e3e" stroke-width="1.5"/>
+          <rect x="140" y="27" width="10" height="13" fill="#e53e3e" rx="1"/>
+          <line x1="145" y1="27" x2="145" y2="18" stroke="#e53e3e" stroke-width="1.5"/>
+          <line x1="170" y1="28" x2="170" y2="40" stroke="#00C9B1" stroke-width="1.5"/>
+          <rect x="165" y="16" width="10" height="12" fill="#00C9B1" rx="1"/>
+          <line x1="170" y1="16" x2="170" y2="8" stroke="#00C9B1" stroke-width="1.5"/>
+          <!-- HH/HL labels -->
+          <text x="60" y="42" fill="#00C9B1" font-size="8" font-family="Inter">HH</text>
+          <text x="85" y="36" fill="#00C9B1" font-size="8" font-family="Inter">HH</text>
+          <text x="110" y="22" fill="#00C9B1" font-size="8" font-family="Inter">HH</text>
+          <text x="38" y="58" fill="var(--teal)" font-size="7" font-family="Inter" opacity=".7">HL</text>
+          <text x="88" y="70" fill="var(--teal)" font-size="7" font-family="Inter" opacity=".7">HL</text>
+          <text x="138" y="50" fill="var(--teal)" font-size="7" font-family="Inter" opacity=".7">HL</text>
+        </svg>
+      </div>
+      <!-- Downtrend card -->
+      <div class="card" style="border-left:3px solid #e53e3e;">
+        <div class="tag" style="background:rgba(229,62,62,0.1);color:#e53e3e;margin-bottom:.8rem;">Downtrend</div>
+        <h4 style="font-family:'Barlow Condensed',sans-serif;font-size:1.25rem;font-weight:700;text-transform:uppercase;margin-bottom:.8rem;">Lower Highs &amp; Lower Lows</h4>
+        <p class="card-body" style="margin-bottom:1rem;">Each bounce fails below the prior peak, and each selloff breaks below the prior trough. Bearish conviction dominates — each rally is weaker and less sustained than the last.</p>
+        <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+          <line x1="20" y1="10" x2="20" y2="22" stroke="#00C9B1" stroke-width="1.5"/>
+          <rect x="15" y="22" width="10" height="14" fill="#00C9B1" rx="1"/>
+          <line x1="20" y1="36" x2="20" y2="46" stroke="#00C9B1" stroke-width="1.5"/>
+          <line x1="45" y1="28" x2="45" y2="40" stroke="#e53e3e" stroke-width="1.5"/>
+          <rect x="40" y="40" width="10" height="15" fill="#e53e3e" rx="1"/>
+          <line x1="45" y1="55" x2="45" y2="65" stroke="#e53e3e" stroke-width="1.5"/>
+          <line x1="70" y1="40" x2="70" y2="50" stroke="#00C9B1" stroke-width="1.5"/>
+          <rect x="65" y="50" width="10" height="12" fill="#00C9B1" rx="1"/>
+          <line x1="70" y1="62" x2="70" y2="72" stroke="#00C9B1" stroke-width="1.5"/>
+          <line x1="95" y1="55" x2="95" y2="65" stroke="#e53e3e" stroke-width="1.5"/>
+          <rect x="90" y="65" width="10" height="14" fill="#e53e3e" rx="1"/>
+          <line x1="95" y1="79" x2="95" y2="90" stroke="#e53e3e" stroke-width="1.5"/>
+          <line x1="120" y1="62" x2="120" y2="72" stroke="#00C9B1" stroke-width="1.5"/>
+          <rect x="115" y="72" width="10" height="12" fill="#00C9B1" rx="1"/>
+          <line x1="120" y1="84" x2="120" y2="94" stroke="#00C9B1" stroke-width="1.5"/>
+          <line x1="145" y1="76" x2="145" y2="86" stroke="#e53e3e" stroke-width="1.5"/>
+          <rect x="140" y="86" width="10" height="14" fill="#e53e3e" rx="1"/>
+          <line x1="145" y1="100" x2="145" y2="112" stroke="#e53e3e" stroke-width="1.5"/>
+          <!-- LH/LL labels -->
+          <text x="38" y="25" fill="#e53e3e" font-size="8" font-family="Inter">LH</text>
+          <text x="63" y="38" fill="#e53e3e" font-size="8" font-family="Inter">LH</text>
+          <text x="88" y="54" fill="#e53e3e" font-size="8" font-family="Inter">LH</text>
+          <text x="40" y="68" fill="#e53e3e" font-size="7" font-family="Inter" opacity=".7">LL</text>
+          <text x="88" y="93" fill="#e53e3e" font-size="7" font-family="Inter" opacity=".7">LL</text>
+          <text x="138" y="115" fill="#e53e3e" font-size="7" font-family="Inter" opacity=".7">LL</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Chart patterns -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;text-transform:uppercase;margin:3rem 0 1.2rem;">Chart Patterns: Similar Looks, Opposite Outcomes</h3>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.75;">Every trend is foreshadowed by specific recurring formations. Two patterns can look deceptively similar but signal completely different futures — a critical distinction that separates profitable traders from the crowd.</p>
+    <div class="grid-2">
+      <div class="card card-teal">
+        <div class="tag tag-teal">Bullish Continuation</div>
+        <h4 style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;margin:.6rem 0 .8rem;text-transform:uppercase;">Bullish Rectangle</h4>
+        <p class="card-body">Price consolidates horizontally between a defined range high and range low. The sideways pause is a <strong>recharge</strong> rather than a reversal. When price breaks above range resistance with conviction, the prior uptrend typically resumes — often with momentum.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #e53e3e;">
+        <div class="tag" style="background:rgba(229,62,62,0.1);color:#e53e3e;">Bearish Reversal</div>
+        <h4 style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;margin:.6rem 0 .8rem;text-transform:uppercase;">Rising Wedge</h4>
+        <p class="card-body">Price drifts upward with narrowing range — technically making higher highs and higher lows, but losing energy. When it breaks below the lower channel support, the result is often a <strong>sharp, accelerated sell-off</strong>. The upward drift was a trap.</p>
+      </div>
+    </div>
+
+    <!-- Trendlines -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;text-transform:uppercase;margin:3rem 0 1.2rem;">Trendlines &amp; Channels</h3>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.75;">Trendlines are slanted lines connecting successive price points — a visual representation of the collective sentiment shift unfolding in real time. They serve three purposes in active trading:</p>
+    <div class="grid-3" style="margin-bottom:2rem;">
+      <div class="card card-amber">
+        <div class="card-title">① Trend Direction</div>
+        <div class="card-body">An upward-sloping trendline confirms bullish momentum is intact. A downward slope confirms sellers are in control. This is your macro compass.</div>
+      </div>
+      <div class="card card-teal">
+        <div class="card-title">② Dynamic Support/Resistance</div>
+        <div class="card-body">Trendlines act as moving support or resistance zones. Each successful test of the line without a break confirms the trend's strength and creates a buying or selling opportunity.</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--muted);">
+        <div class="card-title" style="color:var(--muted);">③ Breaks &amp; Reversals</div>
+        <div class="card-body">When price closes decisively through a major trendline, the trend has likely shifted. Wait for a retest of the broken line — it should now behave as the opposite (support becomes resistance, or vice versa).</div>
+      </div>
+    </div>
+
+    <div class="highlight" style="margin-bottom:1.5rem;">
+      <strong>Channels</strong> are simply two parallel trendlines bounding price action — one connecting highs, one connecting lows. They let you apply the same buy-low/sell-high range trading logic you'd use with horizontal support and resistance.
+    </div>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;text-transform:uppercase;color:var(--amber);margin:2rem 0 1rem;">⚡ 4-Step Process for Trendlines</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Connect candle bodies, not wicks.</strong> This reduces false signals from temporary spike highs and spike lows.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Downtrend lines:</strong> Look for at least 3 consecutive lower highs to connect. This zone acts as resistance on each retest.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Uptrend lines:</strong> Look for at least 3 consecutive higher lows. This zone acts as dynamic support each time price pulls back.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Confirming a break:</strong> Wait for a candle to close beyond the trendline on that timeframe, then watch for a retest. Resistance flipping to support (or vice versa) is high-conviction confirmation.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 4: SUPPORT & RESISTANCE
+═══════════════════════════════════════════ -->
+<div class="band" id="support">
+  <div class="band-inner fade-in">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div>
+        <p class="tag">Range Trading</p>
+        <h2 class="section-title">Support &amp; Resistance<br><span class="amber">Profiting from Trading Ranges</span></h2>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div style="max-width:700px; margin-bottom:2rem;">
+      <p style="font-size:.93rem;line-height:1.8;color:var(--muted);">
+        Sideways consolidation — where price moves horizontally between defined boundaries — is the <strong style="color:var(--off-white);">most predictable market condition</strong>. Neither buyers nor sellers have enough conviction to break out, creating repeatable trading opportunities between the range floor and ceiling.
+      </p>
+    </div>
+
+    <!-- S/R Diagram -->
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:2.5rem;align-items:center;">
+      <div class="diagram-box" style="flex:1;min-width:250px;">
+        <svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+          <!-- Resistance line -->
+          <line x1="10" y1="40" x2="270" y2="40" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="6,3"/>
+          <text x="200" y="35" fill="var(--amber)" font-size="9" font-family="Inter" font-weight="600">RESISTANCE</text>
+          <!-- Support line -->
+          <line x1="10" y1="130" x2="270" y2="130" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="6,3"/>
+          <text x="205" y="145" fill="var(--teal)" font-size="9" font-family="Inter" font-weight="600">SUPPORT</text>
+          <!-- Candles between -->
+          <g>
+            <line x1="30" y1="45" x2="30" y2="60" stroke="#00C9B1" stroke-width="1.5"/>
+            <rect x="25" y="60" width="10" height="30" fill="#00C9B1" rx="1"/>
+            <line x1="30" y1="90" x2="30" y2="110" stroke="#00C9B1" stroke-width="1.5"/>
+          </g>
+          <g>
+            <line x1="60" y1="45" x2="60" y2="55" stroke="#e53e3e" stroke-width="1.5"/>
+            <rect x="55" y="55" width="10" height="35" fill="#e53e3e" rx="1"/>
+            <line x1="60" y1="90" x2="60" y2="105" stroke="#e53e3e" stroke-width="1.5"/>
+          </g>
+          <g>
+            <line x1="90" y1="50" x2="90" y2="65" stroke="#00C9B1" stroke-width="1.5"/>
+            <rect x="85" y="65" width="10" height="25" fill="#00C9B1" rx="1"/>
+            <line x1="90" y1="90" x2="90" y2="115" stroke="#00C9B1" stroke-width="1.5"/>
+          </g>
+          <g>
+            <line x1="120" y1="42" x2="120" y2="58" stroke="#e53e3e" stroke-width="1.5"/>
+            <rect x="115" y="58" width="10" height="35" fill="#e53e3e" rx="1"/>
+            <line x1="120" y1="93" x2="120" y2="112" stroke="#e53e3e" stroke-width="1.5"/>
+          </g>
+          <g>
+            <line x1="150" y1="48" x2="150" y2="62" stroke="#00C9B1" stroke-width="1.5"/>
+            <rect x="145" y="62" width="10" height="28" fill="#00C9B1" rx="1"/>
+            <line x1="150" y1="90" x2="150" y2="120" stroke="#00C9B1" stroke-width="1.5"/>
+          </g>
+          <g>
+            <line x1="180" y1="44" x2="180" y2="57" stroke="#e53e3e" stroke-width="1.5"/>
+            <rect x="175" y="57" width="10" height="32" fill="#e53e3e" rx="1"/>
+            <line x1="180" y1="89" x2="180" y2="108" stroke="#e53e3e" stroke-width="1.5"/>
+          </g>
+          <g>
+            <line x1="210" y1="46" x2="210" y2="60" stroke="#00C9B1" stroke-width="1.5"/>
+            <rect x="205" y="60" width="10" height="26" fill="#00C9B1" rx="1"/>
+            <line x1="210" y1="86" x2="210" y2="118" stroke="#00C9B1" stroke-width="1.5"/>
+          </g>
+          <g>
+            <line x1="240" y1="44" x2="240" y2="56" stroke="#e53e3e" stroke-width="1.5"/>
+            <rect x="235" y="56" width="10" height="30" fill="#e53e3e" rx="1"/>
+            <line x1="240" y1="86" x2="240" y2="108" stroke="#e53e3e" stroke-width="1.5"/>
+          </g>
+        </svg>
+        <p class="diagram-label">Identifying Support &amp; Resistance · SignalStrike.online</p>
+      </div>
+      <div style="flex:1;min-width:240px;">
+        <div class="card card-amber" style="margin-bottom:1rem;">
+          <div class="card-title">Why Ranges Are So Tradeable</div>
+          <div class="card-body">The emotional extremes of greed (at resistance) and fear (at support) produce predictable, repeatable behaviour. The crowd consistently overreacts — and that overreaction is your edge.</div>
+        </div>
+        <div class="highlight">
+          <strong>Key rule for plotting ranges:</strong> Connect closing prices on candle bodies, not wick tips. Wicks are noise; closes reflect conviction. A cleaner range means more reliable trades.
+        </div>
+      </div>
+    </div>
+
+    <!-- False Breakouts -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;text-transform:uppercase;margin-bottom:1rem;">False Breakouts &amp; Breakdowns</h3>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.75;">Understanding herd mentality is essential here. When price briefly pierces resistance, latecomers pile in expecting a continued rally — only for price to reverse back inside the range. The same dynamic plays out below support. These false moves are <strong style="color:var(--off-white);">shakeouts</strong> that flush weak hands before the real move occurs.</p>
+
+    <div class="callout">
+      <p>The strongest emotional reactions in any market occur at range extremes. The sharp, fast moves that follow those extremes are <strong>exactly the trading opportunities you want to be prepared for.</strong></p>
+    </div>
+
+    <!-- Action steps S/R -->
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;text-transform:uppercase;color:var(--amber);margin:2rem 0 1rem;">⚡ Action Steps: Trading Support &amp; Resistance</h3>
+    <div class="grid-2">
+      <div>
+        <p class="tag tag-teal" style="margin-bottom:.8rem;">Buying at Range Lows</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Dollar-cost average into your position as price approaches the range support zone.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Consider placing limit orders well below the range low — "stink bids" — to take advantage of any panic-driven capitulation wick.</div></div>
+        </div>
+      </div>
+      <div>
+        <p class="tag" style="margin-bottom:.8rem;">Selling at Range Highs</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Exit <strong>50%</strong> of your position at range high resistance.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Exit another <strong>30%</strong> slightly above resistance — into any FOMO wick.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Exit the final <strong>20%</strong> at the FOMO wick extremes. This "averaging out" improves your overall exit price versus selling everything at once.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 5: MOVING AVERAGES
+═══════════════════════════════════════════ -->
+<section id="moving-averages">
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div>
+        <p class="tag">Confirmation</p>
+        <h2 class="section-title">Moving Averages<br><span class="amber">Filtering Noise, Confirming Trends</span></h2>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div style="max-width:700px;margin-bottom:2rem;">
+      <p style="font-size:.93rem;line-height:1.8;color:var(--muted);">
+        Moving averages smooth out the inherent volatility of price data into a single flowing line, making it dramatically easier to identify whether an asset is in an uptrend, downtrend, or range. The two main types each have a distinct character and use case.
+      </p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:2.5rem;">
+      <div class="card card-amber">
+        <div class="card-title">Simple Moving Average (SMA)</div>
+        <div class="card-body">Calculates the mean closing price over a set number of periods, giving <strong>equal weight to every session</strong>. A 10-day SMA averages the past 10 daily closes. Smooth and simple, but slower to respond to new price action.</div>
+      </div>
+      <div class="card card-teal">
+        <div class="card-title">Exponential Moving Average (EMA)</div>
+        <div class="card-body">Similar to the SMA but <strong>weights recent prices more heavily</strong>, making it faster and more sensitive to current market conditions. For volatile assets like crypto, the EMA provides better risk management and earlier trend signals.</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;text-transform:uppercase;margin-bottom:1.2rem;">The SignalStrike Recommended Setup</h3>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.75;">Overloading charts with moving averages creates noise and contradictory signals. Use <strong style="color:var(--off-white);">exactly two</strong> per timeframe:</p>
+
+    <table class="ma-table" style="margin-bottom:2rem;">
+      <thead>
+        <tr><th>Timeframe</th><th>Short-Term MA</th><th>Long-Term MA</th><th>What to Watch For</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Daily</strong></td>
+          <td><span class="pill" style="background:rgba(0,201,177,0.1);color:var(--teal);">50 EMA</span></td>
+          <td><span class="pill">200 EMA</span></td>
+          <td>Price above rising 50 EMA = short-term uptrend intact. Price above rising 200 EMA = macro trend intact.</td>
+        </tr>
+        <tr>
+          <td><strong>Weekly</strong></td>
+          <td><span class="pill" style="background:rgba(0,201,177,0.1);color:var(--teal);">21 EMA</span></td>
+          <td><span class="pill">50 EMA</span></td>
+          <td>Holding above rising 21 EMA confirms short-term bull structure. 50 EMA is the deeper macro support level to watch.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout" style="margin-bottom:2rem;">
+      <p>Markets have a fractal nature — the same patterns and MA dynamics repeat across timeframes. A price respecting the rising 21 EMA on the weekly chart mirrors the same dynamic as price finding support at the 50 EMA on the daily. <strong>This consistency is your edge.</strong></p>
+    </div>
+
+    <div class="highlight">
+      <strong>When to act:</strong> If price breaks decisively below key moving averages on your primary timeframe, the trend has likely shifted. Moving averages give you an objective, real-time signal to adjust strategy before losses compound.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     GLOSSARY
+═══════════════════════════════════════════ -->
+<div class="band" id="glossary">
+  <div class="band-inner fade-in">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <div>
+        <p class="tag">Reference</p>
+        <h2 class="section-title">Glossary<br><span class="amber">Every Term, Defined</span></h2>
+      </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="grid-2">
+      <div>
+        <div class="gloss-letter">B</div>
+        <dl>
+          <div class="gloss-item"><dt>Bearish</dt><dd>A market outlook or sentiment that prices will decline. Associated with downtrends and selling pressure.</dd></div>
+          <div class="gloss-item"><dt>Bearish Reversal Pattern</dt><dd>A chart formation suggesting an existing uptrend is about to end and reverse downward. Example: Rising Wedge.</dd></div>
+          <div class="gloss-item"><dt>Bottom</dt><dd>The lowest price point within a move, often signalling a potential turn upward.</dd></div>
+          <div class="gloss-item"><dt>Bullish</dt><dd>A sentiment or outlook indicating prices are expected to rise. Associated with uptrends.</dd></div>
+          <div class="gloss-item"><dt>Bullish Continuation Pattern</dt><dd>A formation suggesting an uptrend will resume after a consolidation pause. Example: Bullish Rectangle.</dd></div>
+        </dl>
+        <div class="gloss-letter">C</div>
+        <dl>
+          <div class="gloss-item"><dt>Channels</dt><dd>Two parallel trendlines bounding price action — one along the highs, one along the lows — forming a corridor for the trend.</dd></div>
+          <div class="gloss-item"><dt>Consolidation</dt><dd>A period of sideways, range-bound price movement with no clear directional trend. Represents a balance between buyers and sellers.</dd></div>
+          <div class="gloss-item"><dt>Crossover</dt><dd>When one moving average crosses above or below another — often used as a buy or sell trigger signal.</dd></div>
+        </dl>
+        <div class="gloss-letter">D</div>
+        <dl>
+          <div class="gloss-item"><dt>Dollar-Cost Averaging (DCA)</dt><dd>Investing a fixed amount at regular intervals regardless of price, reducing the impact of volatility on the average entry.</dd></div>
+          <div class="gloss-item"><dt>Down Bar</dt><dd>A candlestick whose closing price is lower than its opening price. Typically shown in red.</dd></div>
+        </dl>
+        <div class="gloss-letter">E</div>
+        <dl>
+          <div class="gloss-item"><dt>EMA (Exponential Moving Average)</dt><dd>A moving average that applies more weight to recent prices, making it faster and more responsive than a Simple Moving Average.</dd></div>
+          <div class="gloss-item"><dt>Entry / Exit Points</dt><dd>Specific price levels at which a trader initiates or closes a position.</dd></div>
+        </dl>
+        <div class="gloss-letter">F</div>
+        <dl>
+          <div class="gloss-item"><dt>False Breakout</dt><dd>Price moves briefly beyond a support or resistance level but quickly reverses back inside the range, trapping late participants.</dd></div>
+          <div class="gloss-item"><dt>Filled on Capitulation</dt><dd>Having a buy order execute during a panic-driven mass sell-off, often near a price bottom.</dd></div>
+          <div class="gloss-item"><dt>FOMO</dt><dd>Fear Of Missing Out. The emotional impulse to chase a rising price — a classic signal of market excess near a top.</dd></div>
+        </dl>
+        <div class="gloss-letter">H</div>
+        <dl>
+          <div class="gloss-item"><dt>Herd Mentality</dt><dd>The tendency for investors to follow crowd behaviour, often leading to exaggerated price swings in both directions.</dd></div>
+          <div class="gloss-item"><dt>Higher High / Higher Low</dt><dd>Price structures that define an uptrend: each rally peak and each pullback low exceeds the prior equivalent level.</dd></div>
+          <div class="gloss-item"><dt>Horizontal Consolidation</dt><dd>A range-bound period where price moves sideways within a relatively narrow horizontal zone.</dd></div>
+        </dl>
+      </div>
+
+      <div>
+        <div class="gloss-letter">L</div>
+        <dl>
+          <div class="gloss-item"><dt>Local Bottom / Local Top</dt><dd>A temporary low or high within a larger trend, offering short-term buying or selling opportunities without necessarily signalling a macro reversal.</dd></div>
+          <div class="gloss-item"><dt>Lower High / Lower Low</dt><dd>Price structures that define a downtrend: each bounce peak and each new trough is below the prior equivalent level.</dd></div>
+        </dl>
+        <div class="gloss-letter">M</div>
+        <dl>
+          <div class="gloss-item"><dt>Margin Call</dt><dd>A broker's demand that a trader deposit additional funds to cover losses and maintain the minimum required account balance.</dd></div>
+          <div class="gloss-item"><dt>Market Exuberance</dt><dd>Excessive optimism in the market leading to inflated prices beyond fundamental justification — a warning sign of an impending correction.</dd></div>
+        </dl>
+        <div class="gloss-letter">R</div>
+        <dl>
+          <div class="gloss-item"><dt>Rally</dt><dd>A sustained upward move in price, generally defined as a 10–20% increase from a recent low.</dd></div>
+          <div class="gloss-item"><dt>Resistance</dt><dd>A price level at which selling pressure is strong enough to prevent further upward movement. The "ceiling" of a range.</dd></div>
+          <div class="gloss-item"><dt>Rising Wedge</dt><dd>A bearish reversal pattern where price trends upward within converging trendlines — the upper boundary rising faster than the lower — before breaking down sharply.</dd></div>
+        </dl>
+        <div class="gloss-letter">S</div>
+        <dl>
+          <div class="gloss-item"><dt>Shakeout</dt><dd>A sharp, fast price move — usually a flush lower — that forces out weak or overleveraged holders before the real directional move begins.</dd></div>
+          <div class="gloss-item"><dt>SMA (Simple Moving Average)</dt><dd>The average closing price of an asset over a set period, giving equal weight to every session included.</dd></div>
+          <div class="gloss-item"><dt>Stink Bids</dt><dd>Extremely low limit buy orders placed well below the current market price, designed to fill only during panic-driven capitulation spikes.</dd></div>
+          <div class="gloss-item"><dt>Support</dt><dd>A price level at which buying interest is strong enough to prevent further decline. The "floor" of a range.</dd></div>
+        </dl>
+        <div class="gloss-letter">T</div>
+        <dl>
+          <div class="gloss-item"><dt>Trendline</dt><dd>A diagonal line drawn across successive highs or lows, used to identify trend direction, strength and potential reversal points.</dd></div>
+          <div class="gloss-item"><dt>Trading Range</dt><dd>The defined boundary between support and resistance within which price oscillates during consolidation.</dd></div>
+        </dl>
+        <div class="gloss-letter">V</div>
+        <dl>
+          <div class="gloss-item"><dt>Volatility</dt><dd>The degree to which an asset's price fluctuates over time. High volatility means large, rapid price swings — common in crypto markets.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER / CTA -->
+<footer>
+  <div class="logo">Signal<span>Strike</span><span style="color:var(--teal);">.online</span></div>
+  <p style="color:var(--amber);font-size:.9rem;font-weight:600;margin-top:.4rem;">Technical Analysis Blueprint</p>
+  <p>This guide is an educational resource. Crypto trading involves significant financial risk. Always conduct your own research and consider consulting a qualified financial adviser before making investment decisions.</p>
+  <p style="margin-top:1.5rem;font-size:.75rem;">© 2024 SignalStrike.online · All rights reserved</p>
+</footer>
+
+<script>
+// ── CANDLESTICK CANVAS ANIMATION ──────────────────────────────────
+const canvas = document.getElementById('candle-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = 220;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const candles = [];
+const NUM = 40;
+let progress = 0;
+
+function randomCandle(x) {
+  const bullish = Math.random() > 0.42;
+  const bodyH = 20 + Math.random() * 55;
+  const bodyY = 60 + Math.random() * 110;
+  const wickUp = 5 + Math.random() * 18;
+  const wickDn = 5 + Math.random() * 18;
+  return { x, bullish, bodyH, bodyY, wickUp, wickDn, w: 10 };
+}
+
+function initCandles() {
+  candles.length = 0;
+  const gap = canvas.width / NUM;
+  for (let i = 0; i < NUM; i++) {
+    candles.push(randomCandle(gap * i + gap / 2));
+  }
+}
+initCandles();
+
+function drawCandle(c, pct) {
+  const h = c.bodyH * pct;
+  ctx.strokeStyle = c.bullish ? '#00C9B1' : '#F5A623';
+  ctx.fillStyle = c.bullish ? 'rgba(0,201,177,0.25)' : 'rgba(245,166,35,0.22)';
+  ctx.lineWidth = 1.5;
+  // wick
+  ctx.beginPath();
+  ctx.moveTo(c.x, c.bodyY - c.wickUp * pct);
+  ctx.lineTo(c.x, c.bodyY + h + c.wickDn * pct);
+  ctx.stroke();
+  // body
+  ctx.fillRect(c.x - c.w / 2, c.bodyY, c.w, h);
+  ctx.strokeRect(c.x - c.w / 2, c.bodyY, c.w, h);
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  progress = Math.min(progress + 0.012, 1);
+  const reveal = progress * NUM;
+  for (let i = 0; i < NUM; i++) {
+    const pct = Math.min(Math.max(reveal - i, 0), 1);
+    if (pct > 0) drawCandle(candles[i], pct);
+  }
+  if (progress < 1) requestAnimationFrame(animate);
+}
+animate();
+
+// Redraw on resize
+window.addEventListener('resize', () => { resizeCanvas(); initCandles(); progress = 0; animate(); });
+
+// ── SCROLL FADE-IN ────────────────────────────────────────────────
+const faders = document.querySelectorAll('.fade-in');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+faders.forEach(f => obs.observe(f));
+</script>
+</body>
+</html>
