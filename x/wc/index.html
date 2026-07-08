@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- IMMEDIATE REDIRECT TO BYBIT PARTNER LINK -->
+    <meta http-equiv="refresh" content="0; url=https://partner.bybit.com/b/fifawc2026" />
+
+    <title>SignalStrike — Claim Your Crypto Airdrop + Free Newsletter Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0A0A0F;
+            --bg2: #12121A;
+            --card: #1A1A26;
+            --border: #2A2A3E;
+            --pink: #FF90E8;
+            --pink-dark: #d966c8;
+            --lime: #A8FF78;
+            --lime-dark: #5dcf2a;
+            --yellow: #FFE194;
+            --yellow-dark: #e8c300;
+            --gold: #F5C842;
+            --white: #FFFFFF;
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --font-body: 'DM Sans', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+            --font-display: 'DM Serif Display', serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* BACKGROUND GRID */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(168, 255, 120, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(168, 255, 120, 0.03) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* TICKER */
+        .ticker-wrap {
+            position: relative;
+            z-index: 10;
+            background: rgba(168, 255, 120, 0.08);
+            border-bottom: 1px solid rgba(168, 255, 120, 0.15);
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 8px 0;
+        }
+
+        .ticker-inner {
+            display: inline-flex;
+            gap: 3rem;
+            animation: ticker 40s linear infinite;
+        }
+
+        .ticker-item {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--lime);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticker-price {
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* NAV */
+        .nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 2.5rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-style: italic;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--lime);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.7);
+            }
+        }
+
+        .nav-badge {
+            background: rgba(168, 255, 120, 0.1);
+            border: 1px solid rgba(168, 255, 120, 0.3);
+            color: var(--lime);
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 5px 14px;
+            border-radius: 100px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%,
+            100% {
+                box-shadow: 0 0 0 rgba(168, 255, 120, 0);
+            }
+            50% {
+                box-shadow: 0 0 16px rgba(168, 255, 120, 0.2);
+            }
+        }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            z-index: 5;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 144, 232, 0.08);
+            border: 1px solid rgba(255, 144, 232, 0.2);
+            color: var(--pink);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 6px 18px;
+            border-radius: 100px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-eyebrow-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--pink);
+            animation: pulse 1.5s infinite;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 7vw, 6.5rem);
+            font-weight: 400;
+            line-height: 1;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--lime);
+        }
+
+        .hero-title .pink {
+            color: var(--pink);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.75;
+        }
+
+        /* BIG REWARD CARD */
+        .reward-card {
+            position: relative;
+            z-index: 5;
+            max-width: 820px;
+            margin: 0 auto 3rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .reward-card-top {
+            background: linear-gradient(135deg, #0D1F0D, #0A1A0A);
+            border-bottom: 1px solid rgba(168, 255, 120, 0.15);
+            padding: 2.5rem 2rem 2rem;
+            text-align: center;
+        }
+
+        .reward-main-amount {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-style: italic;
+            color: var(--lime);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .reward-main-label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: rgba(168, 255, 120, 0.5);
+            margin-bottom: 1.5rem;
+        }
+
+        .reward-plus-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .reward-plus-item {
+            background: rgba(255, 225, 148, 0.08);
+            border: 1px solid rgba(255, 225, 148, 0.2);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+        }
+
+        .reward-plus-amount {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-style: italic;
+            color: var(--yellow);
+        }
+
+        .reward-plus-label {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 225, 148, 0.5);
+        }
+
+        .reward-plus-sep {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .reward-card-body {
+            padding: 1.75rem 2rem;
+        }
+
+        .reward-newsletter-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 144, 232, 0.06);
+            border: 1px solid rgba(255, 144, 232, 0.15);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .reward-newsletter-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .reward-newsletter-text h3 {
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--pink);
+            margin-bottom: 3px;
+        }
+
+        .reward-newsletter-text p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.5;
+        }
+
+        .reward-newsletter-price {
+            margin-left: auto;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .reward-price-was {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.3);
+            text-decoration: line-through;
+        }
+
+        .reward-price-free {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--lime);
+        }
+
+        /* CTA BTN */
+        .cta-btn {
+            display: block;
+            width: 100%;
+            background: var(--lime);
+            color: #0A0A0F;
+            border: none;
+            padding: 18px 0;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(-100%) skewX(-15deg);
+            transition: transform 0.4s ease;
+        }
+
+        .cta-btn:hover::before {
+            transform: translateX(120%) skewX(-15deg);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(168, 255, 120, 0.25);
+        }
+
+        .cta-btn:active {
+            transform: translateY(0);
+        }
+
+        /* STEPS SECTION */
+        .steps-section {
+            position: relative;
+            z-index: 5;
+            max-width: 820px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .steps-label {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .step-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .step-card:hover {
+            border-color: rgba(168, 255, 120, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(168, 255, 120, 0.08);
+            border: 1px solid rgba(168, 255, 120, 0.2);
+            color: var(--lime);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .step-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.4rem;
+        }
+
+        .step-desc {
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.45);
+            line-height: 1.55;
+        }
+
+        /* TRUST ROW */
+        .trust-row {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            padding: 0 2rem 4rem;
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .trust-item-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--lime);
+            opacity: 0.5;
+        }
+
+        /* MODAL OVERLAY */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #0D1F0D, #0A1A0A);
+            border-bottom: 1px solid rgba(168, 255, 120, 0.12);
+            padding: 2rem 2rem 1.5rem;
+            position: relative;
+            text-align: center;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.5);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--white);
+        }
+
+        .modal-kicker {
+            display: inline-block;
+            background: rgba(168, 255, 120, 0.1);
+            border: 1px solid rgba(168, 255, 120, 0.25);
+            color: var(--lime);
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 4px 14px;
+            border-radius: 100px;
+            margin-bottom: 1rem;
+        }
+
+        .modal-reward-amount {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-style: italic;
+            color: var(--lime);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-reward-sub {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(168, 255, 120, 0.45);
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-plus-pills {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-plus-pill {
+            background: rgba(255, 225, 148, 0.08);
+            border: 1px solid rgba(255, 225, 148, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            text-align: center;
+        }
+
+        .modal-plus-pill .amount {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--yellow);
+        }
+
+        .modal-plus-pill .label {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 225, 148, 0.4);
+        }
+
+        .modal-body {
+            padding: 1.75rem 2rem;
+        }
+
+        .modal-newsletter-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 144, 232, 0.06);
+            border: 1px solid rgba(255, 144, 232, 0.15);
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-newsletter-banner .nicon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .modal-newsletter-banner .ntxt {
+            flex: 1;
+        }
+
+        .modal-newsletter-banner .ntxt strong {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--pink);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .modal-newsletter-banner .ntxt span {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .modal-newsletter-banner .nbadge {
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .modal-newsletter-banner .nbadge .was {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            color: rgba(255, 255, 255, 0.25);
+            text-decoration: line-through;
+            display: block;
+        }
+
+        .modal-newsletter-banner .nbadge .free {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--lime);
+        }
+
+        .modal-steps-title {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: rgba(255, 255, 255, 0.35);
+            margin-bottom: 1rem;
+        }
+
+        .modal-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .modal-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.9rem 1rem;
+        }
+
+        .modal-step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: rgba(168, 255, 120, 0.1);
+            border: 1px solid rgba(168, 255, 120, 0.25);
+            color: var(--lime);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+        }
+
+        .modal-step-content strong {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--white);
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .modal-step-content span {
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.45);
+            line-height: 1.5;
+        }
+
+        .modal-cta-wrap {
+            position: relative;
+        }
+
+        .modal-cta-btn {
+            display: block;
+            width: 100%;
+            background: var(--lime);
+            color: #0A0A0F;
+            border: none;
+            padding: 17px 0;
+            font-family: var(--font-mono);
+            font-size: 0.92rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-cta-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%) skewX(-15deg);
+            transition: transform 0.4s;
+        }
+
+        .modal-cta-btn:hover::before {
+            transform: translateX(120%) skewX(-15deg);
+        }
+
+        .modal-cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 255, 120, 0.3);
+        }
+
+        .modal-disclaimer {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.2);
+            text-align: center;
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        /* LOADING SCREEN */
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: opacity 0.5s ease;
+        }
+
+        #loadingScreen.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .load-logo {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-style: italic;
+            color: var(--white);
+        }
+
+        .load-logo span {
+            color: var(--lime);
+        }
+
+        .load-sub {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .load-bar {
+            width: 200px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .load-fill {
+            height: 100%;
+            background: var(--lime);
+            width: 0%;
+            animation: loadIn 1.2s ease forwards;
+        }
+
+        @keyframes loadIn {
+            to {
+                width: 100%;
+            }
+        }
+
+        /* REDIRECT NOTICE */
+        .redirect-notice {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.92);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(168, 255, 120, 0.25);
+            border-radius: 14px;
+            padding: 1rem 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.5s ease 0.6s both;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .redirect-notice strong {
+            color: var(--lime);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.06em;
+        }
+
+        .redirect-notice p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+
+        .redirect-notice .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(168, 255, 120, 0.2);
+            border-top-color: var(--lime);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media(max-width:640px) {
+            .nav {
+                padding: 1rem 1.25rem;
+            }
+            .hero {
+                padding: 3rem 1.25rem 2.5rem;
+            }
+            .hero-title {
+                font-size: 3rem;
+            }
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+            .reward-card-top {
+                padding: 2rem 1.25rem 1.5rem;
+            }
+            .reward-card-body {
+                padding: 1.25rem;
+            }
+            .trust-row {
+                gap: 1.25rem;
+            }
+            .modal-body {
+                padding: 1.25rem;
+            }
+            .modal-header {
+                padding: 1.5rem 1.25rem 1.25rem;
+            }
+            .redirect-notice {
+                padding: 0.75rem 1.25rem;
+                bottom: 1rem;
+            }
+            .redirect-notice strong {
+                font-size: 0.65rem;
+            }
+            .redirect-notice p {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+
+    <!-- X (Twitter) Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Immediate Payouts | Place Your FREE BET!">
+    <meta name="twitter:description" content="0% Trading Fees">
+    <meta name="twitter:image" content="https://signalstrike.online/x/wc/1.png">
+    <meta name="twitter:url" content="https://signalstrike.online">
+</head>
+<body>
+
+    <!-- LOADING SCREEN (shown briefly before redirect) -->
+    <div id="loadingScreen">
+        <div class="load-logo">Signal<span>Strike</span></div>
+        <div class="load-sub">Crypto Intelligence Platform</div>
+        <div class="load-bar"><div class="load-fill"></div></div>
+    </div>
+
+    <!-- REDIRECT NOTICE — visible while redirecting -->
+    <div class="redirect-notice" id="redirectNotice">
+        <div>
+            <span class="spinner"></span>
+            <strong>Redirecting to Bybit • FIFA WC 2026 Offer</strong>
+            <p>You will be redirected automatically. If not, <a href="https://partner.bybit.com/b/fifawc2026" style="color:var(--lime);text-decoration:underline;">click here</a>.</p>
+        </div>
+    </div>
+
+    <!-- TICKER -->
+    <div class="ticker-wrap">
+        <div class="ticker-inner">
+            <span class="ticker-item">BTC <span class="ticker-price">$84,210</span></span>
+            <span class="ticker-item">ETH <span class="ticker-price">$3,102</span></span>
+            <span class="ticker-item">SOL <span class="ticker-price">$142.80</span></span>
+            <span class="ticker-item">DOGE <span class="ticker-price">$0.178</span></span>
+            <span class="ticker-item">LINK <span class="ticker-price">$18.22</span></span>
+            <span class="ticker-item">AVAX <span class="ticker-price">$36.10</span></span>
+            <span class="ticker-item">BNB <span class="ticker-price">$598</span></span>
+            <span class="ticker-item">RENDER <span class="ticker-price">$7.48</span></span>
+            <span class="ticker-item">BTC <span class="ticker-price">$84,210</span></span>
+            <span class="ticker-item">ETH <span class="ticker-price">$3,102</span></span>
+            <span class="ticker-item">SOL <span class="ticker-price">$142.80</span></span>
+            <span class="ticker-item">DOGE <span class="ticker-price">$0.178</span></span>
+            <span class="ticker-item">LINK <span class="ticker-price">$18.22</span></span>
+            <span class="ticker-item">AVAX <span class="ticker-price">$36.10</span></span>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a href="#" class="nav-logo">SignalStrike <span class="nav-dot"></span></a>
+        <div class="nav-badge">⚡ Limited-Time Airdrop Live</div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>Exclusive Member Offer — 2026</div>
+        <h1 class="hero-title">
+            Earn Up To<br>
+            <em>$35,130</em><br>
+            in <span class="pink">Crypto Rewards</span>
+        </h1>
+        <p class="hero-sub">Get full access to our $29.99/mo crypto signals newsletter — completely free — plus earn massive Bybit bonuses on your first deposit and trade.</p>
+    </section>
+
+    <!-- REWARD CARD -->
+    <div style="position:relative;z-index:5;padding:0 2rem;">
+        <div class="reward-card">
+            <div class="reward-card-top">
+                <div class="reward-main-amount">$30,100</div>
+                <div class="reward-main-label">Welcome Bonus — New Bybit Users</div>
+                <div class="reward-plus-row">
+                    <div class="reward-plus-item">
+                        <div class="reward-plus-amount">+$5,030</div>
+                        <div class="reward-plus-label">TradFi Rewards</div>
+                    </div>
+                    <div class="reward-plus-sep">+</div>
+                    <div class="reward-plus-item">
+                        <div class="reward-plus-amount">FREE</div>
+                        <div class="reward-plus-label">Newsletter Access</div>
+                    </div>
+                </div>
+            </div>
+            <div class="reward-card-body">
+                <div class="reward-newsletter-row">
+                    <div class="reward-newsletter-icon">📡</div>
+                    <div class="reward-newsletter-text">
+                        <h3>SignalStrike Daily — Full Access Included</h3>
+                        <p>250,000+ members. AI-powered crypto signals, whale tracking, DeFi alpha & daily briefings.</p>
+                    </div>
+                    <div class="reward-newsletter-price">
+                        <div class="reward-price-was">$29.99/mo</div>
+                        <div class="reward-price-free">FREE</div>
+                    </div>
+                </div>
+                <a href="https://partner.bybit.com/b/fifawc2026" target="_blank" rel="noopener noreferrer" class="cta-btn">
+                    ⚡ Claim Airdrop &amp; Free Access →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEPS -->
+    <section class="steps-section" style="margin-top:3rem;">
+        <div class="steps-label">How to Claim Your Rewards</div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <div class="step-icon">🆕</div>
+                <div class="step-title">Sign Up as New User</div>
+                <div class="step-desc">Create your free Bybit account using the SignalStrike link below.</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <div class="step-icon">💰</div>
+                <div class="step-title">Deposit &amp; Trade</div>
+                <div class="step-desc">Fulfill the deposit and trading criteria within 14 days to unlock your bonuses.</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <div class="step-icon">🎁</div>
+                <div class="step-title">Claim in Rewards Hub</div>
+                <div class="step-desc">Head to the Bybit Rewards Hub to collect all your bonuses and TradFi rewards.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRUST ROW -->
+    <div class="trust-row">
+        <div class="trust-item"><span class="trust-item-dot"></span>250,000+ Members</div>
+        <div class="trust-item"><span class="trust-item-dot"></span>97.2% Signal Accuracy</div>
+        <div class="trust-item"><span class="trust-item-dot"></span>14-Day Reward Window</div>
+        <div class="trust-item"><span class="trust-item-dot"></span>USDC On-Chain Pay</div>
+        <div class="trust-item"><span class="trust-item-dot"></span>100% Remote Team</div>
+    </div>
+
+    <!-- AIRDROP MODAL (hidden — redirect takes priority) -->
+    <div class="modal-overlay" id="airdropModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close-btn" onclick="closeAirdropModal()">✕ Close</button>
+                <div class="modal-kicker">⚡ Exclusive Airdrop — SignalStrike x Bybit</div>
+                <div class="modal-reward-amount">$35,130</div>
+                <div class="modal-reward-sub">Total Rewards Available to New Members</div>
+                <div class="modal-plus-pills">
+                    <div class="modal-plus-pill">
+                        <div class="amount">$30,100</div>
+                        <div class="label">Welcome Bonus</div>
+                    </div>
+                    <div style="font-family:var(--font-mono);font-size:0.8rem;color:rgba(255,255,255,0.2);padding:0 0.25rem;">+</div>
+                    <div class="modal-plus-pill">
+                        <div class="amount">$5,030</div>
+                        <div class="label">TradFi Rewards</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-newsletter-banner">
+                    <div class="nicon">📡</div>
+                    <div class="ntxt">
+                        <strong>SignalStrike Daily Newsletter — Full Access</strong>
+                        <span>AI signals, whale alerts, DeFi alpha & macro briefings. 250k+ members.</span>
+                    </div>
+                    <div class="nbadge">
+                        <span class="was">$29.99/mo</span>
+                        <span class="free">FREE</span>
+                    </div>
+                </div>
+
+                <div class="modal-steps-title">3 Steps to Claim Your Airdrop</div>
+                <div class="modal-steps">
+                    <div class="modal-step">
+                        <div class="modal-step-num">1</div>
+                        <div class="modal-step-content">
+                            <strong>Sign Up as a New User</strong>
+                            <span>Click the button below and create your free Bybit account via the SignalStrike affiliate link.</span>
+                        </div>
+                    </div>
+                    <div class="modal-step">
+                        <div class="modal-step-num">2</div>
+                        <div class="modal-step-content">
+                            <strong>Fulfill Deposit &amp; Trading Criteria</strong>
+                            <span>Complete your first deposit and trading activity to unlock the full bonus within 14 days.</span>
+                        </div>
+                    </div>
+                    <div class="modal-step">
+                        <div class="modal-step-num">3</div>
+                        <div class="modal-step-content">
+                            <strong>Claim Bonuses in Rewards Hub</strong>
+                            <span>Visit the Bybit Rewards Hub to claim your $30,100 welcome bonus + $5,030 TradFi rewards.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-cta-wrap">
+                    <a href="https://partner.bybit.com/b/fifawc2026" target="_blank" rel="noopener noreferrer" class="modal-cta-btn">
+                        💳 Claim Airdrop &amp; Get Free Newsletter Access →
+                    </a>
+                </div>
+                <div class="modal-disclaimer">
+                    * Bonuses subject to Bybit's terms and conditions. Must be a new Bybit user. Deposit and trading criteria must be met within 14 days of sign-up to qualify. SignalStrike newsletter access granted upon verification via affiliate link. This is a promotional partnership.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMMEDIATE REDIRECT — JavaScript fallback (meta refresh already in <head>) -->
+    <script>
+        // Hard redirect as soon as the script runs (fallback for meta refresh)
+        (function() {
+            var targetUrl = 'https://partner.bybit.com/b/fifawc2026';
+
+            // Try to use location.replace() for a clean redirect (no back button entry)
+            try {
+                window.location.replace(targetUrl);
+            } catch (e) {
+                // Fallback
+                window.location.href = targetUrl;
+            }
+
+            // If the page is still here after 300ms, force it
+            setTimeout(function() {
+                try {
+                    window.location.replace(targetUrl);
+                } catch (e) {
+                    window.location.href = targetUrl;
+                }
+            }, 300);
+        })();
+    </script>
+
+    <!-- Statcounter (kept as-is) -->
+    <script type="text/javascript">
+        var sc_project = 13294353;
+        var sc_invisible = 1;
+        var sc_security = "ead64a78";
+    </script>
+    <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async>
+    </script>
+    <noscript>
+        <div class="statcounter"><a title="Web Analytics" href="https://statcounter.com/" target="_blank"><img class="statcounter" src="https://c.statcounter.com/13294353/0/ead64a78/1/" alt="Web Analytics" referrerPolicy="no-referrer-when-downgrade"></a></div>
+    </noscript>
+
+</body>
+</html>
