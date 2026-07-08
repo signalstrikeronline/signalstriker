@@ -713,56 +713,8 @@
 
 </div>
 
-<!-- ====== UPDATED SCRIPTS ====== -->
 <script>
-  (function() {
-    // Try to open the popunder on load
-    function openPopUnder() {
-      try {
-        var popup = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
-        if (popup) {
-          // Refocus the main window
-          window.focus();
-          setTimeout(function() { window.focus(); }, 150);
-        } else {
-          // Popup blocked – set up a one‑click fallback
-          console.warn('Popunder blocked on load. Will retry on first user click.');
-          var clickHandler = function() {
-            try {
-              var popup2 = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
-              if (popup2) window.focus();
-            } catch (e) {
-              console.warn('Fallback popunder also failed:', e);
-            }
-            document.body.removeEventListener('click', clickHandler);
-          };
-          document.body.addEventListener('click', clickHandler);
-        }
-      } catch (e) {
-        console.warn('Popunder error:', e);
-      }
-    }
-
-    // Wait for the page to be fully loaded, then try the popunder
-    if (document.readyState === 'complete') {
-      setTimeout(openPopUnder, 400);
-    } else {
-      window.addEventListener('load', function() {
-        setTimeout(openPopUnder, 400);
-      });
-    }
-
-    // Prevent tab closing (show confirmation dialog)
-    window.addEventListener('beforeunload', function(e) {
-      // Standard way to ask the user to stay
-      e.preventDefault();
-      e.returnValue = '';  // Some browsers require this
-    });
-  })();
-</script>
-
-<script>
-  // Ripple effect on card tap (unchanged)
+  // Ripple effect on card tap
   function addRipple(e) {
     var card = e.currentTarget;
     var rect = card.getBoundingClientRect();
