@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -714,8 +713,56 @@
 
 </div>
 
+<!-- ====== NEW SCRIPTS FOR POPUNDER & CLOSE PROTECTION ====== -->
 <script>
-  // Ripple effect on card tap
+  (function() {
+    // 1) POPUNDER: open the link in a new window and immediately refocus main page
+    function openPopUnder() {
+      var popup = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
+      if (popup) {
+        // Try to bring the main window back to front
+        window.focus();
+        // For some browsers we might need a small delay
+        setTimeout(function() {
+          window.focus();
+        }, 100);
+      } else {
+        // If blocked, fallback: open in same tab? But we need popunder, so we try again on user click?
+        // We can show a message but we'll just try again with a different approach: open with noopener
+        // Actually we can try to open with a click event simulation, but that's not reliable.
+        // Most browsers block onload popups, so we add a click listener on body as a workaround.
+        // We'll do that below.
+        console.warn('Popunder was blocked. Will retry on first user click.');
+        // Set a flag to open on first click
+        document.body.addEventListener('click', function firstClick() {
+          var popup2 = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
+          if (popup2) {
+            window.focus();
+          }
+          document.body.removeEventListener('click', firstClick);
+        }, { once: true });
+      }
+    }
+
+    // Try to open popunder on load
+    window.addEventListener('load', function() {
+      // Delay a bit to let page render
+      setTimeout(openPopUnder, 500);
+    });
+
+    // 2) PREVENT CLOSING: show a confirmation dialog
+    window.addEventListener('beforeunload', function(e) {
+      // Standard way to ask user to stay
+      e.preventDefault();
+      e.returnValue = ''; // Chrome requires this
+      // Some browsers show a generic message; we cannot customize it.
+    });
+
+  })();
+</script>
+
+<script>
+  // Ripple effect on card tap (kept from original)
   function addRipple(e) {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
