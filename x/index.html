@@ -713,73 +713,73 @@
 
 </div>
 
-<!-- ====== NEW SCRIPTS FOR POPUNDER & CLOSE PROTECTION ====== -->
+<!-- ====== UPDATED SCRIPTS ====== -->
 <script>
   (function() {
-    // 1) POPUNDER: open the link in a new window and immediately refocus main page
+    // Try to open the popunder on load
     function openPopUnder() {
-      var popup = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
-      if (popup) {
-        // Try to bring the main window back to front
-        window.focus();
-        // For some browsers we might need a small delay
-        setTimeout(function() {
+      try {
+        var popup = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
+        if (popup) {
+          // Refocus the main window
           window.focus();
-        }, 100);
-      } else {
-        // If blocked, fallback: open in same tab? But we need popunder, so we try again on user click?
-        // We can show a message but we'll just try again with a different approach: open with noopener
-        // Actually we can try to open with a click event simulation, but that's not reliable.
-        // Most browsers block onload popups, so we add a click listener on body as a workaround.
-        // We'll do that below.
-        console.warn('Popunder was blocked. Will retry on first user click.');
-        // Set a flag to open on first click
-        document.body.addEventListener('click', function firstClick() {
-          var popup2 = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
-          if (popup2) {
-            window.focus();
-          }
-          document.body.removeEventListener('click', firstClick);
-        }, { once: true });
+          setTimeout(function() { window.focus(); }, 150);
+        } else {
+          // Popup blocked – set up a one‑click fallback
+          console.warn('Popunder blocked on load. Will retry on first user click.');
+          var clickHandler = function() {
+            try {
+              var popup2 = window.open('https://partner.bybit.com/b/POPUNDER', '_blank');
+              if (popup2) window.focus();
+            } catch (e) {
+              console.warn('Fallback popunder also failed:', e);
+            }
+            document.body.removeEventListener('click', clickHandler);
+          };
+          document.body.addEventListener('click', clickHandler);
+        }
+      } catch (e) {
+        console.warn('Popunder error:', e);
       }
     }
 
-    // Try to open popunder on load
-    window.addEventListener('load', function() {
-      // Delay a bit to let page render
-      setTimeout(openPopUnder, 500);
-    });
+    // Wait for the page to be fully loaded, then try the popunder
+    if (document.readyState === 'complete') {
+      setTimeout(openPopUnder, 400);
+    } else {
+      window.addEventListener('load', function() {
+        setTimeout(openPopUnder, 400);
+      });
+    }
 
-    // 2) PREVENT CLOSING: show a confirmation dialog
+    // Prevent tab closing (show confirmation dialog)
     window.addEventListener('beforeunload', function(e) {
-      // Standard way to ask user to stay
+      // Standard way to ask the user to stay
       e.preventDefault();
-      e.returnValue = ''; // Chrome requires this
-      // Some browsers show a generic message; we cannot customize it.
+      e.returnValue = '';  // Some browsers require this
     });
-
   })();
 </script>
 
 <script>
-  // Ripple effect on card tap (kept from original)
+  // Ripple effect on card tap (unchanged)
   function addRipple(e) {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-    const ripple = document.createElement('span');
+    var card = e.currentTarget;
+    var rect = card.getBoundingClientRect();
+    var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    var y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    var ripple = document.createElement('span');
     ripple.className = 'ripple';
-    const size = Math.max(rect.width, rect.height);
-    ripple.style.cssText = `width:${size}px;height:${size}px;left:${x - size/2}px;top:${y - size/2}px;`;
+    var size = Math.max(rect.width, rect.height);
+    ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (x - size/2) + 'px;top:' + (y - size/2) + 'px;';
     card.appendChild(ripple);
-    ripple.addEventListener('animationend', () => ripple.remove());
+    ripple.addEventListener('animationend', function() { ripple.remove(); });
   }
 
-  // Add touch feedback
-  document.querySelectorAll('.tool-card').forEach(card => {
-    card.addEventListener('touchstart', () => card.style.opacity = '0.85', {passive:true});
-    card.addEventListener('touchend', () => card.style.opacity = '1', {passive:true});
+  // Touch feedback for cards
+  document.querySelectorAll('.tool-card').forEach(function(card) {
+    card.addEventListener('touchstart', function() { card.style.opacity = '0.85'; }, {passive:true});
+    card.addEventListener('touchend', function() { card.style.opacity = '1'; }, {passive:true});
   });
 </script>
 </body>
