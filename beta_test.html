@@ -613,7 +613,7 @@
   }
   .article-body .highlight-box strong { color: var(--black); }
 
-  /* Tracker modal (unchanged) */
+  /* Tracker modal (updated to show pool trades) */
   .tracker-modal-grid {
     display: flex;
     flex-direction: column;
@@ -946,7 +946,7 @@
       </div>
     </div>
 
-    <!-- ===== NEW: PAST 24 HOUR TRADES BY POOL ADDRESS ===== -->
+    <!-- ===== PAST 24 HOUR TRADES BY POOL ADDRESS ===== -->
     <div class="dash-section delay-3" id="trades">
       <div class="dash-section-head">
         <div class="dash-section-title">🔄 Past 24 Hour Trades by Pool Address</div>
@@ -1187,9 +1187,7 @@
       <div id="gateBybitSpinner" class="gate-verify-spinner" style="display:none;">Checking your Bybit ID… please wait</div>
 
       <button class="gate-btn-primary" onclick="runGateBybitVerify()">Verify BYBIT ID →</button>
-      <button class="gate-btn-secondary" onclick="window.open('https://partner.bybit.com/b/SIGNALSTRIKE', '_blank')">
-  Get Free Access →
-</button>
+      <button class="gate-btn-secondary" onclick="window.open('https://partner.bybit.com/b/SIGNALSTRIKE', '_blank')">Get Free Access →</button>
 
       <div class="gate-note" style="margin-top:0.75rem;">
         Find your User ID in the Bybit app under <strong>Account → Profile</strong>.<br>
@@ -1212,7 +1210,7 @@
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
-     BYBIT REWARDS MODAL (for existing members unlocking reward cards)
+     BYBIT REWARDS MODAL
 ════════════════════════════════════════════════════════ -->
 <div id="bybitModal" class="bybit-modal-backdrop">
   <div class="bybit-modal-box">
@@ -1288,7 +1286,7 @@
   // ─── COINGECKO CONFIG ───
   const CG_API_KEY = 'CG-4mouVYq6rtzQ5ZT9rseCQFoL';
   const CG_BASE_URL = 'https://api.coingecko.com/api/v3';
-  // Default pool: Uniswap V3 USDC/WETH 0.3% on Ethereum mainnet
+  // Uniswap V3 USDC/WETH 0.3% on Ethereum mainnet
   const POOL_NETWORK = 'eth';
   const POOL_ADDRESS = '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640';
 
@@ -1673,37 +1671,55 @@
   refreshMemeCoins();
   setInterval(refreshMemeCoins, 90000);
 
-  // ─── COINGECKO: POOL TRADES ───
+  // ─── COINGECKO: POOL TRADES (fixed header & fallback) ───
+  const SAMPLE_TRADES = [
+    { timestamp: Date.now() - 1000 * 60 * 5, type: 'buy',  amount: 125.4,  price_usd: 3120.50, value_usd: 391500 },
+    { timestamp: Date.now() - 1000 * 60 * 12, type: 'sell', amount: 87.2,   price_usd: 3115.80, value_usd: 271700 },
+    { timestamp: Date.now() - 1000 * 60 * 22, type: 'buy',  amount: 204.6,  price_usd: 3108.20, value_usd: 635900 },
+    { timestamp: Date.now() - 1000 * 60 * 35, type: 'sell', amount: 42.1,   price_usd: 3102.00, value_usd: 130600 },
+    { timestamp: Date.now() - 1000 * 60 * 50, type: 'buy',  amount: 312.0,  price_usd: 3095.40, value_usd: 965700 },
+    { timestamp: Date.now() - 1000 * 60 * 70, type: 'sell', amount: 156.3,  price_usd: 3090.10, value_usd: 483000 },
+    { timestamp: Date.now() - 1000 * 60 * 95, type: 'buy',  amount: 78.9,   price_usd: 3085.70, value_usd: 243500 },
+    { timestamp: Date.now() - 1000 * 60 * 120,type: 'sell', amount: 223.7,  price_usd: 3078.30, value_usd: 688600 },
+  ];
+
   async function fetchPoolTrades() {
     const status = document.getElementById('tradeStatusBadge');
     const container = document.getElementById('tradesContainer');
     try {
       if (status) status.textContent = 'Fetching…';
+      // Try the real API with the DEMO header (since key starts with CG-)
       const url = `${CG_BASE_URL}/onchain/dex/trades/${POOL_NETWORK}/${POOL_ADDRESS}`;
       const resp = await fetch(url, {
-        headers: { 'x-cg-pro-api-key': CG_API_KEY }
+        headers: { 'x-cg-demo-api-key': CG_API_KEY }  // <-- Fixed header
       });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+      if (!resp.ok) {
+        const errBody = await resp.text();
+        throw new Error(`HTTP ${resp.status} - ${errBody.substring(0, 80)}`);
+      }
       const json = await resp.json();
-      // expected structure: { data: [ { ... } ] }
       const trades = json.data || [];
-      if (!trades.length) throw new Error('No trades returned');
-      renderTrades(trades.slice(0, 15)); // show latest 15
+      if (!trades.length) {
+        // No real trades — show sample data with a note
+        renderTrades(SAMPLE_TRADES, 'No live trades; showing sample data');
+        if (status) status.textContent = `Sample data (${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})})`;
+        return;
+      }
+      renderTrades(trades.slice(0, 15));
       if (status) status.textContent = `Updated ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
     } catch (err) {
-      console.error('Trade fetch error:', err);
-      container.innerHTML = `<div style="text-align:center;padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--pink-dark);">
-        ⚠ Failed to load trades. Please try again later.
-      </div>`;
-      if (status) status.textContent = 'Error';
+      console.warn('Trade fetch error, using fallback:', err.message);
+      // Fallback: show sample trades
+      renderTrades(SAMPLE_TRADES, '⚠ Live data unavailable — showing sample trades');
+      if (status) status.textContent = 'Fallback (demo)';
     }
   }
 
-  function renderTrades(trades) {
+  function renderTrades(trades, note) {
     const container = document.getElementById('tradesContainer');
-    if (!trades.length) {
+    if (!trades || !trades.length) {
       container.innerHTML = `<div style="text-align:center;padding:1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:#888;">
-        No trades found in the last 24 hours.
+        No trades found.
       </div>`;
       return;
     }
@@ -1725,17 +1741,18 @@
         </div>
       `;
     }).join('');
-    container.innerHTML = rows;
+    const noteHtml = note ? `<div style="font-family:var(--font-mono);font-size:0.6rem;color:#888;padding:0.4rem 0.2rem;">${note}</div>` : '';
+    container.innerHTML = rows + noteHtml;
   }
 
-  // refresh trades every 60 seconds
+  // refresh trades every 60 seconds (only if not locked)
   setInterval(() => {
     if (!document.body.classList.contains('is-locked')) {
       fetchPoolTrades();
     }
   }, 60000);
 
-  // ─── BYBIT REWARDS MODAL (for existing members, reward cards) ───
+  // ─── BYBIT REWARDS MODAL ───
   let bybitVerified = false;
   let claimedCount  = 0;
 
@@ -1858,7 +1875,6 @@
 
   function openTrackerModal(e) {
     e.preventDefault();
-    // Copy current trades from the main section into the modal
     const mainContainer = document.getElementById('tradesContainer');
     const modalGrid = document.getElementById('trackerModalGrid');
     if (mainContainer && modalGrid) {
@@ -1879,7 +1895,7 @@
     if (e.target === trackerModal) closeTrackerModalFn();
   });
 
-  // ─── ANIMATED METRICS (Intersection Observer + Counting) ───
+  // ─── ANIMATED METRICS ───
   const metricCells = document.querySelectorAll('.metric-cell');
   let metricsAnimated = false;
 
@@ -1889,13 +1905,12 @@
     const target = parseFloat(cell.dataset.target);
     const suffix = cell.dataset.suffix || '';
     const decimals = parseInt(cell.dataset.decimal) || 0;
-    const duration = 1500; // ms
+    const duration = 1500;
     const startTime = performance.now();
 
     function update(now) {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // easeOutQuart
       const eased = 1 - Math.pow(1 - progress, 4);
       const current = eased * target;
       let display;
@@ -1909,14 +1924,12 @@
         requestAnimationFrame(update);
       } else {
         valEl.textContent = target.toFixed(decimals) + suffix;
-        // add bounce animation class
         cell.classList.add('animate');
       }
     }
     requestAnimationFrame(update);
   }
 
-  // Use Intersection Observer to trigger once when metrics come into view
   const metricsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !metricsAnimated) {
@@ -1926,20 +1939,13 @@
       }
     });
   }, { threshold: 0.3 });
-  // Observe the metrics grid container
   const metricsGrid = document.getElementById('metricsGrid');
   if (metricsGrid) metricsObserver.observe(metricsGrid);
 
-  // Ensure that if metrics are already visible on load, we still animate (observer catches it)
-  // If the page loads and metrics are visible, intersection will fire.
-
   // ─── INITIAL FETCH ───
-  // We'll fetch trades after auth is resolved (already called inside onAuthStateChanged)
-  // But we also want to fetch if already logged in and gate is not shown.
-  // The code above calls fetchPoolTrades() when access is granted.
-  // Additionally, we can call it now if we're already authenticated and not locked.
-  // We'll also add a check in the onAuthStateChanged.
-
+  // fetchPoolTrades() is called inside onAuthStateChanged after access is granted.
+  // Also call it if the user is already authenticated and not locked (edge case).
+  // The onAuthStateChanged already handles this.
 </script>
 </body>
 </html>
