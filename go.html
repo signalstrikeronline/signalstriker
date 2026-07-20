@@ -200,6 +200,85 @@
   .btn-archive { background: transparent; color: var(--black); border: 2px solid var(--black); padding: 8px 20px; font-family: var(--font-body); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; text-decoration: none; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
   .btn-archive:hover { background: var(--black); color: var(--white); box-shadow: none; transform: translate(3px,3px); }
 
+  /* PRICE HISTORY TABLE */
+  .price-table-wrap {
+    border: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .price-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .price-table thead tr {
+    background: var(--black);
+  }
+  .price-table th {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--pink);
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+  .price-table td {
+    font-size: 0.78rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    background: var(--white);
+    vertical-align: middle;
+    font-family: var(--font-mono);
+  }
+  .price-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .price-table tbody tr:hover td {
+    background: var(--bg2);
+  }
+  .price-table .timestamp {
+    font-size: 0.7rem;
+    color: #555;
+  }
+  .price-table .price {
+    font-weight: 700;
+    color: var(--black);
+  }
+
+  /* DERIVATIVES EXCHANGES */
+  .derivatives-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    background: var(--white);
+    box-shadow: var(--shadow);
+  }
+  .derivatives-item {
+    background: var(--bg2);
+    border: 2px solid var(--black);
+    border-radius: var(--radius);
+    padding: 0.6rem 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--black);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .derivatives-item:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow);
+  }
+
   /* SIGNAL GRID */
   .signal-grid { display: grid; grid-template-columns: repeat(3,1fr); border: var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
   .signal-cell { padding: 1.25rem; border-right: 2px solid var(--black); border-bottom: 2px solid var(--black); transition: background 0.15s; background: var(--white); }
@@ -879,6 +958,8 @@
       <div class="sidebar-label">Overview</div>
       <a href="#rewards" class="sidebar-link rewards-link"><span class="sl-icon">🎁</span> Rewards <span class="sl-badge new rewards-badge-count">6</span></a>
       <a href="#today" class="sidebar-link active"><span class="sl-icon">📬</span> Today's Brief <span class="sl-badge new">NEW</span></a>
+      <a href="#archive-prices" class="sidebar-link"><span class="sl-icon">📊</span> Price History</a>
+      <a href="#derivatives" class="sidebar-link"><span class="sl-icon">📈</span> Derivatives</a>
       <a href="#news" class="sidebar-link"><span class="sl-icon">📰</span> News</a>
       <a href="#nfts" class="sidebar-link"><span class="sl-icon">🖼️</span> NFTs</a>
       <a href="#signals" class="sidebar-link"><span class="sl-icon">📡</span> AI Signals</a>
@@ -1048,6 +1129,28 @@
           <a href="#" class="btn-read" id="openArticleBtn">Read Full Issue →</a>
           <a href="#archive" class="btn-archive">Browse Archive</a>
         </div>
+      </div>
+    </div>
+
+    <!-- ISSUE ARCHIVE (Price History) -->
+    <div class="dash-section delay-1" id="archive-prices">
+      <div class="dash-section-head">
+        <div class="dash-section-title">📊 Issue Archive — BTC Price History</div>
+        <span class="dash-section-link" style="cursor:default;">Last 2 data points</span>
+      </div>
+      <div id="priceHistoryContainer" class="price-table-wrap">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- DERIVATIVES EXCHANGES LIST -->
+    <div class="dash-section delay-1" id="derivatives">
+      <div class="dash-section-head">
+        <div class="dash-section-title">📈 Derivatives Exchanges</div>
+        <span class="dash-section-link" style="cursor:default;">Top platforms</span>
+      </div>
+      <div id="derivativesList" class="derivatives-list">
+        <!-- Rendered by JS -->
       </div>
     </div>
 
@@ -1251,7 +1354,7 @@
       </div>
     </div>
 
-    <!-- ISSUE ARCHIVE -->
+    <!-- ISSUE ARCHIVE (original) -->
     <div class="dash-section delay-4" id="archive">
       <div class="dash-section-head">
         <div class="dash-section-title">Issue Archive — Recent</div>
@@ -2077,9 +2180,78 @@
     `).join('');
   }
 
+  // ─── ISSUE ARCHIVE (Price History) ───
+  const priceData = {
+    "prices": [
+      [1779027899041, 77953.82550382407],
+      [1779028199661, 78052.87543398788]
+    ],
+    "market_caps": [
+      [1779027899041, 1560631481361.8042],
+      [1779028199661, 1562027330524.267]
+    ],
+    "total_volumes": [
+      [1779027899041, 18688431751.857048],
+      [1779028199661, 18974828816.446976]
+    ]
+  };
+
+  function renderPriceHistory(data) {
+    const container = document.getElementById('priceHistoryContainer');
+    if (!data.prices || data.prices.length === 0) {
+      container.innerHTML = '<div style="padding:1.5rem;text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:#888;">No price data available</div>';
+      return;
+    }
+    // Build table
+    let html = `<table class="price-table">
+      <thead><tr>
+        <th>Timestamp</th>
+        <th>Price (USD)</th>
+        <th>Market Cap (USD)</th>
+        <th>Volume (USD)</th>
+      </tr></thead><tbody>`;
+    data.prices.forEach((item, index) => {
+      const timestamp = new Date(item[0]).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      const price = item[1];
+      const mcap = data.market_caps[index] ? data.market_caps[index][1] : null;
+      const vol = data.total_volumes[index] ? data.total_volumes[index][1] : null;
+      html += `<tr>
+        <td class="timestamp">${timestamp}</td>
+        <td class="price">$${price.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td>${mcap ? '$' + mcap.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0}) : '—'}</td>
+        <td>${vol ? '$' + vol.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0}) : '—'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  // ─── DERIVATIVES EXCHANGES ───
+  const derivativesData = [
+    { id: "binance_futures", name: "Binance (Futures)" },
+    { id: "bybit", name: "Bybit (Futures)" }
+  ];
+
+  function renderDerivatives(exchanges) {
+    const container = document.getElementById('derivativesList');
+    if (!exchanges.length) {
+      container.innerHTML = '<div style="padding:1rem;text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:#888;">No exchanges listed</div>';
+      return;
+    }
+    container.innerHTML = exchanges.map(ex => `
+      <a href="https://${ex.id}.com" target="_blank" class="derivatives-item">
+        <span>📊</span> ${ex.name}
+      </a>
+    `).join('');
+  }
+
   // ─── INIT STATIC SECTIONS ───
   renderNews(newsData);
   renderNfts(nftsData);
+  renderPriceHistory(priceData);
+  renderDerivatives(derivativesData);
 
   // ─── BYBIT REWARDS MODAL ───
   let bybitVerified = false;
