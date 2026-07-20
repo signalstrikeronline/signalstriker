@@ -388,6 +388,128 @@
     }
   }
 
+  /* NEWS */
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+  }
+  .news-card {
+    background: var(--white);
+    border: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+  }
+  .news-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .news-card-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-bottom: var(--border);
+    background: var(--bg2);
+  }
+  .news-card-body {
+    padding: 0.85rem 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .news-card-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--black);
+    line-height: 1.3;
+    margin-bottom: 0.2rem;
+  }
+  .news-card-title a {
+    color: var(--black);
+    text-decoration: none;
+  }
+  .news-card-title a:hover {
+    text-decoration: underline;
+  }
+  .news-card-meta {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 0.5rem;
+  }
+  .news-card-source {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--pink-dark);
+  }
+  .news-card-time {
+    color: #aaa;
+  }
+
+  /* NFTS TABLE */
+  .nfts-table-wrap {
+    border: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .nfts-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .nfts-table thead tr {
+    background: var(--black);
+  }
+  .nfts-table th {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--pink);
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+  .nfts-table td {
+    font-size: 0.78rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    background: var(--white);
+    vertical-align: middle;
+    font-family: var(--font-mono);
+  }
+  .nfts-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .nfts-table tbody tr:hover td {
+    background: var(--bg2);
+  }
+  .nfts-table .contract-addr {
+    font-size: 0.7rem;
+    color: #555;
+    word-break: break-all;
+  }
+  .nfts-table .platform-badge {
+    background: var(--yellow);
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 0.6rem;
+    border: 1px solid var(--black);
+    display: inline-block;
+  }
+
   /* REWARDS */
   @keyframes rewardFloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-3px); } }
   .rewards-unclaimed-badge { background: var(--yellow); color: var(--black); border: 2px solid var(--black); font-family: var(--font-mono); font-size: 0.62rem; padding: 3px 10px; border-radius: 3px; font-weight: 700; box-shadow: var(--shadow-sm); }
@@ -671,6 +793,7 @@
     .issue-card-body { grid-template-columns: 1fr; }
     .rewards-grid { grid-template-columns: 1fr 1fr; }
     .full-modal { padding: 1.5rem; max-height: 95vh; }
+    .news-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 600px) {
     .signal-grid { grid-template-columns: 1fr; }
@@ -685,6 +808,8 @@
     .gate-access-grid { grid-template-columns: 1fr; }
     .full-modal { padding: 1rem; }
     .article-modal-header h2 { font-size: 1.5rem; }
+    .news-grid { grid-template-columns: 1fr; }
+    .nfts-table th:nth-child(3), .nfts-table td:nth-child(3) { display: none; }
   }
 </style>
 </head>
@@ -754,6 +879,8 @@
       <div class="sidebar-label">Overview</div>
       <a href="#rewards" class="sidebar-link rewards-link"><span class="sl-icon">🎁</span> Rewards <span class="sl-badge new rewards-badge-count">6</span></a>
       <a href="#today" class="sidebar-link active"><span class="sl-icon">📬</span> Today's Brief <span class="sl-badge new">NEW</span></a>
+      <a href="#news" class="sidebar-link"><span class="sl-icon">📰</span> News</a>
+      <a href="#nfts" class="sidebar-link"><span class="sl-icon">🖼️</span> NFTs</a>
       <a href="#signals" class="sidebar-link"><span class="sl-icon">📡</span> AI Signals</a>
       <a href="#whales" class="sidebar-link"><span class="sl-icon">🐋</span> Whale Radar</a>
       <a href="#defi" class="sidebar-link"><span class="sl-icon">🌾</span> DeFi Alpha</a>
@@ -921,6 +1048,40 @@
           <a href="#" class="btn-read" id="openArticleBtn">Read Full Issue →</a>
           <a href="#archive" class="btn-archive">Browse Archive</a>
         </div>
+      </div>
+    </div>
+
+    <!-- CRYPTO NEWS -->
+    <div class="dash-section delay-1" id="news">
+      <div class="dash-section-head">
+        <div class="dash-section-title">📰 Crypto News</div>
+        <span class="dash-section-link" style="cursor:default;">Latest</span>
+      </div>
+      <div id="newsGrid" class="news-grid">
+        <!-- JS will render -->
+      </div>
+    </div>
+
+    <!-- NFTS LIST -->
+    <div class="dash-section delay-1" id="nfts">
+      <div class="dash-section-head">
+        <div class="dash-section-title">🖼️ NFTs List</div>
+        <span class="dash-section-link" style="cursor:default;">Top Collections</span>
+      </div>
+      <div id="nftsTableWrap" class="nfts-table-wrap">
+        <table class="nfts-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Symbol</th>
+              <th>Contract</th>
+              <th>Platform</th>
+            </tr>
+          </thead>
+          <tbody id="nftsTableBody">
+            <tr><td colspan="4" style="padding:1.5rem;text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:#888;">Loading NFTs…</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -1833,11 +1994,94 @@
     }
   }
 
-  // ─── INIT TRENDING (after auth) ───
-  // We'll call it inside onAuthStateChanged after membership check.
-  // Add after the existing refreshMemeCoins calls.
+  // ─── CRYPTO NEWS (static) ───
+  const newsData = [
+    {
+      title: "European Union debates limits on Big Tech access to cloud tenders",
+      url: "https://cryptobriefing.com/eu-big-tech-cloud-tender-limits/",
+      image: "https://assets.coingecko.com/articles/images/107301317/large/open-uri20260527-7-l3llje.?1779877857",
+      author: "Editorial Team",
+      posted_at: "2026-05-27T10:27:57Z",
+      type: "news",
+      source_name: "Crypto Briefing",
+      related_coin_ids: ["could", "union-2"]
+    },
+    {
+      title: "Implied Volatility and IV Crush in Bitcoin Options Explained",
+      url: "https://www.coingecko.com/learn/implied-volatility-iv-crush-bitcoin-options",
+      image: "https://coin-images.coingecko.com/posts/images/102135679/large/Implied_Volatility_Options.png?1779696471",
+      author: "Hans Be",
+      posted_at: "2026-05-25T13:08:37Z",
+      type: "guide",
+      source_name: "CoinGecko",
+      related_coin_ids: ["bitcoin", "ethereum"]
+    }
+  ];
 
-  // ─── BYBIT REWARDS MODAL (for existing members, reward cards) ───
+  function renderNews(articles) {
+    const grid = document.getElementById('newsGrid');
+    if (!articles.length) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;font-family:var(--font-mono);font-size:0.72rem;color:#888;">No news available</div>';
+      return;
+    }
+    grid.innerHTML = articles.map(article => {
+      const time = new Date(article.posted_at).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      return `
+        <div class="news-card">
+          <img src="${article.image}" alt="${article.title}" class="news-card-image" onerror="this.style.display='none'">
+          <div class="news-card-body">
+            <div class="news-card-title"><a href="${article.url}" target="_blank">${article.title}</a></div>
+            <div class="news-card-meta">
+              <span class="news-card-source">${article.source_name}</span>
+              <span class="news-card-time">${time}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ─── NFTS LIST (static) ───
+  const nftsData = [
+    {
+      id: "cryptopunks",
+      contract_address: "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB",
+      name: "CryptoPunks",
+      asset_platform_id: "ethereum",
+      symbol: "PUNK"
+    },
+    {
+      id: "bored-ape-yacht-club",
+      contract_address: "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+      name: "Bored Ape Yacht Club",
+      asset_platform_id: "ethereum",
+      symbol: "BAYC"
+    }
+  ];
+
+  function renderNfts(nfts) {
+    const tbody = document.getElementById('nftsTableBody');
+    if (!nfts.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="padding:1.5rem;text-align:center;font-family:var(--font-mono);font-size:0.72rem;color:#888;">No NFTs available</td></tr>';
+      return;
+    }
+    tbody.innerHTML = nfts.map(nft => `
+      <tr>
+        <td><strong>${nft.name}</strong></td>
+        <td>${nft.symbol}</td>
+        <td class="contract-addr">${nft.contract_address}</td>
+        <td><span class="platform-badge">${nft.asset_platform_id}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // ─── INIT STATIC SECTIONS ───
+  renderNews(newsData);
+  renderNfts(nftsData);
+
+  // ─── BYBIT REWARDS MODAL ───
   let bybitVerified = false;
   let claimedCount  = 0;
 
@@ -1962,7 +2206,6 @@
     e.preventDefault();
     trackerModal.classList.add('open');
     document.body.style.overflow = 'hidden';
-    // update timestamp
     document.getElementById('trackerTimestamp').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   }
   function closeTrackerModalFn() {
@@ -1976,7 +2219,7 @@
     if (e.target === trackerModal) closeTrackerModalFn();
   });
 
-  // ─── ANIMATED METRICS (Intersection Observer + Counting) ───
+  // ─── ANIMATED METRICS ───
   const metricCells = document.querySelectorAll('.metric-cell');
   let metricsAnimated = false;
 
@@ -1986,34 +2229,27 @@
     const target = parseFloat(cell.dataset.target);
     const suffix = cell.dataset.suffix || '';
     const decimals = parseInt(cell.dataset.decimal) || 0;
-    const duration = 1500; // ms
+    const duration = 1500;
     const startTime = performance.now();
 
     function update(now) {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // easeOutQuart
       const eased = 1 - Math.pow(1 - progress, 4);
       const current = eased * target;
       let display;
-      if (decimals === 0) {
-        display = Math.round(current).toString();
-      } else {
-        display = current.toFixed(decimals);
-      }
+      if (decimals === 0) display = Math.round(current).toString();
+      else display = current.toFixed(decimals);
       valEl.textContent = display + suffix;
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      } else {
+      if (progress < 1) requestAnimationFrame(update);
+      else {
         valEl.textContent = target.toFixed(decimals) + suffix;
-        // add bounce animation class
         cell.classList.add('animate');
       }
     }
     requestAnimationFrame(update);
   }
 
-  // Use Intersection Observer to trigger once when metrics come into view
   const metricsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting && !metricsAnimated) {
@@ -2023,66 +2259,19 @@
       }
     });
   }, { threshold: 0.3 });
-  // Observe the metrics grid container
   const metricsGrid = document.getElementById('metricsGrid');
   if (metricsGrid) metricsObserver.observe(metricsGrid);
 
   // ─── INIT TRENDING AFTER AUTH ───
-  // We need to ensure this runs after user is authenticated and membership is cleared.
-  // We'll modify onAuthStateChanged to call refreshTrending() after successful login.
-  // We'll also set an interval.
-  // We can add these lines inside onAuthStateChanged after membership check:
-  // refreshTrending();
-  // setInterval(refreshTrending, 300000);
-
-  // Since we cannot override the existing onAuthStateChanged easily, we'll patch it:
-  // We'll store the original and add our calls.
-  // Actually, we can just call it after the main auth flow, but since it's inside the module,
-  // we can add a listener to the auth state or simply call it after the user is set.
-  // Let's use a separate observer or add a timeout.
-  // Simpler: add a call inside the existing onAuthStateChanged.
-  // We'll modify the existing onAuthStateChanged by redefining it? No, we can add a new listener.
-  // But we already have the main listener. We'll just call refreshTrending() inside the existing one.
-  // However, we can't edit the code that's already executed. We'll just call it after everything.
-  // Since the script is module, we can add a new onAuthStateChanged that runs after.
-  // The first one already sets _currentUser and does gate logic. We'll add another listener that triggers after.
-  // But we need to ensure it doesn't run before user is set.
-  // We'll add a check.
-
-  // Let's add a second listener that triggers after the first one has completed.
-  // We'll use setTimeout to let the first one finish.
-  // Or we can just add a function to call after membership is confirmed.
-  // We'll modify the existing onAuthStateChanged to call refreshTrending after hideGate().
-  // But we cannot edit that code directly.
-  // Instead, we'll add a new listener that checks if _currentUser is set and then calls refreshTrending.
-  // We'll also set an interval.
-
-  // Since we are in a module and can redefine, we'll append a new listener.
-  // But the existing listener is already registered. We'll add another one.
-  // We'll just call refreshTrending() after a small delay once _currentUser is set.
-  // We'll use a setInterval to check.
-
-  // Wait, we can simply call it from the existing onAuthStateChanged by adding a line there.
-  // But we are not editing that function anymore. Let's just add a new listener that runs after.
-  // This listener will trigger after the first one, but we need to ensure it doesn't run before user is set.
-  // We'll add an interval that checks for _currentUser and then calls refreshTrending once.
-
-  // Let's do it like this:
   let trendingInitiated = false;
   const checkUserAndInitTrending = setInterval(() => {
     if (_currentUser && !trendingInitiated) {
       trendingInitiated = true;
       clearInterval(checkUserAndInitTrending);
       refreshTrending();
-      setInterval(refreshTrending, 300000); // every 5 minutes
-      console.log('Trending initialized');
+      setInterval(refreshTrending, 300000);
     }
   }, 500);
-
-  // Also ensure that if user is already set (e.g., after page load), we still start.
-  // The interval will catch it.
-
-  // ─── END TRENDING INIT ───
 
 </script>
 </body>
