@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🦒 NeckT Airdrop — Claim 1,000,000 $NeckT</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ─── Base ─── */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0b12;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* ─── Glass Card ─── */
+        .glass {
+            background: rgba(18, 18, 30, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 215, 0, 0.06);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 215, 0, 0.08);
+        }
+
+        /* ─── Animated Gradient Border ─── */
+        .border-glow {
+            position: relative;
+        }
+        .border-glow::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 1.25rem;
+            padding: 2px;
+            background: conic-gradient(from 0deg, #fbbf24, #f59e0b, #fbbf24, #f59e0b, #fbbf24);
+            background-size: 300% 300%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: spinGlow 6s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes spinGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .border-glow>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── Neck Container ─── */
+        .neck-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 200px;
+            width: 120px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .neck-body {
+            width: 60px;
+            background: linear-gradient(180deg, #f59e0b 0%, #d97706 40%, #b45309 80%, #92400e 100%);
+            border-radius: 30px 30px 10px 10px;
+            transition: height 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            transform-origin: bottom center;
+            min-height: 20px;
+            box-shadow: inset -4px 0 12px rgba(0, 0, 0, 0.3), inset 4px 0 12px rgba(255, 215, 0, 0.1);
+        }
+
+        .neck-body .neck-pattern {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 14px,
+                    rgba(139, 69, 19, 0.25) 14px,
+                    rgba(139, 69, 19, 0.25) 16px);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .neck-head {
+            width: 56px;
+            height: 48px;
+            background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 60%, #d97706 100%);
+            border-radius: 40% 40% 20% 20% / 60% 60% 20% 20%;
+            margin-bottom: -4px;
+            position: relative;
+            box-shadow: inset -3px -3px 12px rgba(0, 0, 0, 0.2), inset 3px 3px 12px rgba(255, 215, 0, 0.15);
+            transition: transform 0.2s ease;
+        }
+
+        .neck-head .eyes {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding-top: 12px;
+        }
+
+        .neck-head .eyes span {
+            display: block;
+            width: 8px;
+            height: 10px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        .neck-head .eyes span::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .neck-head .horn-left,
+        .neck-head .horn-right {
+            position: absolute;
+            top: -8px;
+            width: 10px;
+            height: 18px;
+            background: linear-gradient(180deg, #b45309, #78350f);
+            border-radius: 50% 50% 0 0 / 80% 80% 0 0;
+            transform: rotate(-8deg);
+        }
+        .neck-head .horn-left {
+            left: 8px;
+        }
+        .neck-head .horn-right {
+            right: 8px;
+            transform: rotate(8deg);
+        }
+
+        .neck-head .ear-left,
+        .neck-head .ear-right {
+            position: absolute;
+            top: 4px;
+            width: 14px;
+            height: 20px;
+            background: #d97706;
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(-12deg);
+            box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.15);
+        }
+        .neck-head .ear-left {
+            left: -6px;
+        }
+        .neck-head .ear-right {
+            right: -6px;
+            transform: rotate(12deg) scaleX(-1);
+        }
+
+        .neck-head .smile {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 8px;
+            border-bottom: 3px solid #78350f;
+            border-radius: 0 0 50% 50%;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .neck-head .smile.happy {
+            width: 22px;
+            height: 12px;
+            border-bottom-width: 4px;
+            opacity: 1;
+            border-color: #fbbf24;
+        }
+
+        /* ─── Crack Effect ─── */
+        .crack-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        .crack-overlay.active {
+            opacity: 1;
+        }
+
+        .crack-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ─── Tension Meter ─── */
+        .meter-track {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 999px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b, #dc2626);
+            transition: width 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .meter-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 1.6s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* ─── Button ─── */
+        .btn-crack {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            border: none;
+            padding: 0.9rem 2.2rem;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #0b0b12;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 28px -6px rgba(245, 158, 11, 0.35);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .btn-crack:hover:not(:disabled) {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px -6px rgba(245, 158, 11, 0.5);
+        }
+
+        .btn-crack:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .btn-crack:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-crack .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: rippleAnim 0.7s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* ─── Confetti ─── */
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 14px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-20px) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* ─── Flash ─── */
+        .flash-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.35), rgba(251, 191, 36, 0) 70%);
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        .flash-overlay.active {
+            opacity: 1;
+            animation: flashPulse 0.5s ease-out forwards;
+        }
+
+        @keyframes flashPulse {
+            0% {
+                opacity: 1;
+                transform: scale(0.9);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+
+        /* ─── Wallet ─── */
+        .wallet-address {
+            font-family: 'Inter', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .wallet-address .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .wallet-address .dot.green {
+            background: #4ade80;
+        }
+        .wallet-address .dot.yellow {
+            background: #fbbf24;
+        }
+        .wallet-address .dot.gray {
+            background: #6b7280;
+        }
+
+        /* ─── Bybit Input ─── */
+        .bybit-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            padding: 0.7rem 1.4rem;
+            color: #fff;
+            font-size: 0.95rem;
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .bybit-input:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
+        }
+
+        .bybit-input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .btn-cashout {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #0b0b12;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 24px -6px rgba(34, 197, 94, 0.3);
+            white-space: nowrap;
+        }
+
+        .btn-cashout:hover:not(:disabled) {
+            transform: scale(1.03);
+            box-shadow: 0 10px 32px -6px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-cashout:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-create-bybit {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.7rem 1.6rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-create-bybit:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 215, 0, 0.2);
+        }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(18, 18, 30, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            padding: 0.8rem 2rem;
+            border-radius: 999px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 12px 48px -12px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 640px) {
+            body {
+                padding: 0.8rem;
+            }
+            .neck-wrapper {
+                height: 160px;
+                width: 90px;
+            }
+            .neck-body {
+                width: 46px;
+            }
+            .neck-head {
+                width: 44px;
+                height: 38px;
+            }
+            .neck-head .eyes {
+                gap: 8px;
+                padding-top: 8px;
+            }
+            .neck-head .eyes span {
+                width: 6px;
+                height: 8px;
+            }
+            .neck-head .horn-left,
+            .neck-head .horn-right {
+                width: 8px;
+                height: 14px;
+                top: -6px;
+            }
+            .neck-head .horn-left {
+                left: 6px;
+            }
+            .neck-head .horn-right {
+                right: 6px;
+            }
+            .neck-head .ear-left,
+            .neck-head .ear-right {
+                width: 10px;
+                height: 16px;
+                top: 2px;
+            }
+            .neck-head .ear-left {
+                left: -4px;
+            }
+            .neck-head .ear-right {
+                right: -4px;
+            }
+            .neck-head .smile {
+                width: 12px;
+                height: 6px;
+                bottom: 6px;
+            }
+            .neck-head .smile.happy {
+                width: 16px;
+                height: 8px;
+            }
+            .btn-crack {
+                font-size: 0.95rem;
+                padding: 0.7rem 1.6rem;
+                max-width: 100%;
+            }
+            .wallet-address {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.7rem;
+            }
+            .bybit-input {
+                font-size: 0.85rem;
+                padding: 0.6rem 1.2rem;
+            }
+            .btn-cashout {
+                font-size: 0.85rem;
+                padding: 0.6rem 1.4rem;
+            }
+            .btn-create-bybit {
+                font-size: 0.8rem;
+                padding: 0.6rem 1.2rem;
+            }
+            .toast {
+                font-size: 0.8rem;
+                padding: 0.6rem 1.4rem;
+                bottom: 1.2rem;
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .neck-wrapper {
+                height: 130px;
+                width: 72px;
+            }
+            .neck-body {
+                width: 36px;
+            }
+            .neck-head {
+                width: 36px;
+                height: 32px;
+            }
+            .neck-head .eyes {
+                gap: 6px;
+                padding-top: 6px;
+            }
+            .neck-head .eyes span {
+                width: 5px;
+                height: 6px;
+            }
+            .neck-head .horn-left,
+            .neck-head .horn-right {
+                width: 6px;
+                height: 10px;
+                top: -4px;
+            }
+            .neck-head .horn-left {
+                left: 4px;
+            }
+            .neck-head .horn-right {
+                right: 4px;
+            }
+            .neck-head .ear-left,
+            .neck-head .ear-right {
+                display: none;
+            }
+        }
+
+        /* ─── Utilities ─── */
+        .text-glow {
+            text-shadow: 0 0 40px rgba(251, 191, 36, 0.15), 0 0 80px rgba(251, 191, 36, 0.05);
+        }
+
+        .bg-grid {
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(251, 191, 36, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(251, 191, 36, 0.03) 0%, transparent 50%);
+        }
+
+        .animate-pulse-slow {
+            animation: pulseSlow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseSlow {
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        .spin-slow {
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3);
+            border-radius: 999px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ─── FLASH OVERLAY ─── -->
+    <div class="flash-overlay" id="flashOverlay"></div>
+
+    <!-- ─── CONFETTI CONTAINER ─── -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- ─── TOAST ─── -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✨</span>
+        <span id="toastMessage">Ready!</span>
+    </div>
+
+    <!-- ─── MAIN CARD ─── -->
+    <div class="glass border-glow rounded-2xl w-full max-w-2xl p-6 md:p-8 relative bg-grid">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2.5">
+                <div class="text-3xl animate-float">🦒</div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                        NeckT
+                        <span class="text-yellow-400">Airdrop</span>
+                    </h1>
+                    <p class="text-xs text-gray-400 font-medium -mt-0.5">
+                        <i class="fa-brands fa-bitcoin text-yellow-400 mr-1"></i>
+                        Exclusive on Bybit
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500 font-medium hidden sm:inline">$NeckT</span>
+                <span class="text-xs bg-yellow-400/10 text-yellow-400 px-2.5 py-1 rounded-full font-bold border border-yellow-400/20">
+                    <i class="fa-solid fa-bolt mr-1 text-[10px]"></i> Live
+                </span>
+            </div>
+        </div>
+
+        <!-- Subtitle -->
+        <p class="text-gray-400 text-sm md:text-base font-medium mb-6 flex items-center gap-2 flex-wrap">
+            <i class="fa-solid fa-gift text-yellow-400"></i>
+            <span>Claim your <strong class="text-white">1,000,000</strong> <strong class="text-yellow-400">$NeckT</strong> — crack the neck to activate!</span>
+        </p>
+
+        <!-- ─── INTERACTIVE SECTION ─── -->
+        <div class="glass-light rounded-2xl p-5 md:p-6 mb-6 relative overflow-hidden">
+
+            <!-- Neck Visual -->
+            <div class="flex flex-col items-center">
+                <div class="neck-wrapper" id="neckWrapper">
+                    <!-- Head -->
+                    <div class="neck-head" id="neckHead">
+                        <div class="horn-left"></div>
+                        <div class="horn-right"></div>
+                        <div class="ear-left"></div>
+                        <div class="ear-right"></div>
+                        <div class="eyes">
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <div class="smile" id="smile"></div>
+                    </div>
+                    <!-- Neck Body -->
+                    <div class="neck-body" id="neckBody" style="height:60px;">
+                        <div class="neck-pattern"></div>
+                        <!-- Crack overlay -->
+                        <div class="crack-overlay" id="crackOverlay">
+                            <svg class="crack-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path d="M10,20 L30,10 L25,30 L45,25 L40,45 L60,40 L55,60 L80,55 L75,80 L50,70 L45,90 L20,75 L10,90 L5,60 L20,50 L5,40 Z"
+                                fill="rgba(255,215,0,0.3)" stroke="rgba(255,215,0,0.6)" stroke-width="1.5" />
+                                <path d="M30,30 L50,20 L45,40 L65,35 L60,55 L85,50 L80,75 L60,65 L55,85 L30,70 L20,85 L15,60 L30,50 L15,40 Z"
+                                fill="rgba(255,200,50,0.2)" stroke="rgba(255,200,50,0.4)" stroke-width="1" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tension Meter -->
+                <div class="w-full max-w-xs mt-4">
+                    <div class="flex justify-between text-xs text-gray-500 font-medium mb-1">
+                        <span>TENSION</span>
+                        <span id="tensionLabel">0%</span>
+                    </div>
+                    <div class="meter-track">
+                        <div class="meter-fill" id="meterFill" style="width:0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Clicks counter -->
+                <p class="text-xs text-gray-500 mt-2 font-medium" id="clickCounter">
+                    <i class="fa-solid fa-hand-pointer mr-1"></i>
+                    Clicks: <span id="clickCount">0</span> / <span id="maxClicks">8</span>
+                </p>
+            </div>
+
+            <!-- Crack Button -->
+            <div class="flex justify-center mt-5">
+                <button class="btn-crack" id="crackBtn">
+                    <i class="fa-solid fa-bolt mr-2"></i>
+                    <span id="btnLabel">Crack the Neck</span>
+                </button>
+            </div>
+
+            <!-- Status message -->
+            <div class="text-center mt-3">
+                <p class="text-xs font-medium" id="statusMessage">
+                    <span class="text-gray-400">👆 Tap the button to build tension...</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- ─── WALLET ─── -->
+        <div class="glass-light rounded-2xl p-4 md:p-5 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-yellow-400/10 flex items-center justify-center text-yellow-400 border border-yellow-400/20 flex-shrink-0">
+                        <i class="fa-solid fa-wallet text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">DIGITAL WALLET</p>
+                        <div class="wallet-address mt-0.5">
+                            <span class="dot" id="walletDot green"></span>
+                            <span id="walletAddress" class="text-gray-300">0x742...a1B2</span>
+                            <button id="copyWalletBtn" class="text-gray-500 hover:text-yellow-400 transition text-xs ml-1" title="Copy address">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 bg-black/30 px-4 py-2 rounded-full border border-white/5">
+                    <span class="text-xs text-gray-400 font-medium">Balance</span>
+                    <span class="text-lg font-extrabold text-yellow-400" id="walletBalance">0</span>
+                    <span class="text-xs font-bold text-yellow-400/70">$NeckT</span>
+                </div>
+            </div>
+
+            <!-- Claimed status -->
+            <div class="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
+                <span class="text-xs text-gray-500">
+                    <i class="fa-regular fa-clock mr-1"></i>
+                    Status:
+                    <span id="claimStatus" class="text-yellow-400 font-semibold">🔒 Not claimed</span>
+                </span>
+                <span class="text-[10px] text-gray-600 font-mono" id="blockInfo">⛓️ Block: #4,202,069</span>
+            </div>
+        </div>
+
+        <!-- ─── CASH OUT ─── -->
+        <div class="glass-light rounded-2xl p-4 md:p-5">
+            <div class="flex items-center gap-2.5 mb-3">
+                <div class="w-7 h-7 rounded-full bg-green-400/10 flex items-center justify-center text-green-400 border border-green-400/20 flex-shrink-0">
+                    <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+                </div>
+                <h3 class="text-sm font-bold text-white">Cash Out to Bybit</h3>
+                <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full font-medium border border-blue-500/20 ml-auto">Bybit Exclusive</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex-1">
+                    <input type="text" class="bybit-input" id="bybitInput"
+                    placeholder="Enter your Bybit ID (e.g. 12345678)" />
+                    <p class="text-[10px] text-gray-500 mt-1.5">
+                        <i class="fa-regular fa-circle-question mr-1"></i>
+                        Your Bybit UID is in your account settings.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 items-center">
+                    <button class="btn-cashout" id="cashoutBtn" disabled>
+                        <i class="fa-solid fa-paper-plane mr-1.5"></i> Cash Out
+                    </button>
+                    <button class="btn-create-bybit" id="createBybitBtn">
+                        <i class="fa-regular fa-user-plus mr-1.5"></i> Create Account
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cash out history / message -->
+            <div class="mt-3 pt-3 border-t border-white/5">
+                <p class="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
+                    <i class="fa-regular fa-circle-check text-green-400"></i>
+                    <span id="cashoutMessage">Enter your Bybit ID to withdraw your $NeckT.</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-5 text-center text-[10px] text-gray-600 font-medium flex items-center justify-center gap-4 flex-wrap">
+            <span>🦒 NeckT • Meme Coin</span>
+            <span>•</span>
+            <span><i class="fa-regular fa-clock mr-1"></i> Airdrop live</span>
+            <span>•</span>
+            <a href="#" class="hover:text-yellow-400 transition"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" class="hover:text-yellow-400 transition"><i class="fa-brands fa-telegram"></i></a>
+            <a href="#" class="hover:text-yellow-400 transition"><i class="fa-regular fa-globe"></i></a>
+        </div>
+    </div>
+
+    <!-- ─── JAVASCRIPT ─── -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ── DOM refs ──
+            const crackBtn = document.getElementById('crackBtn');
+            const btnLabel = document.getElementById('btnLabel');
+            const meterFill = document.getElementById('meterFill');
+            const tensionLabel = document.getElementById('tensionLabel');
+            const clickCountEl = document.getElementById('clickCount');
+            const maxClicksEl = document.getElementById('maxClicks');
+            const statusMessage = document.getElementById('statusMessage');
+            const walletBalance = document.getElementById('walletBalance');
+            const claimStatus = document.getElementById('claimStatus');
+            const walletAddress = document.getElementById('walletAddress');
+            const walletDot = document.getElementById('walletDot');
+            const copyWalletBtn = document.getElementById('copyWalletBtn');
+            const bybitInput = document.getElementById('bybitInput');
+            const cashoutBtn = document.getElementById('cashoutBtn');
+            const createBybitBtn = document.getElementById('createBybitBtn');
+            const cashoutMessage = document.getElementById('cashoutMessage');
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const flashOverlay = document.getElementById('flashOverlay');
+            const confettiContainer = document.getElementById('confettiContainer');
+            const crackOverlay = document.getElementById('crackOverlay');
+            const neckBody = document.getElementById('neckBody');
+            const neckHead = document.getElementById('neckHead');
+            const smile = document.getElementById('smile');
+
+            // ── State ──
+            const MAX_CLICKS = 8;
+            const TOTAL_TOKENS = 1000000;
+            let clicks = 0;
+            let claimed = false;
+            let balance = 0;
+            let cashoutUsed = false;
+            let bybitId = '';
+
+            // Generate a random wallet address
+            function generateWallet() {
+                const chars = '0123456789abcdef';
+                let addr = '0x';
+                for (let i = 0; i < 40; i++) {
+                    addr += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return addr;
+            }
+
+            const walletAddr = generateWallet();
+
+            // ── Helpers ──
+            function formatAddr(addr) {
+                return addr.slice(0, 6) + '...' + addr.slice(-4);
+            }
+
+            function updateUI() {
+                const pct = Math.min(100, (clicks / MAX_CLICKS) * 100);
+                meterFill.style.width = pct + '%';
+                tensionLabel.textContent = Math.round(pct) + '%';
+                clickCountEl.textContent = clicks;
+
+                // Neck stretch
+                const baseHeight = 20;
+                const maxHeight = 130;
+                const stretch = Math.min(1, clicks / MAX_CLICKS);
+                const height = baseHeight + (maxHeight - baseHeight) * easeInOut(stretch);
+                neckBody.style.height = Math.round(height) + 'px';
+
+                // Head bob
+                const bob = stretch * 4;
+                neckHead.style.transform = `translateY(-${bob}px) rotate(${stretch * 2 - 1}deg)`;
+
+                // Smile
+                if (stretch > 0.7) {
+                    smile.classList.add('happy');
+                } else {
+                    smile.classList.remove('happy');
+                }
+
+                // Button state
+                if (claimed) {
+                    crackBtn.disabled = true;
+                    btnLabel.innerHTML = '<i class="fa-solid fa-check-circle mr-2"></i> Claimed! 🎉';
+                    statusMessage.innerHTML = '<span class="text-green-400">✅ You claimed 1,000,000 $NeckT!</span>';
+                    claimStatus.textContent = '✅ Claimed';
+                    claimStatus.className = 'text-green-400 font-semibold';
+                    walletDot.className = 'dot green';
+                } else if (clicks >= MAX_CLICKS) {
+                    crackBtn.disabled = false;
+                    btnLabel.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> CRACK IT! 💥';
+                    statusMessage.innerHTML = '<span class="text-yellow-400 animate-pulse">⚡ The neck is ready! Click to crack!</span>';
+                } else if (clicks > 0) {
+                    crackBtn.disabled = false;
+                    btnLabel.innerHTML = `<i class="fa-solid fa-hand-pointer mr-2"></i> Tap ${MAX_CLICKS - clicks} more`;
+                    const msgs = [
+                        '💪 Keep going!',
+                        '🔥 Almost there!',
+                        '✨ You\'re doing great!',
+                        '🦒 Stretch it!',
+                        '⚡ One more push!'
+                    ];
+                    const idx = Math.min(clicks - 1, msgs.length - 1);
+                    statusMessage.innerHTML = `<span class="text-gray-300">${msgs[idx] || '👆 Keep tapping!'}</span>`;
+                } else {
+                    crackBtn.disabled = false;
+                    btnLabel.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Crack the Neck';
+                    statusMessage.innerHTML = '<span class="text-gray-400">👆 Tap the button to build tension...</span>';
+                }
+
+                // Balance
+                walletBalance.textContent = balance.toLocaleString();
+
+                // Wallet address
+                walletAddress.textContent = formatAddr(walletAddr);
+
+                // Cashout button
+                const hasBalance = balance > 0;
+                const hasBybitId = bybitInput.value.trim().length > 0;
+                cashoutBtn.disabled = !(hasBalance && hasBybitId && !cashoutUsed && claimed);
+            }
+
+            function easeInOut(t) {
+                return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+            }
+
+            // ── Confetti ──
+            function fireConfetti(count = 120) {
+                const colors = ['#fbbf24', '#f59e0b', '#ef4444', '#4ade80', '#60a5fa', '#a78bfa', '#f472b6', '#fb923c', '#22d3ee',
+                    '#fff'
+                ];
+                const container = confettiContainer;
+
+                for (let i = 0; i < count; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti-piece';
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const size = 6 + Math.random() * 10;
+                    const left = Math.random() * 100;
+                    const duration = 1.8 + Math.random() * 2.2;
+                    const delay = Math.random() * 0.8;
+                    const rotate = Math.random() * 720;
+                    const shape = Math.random() > 0.5 ? '50%' : '2px';
+
+                    el.style.cssText = `
+                        left: ${left}%;
+                        width: ${size}px;
+                        height: ${size * (0.6 + Math.random() * 0.8)}px;
+                        background: ${color};
+                        border-radius: ${shape};
+                        animation-duration: ${duration}s;
+                        animation-delay: ${delay}s;
+                        transform: rotate(${rotate}deg);
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    `;
+                    container.appendChild(el);
+
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (el.parentNode) el.remove();
+                    }, (duration + delay) * 1000 + 200);
+                }
+            }
+
+            // ── Flash ──
+            function fireFlash() {
+                flashOverlay.classList.remove('active');
+                // force reflow
+                void flashOverlay.offsetWidth;
+                flashOverlay.classList.add('active');
+                setTimeout(() => {
+                    flashOverlay.classList.remove('active');
+                }, 600);
+            }
+
+            // ── Crack Effect ──
+            function showCrack() {
+                crackOverlay.classList.add('active');
+                setTimeout(() => {
+                    crackOverlay.classList.remove('active');
+                }, 600);
+            }
+
+            // ── Toast ──
+            function showToast(message, icon = '✨') {
+                toastMessage.textContent = message;
+                toast.querySelector('.toast-icon').textContent = icon;
+                toast.classList.add('show');
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2800);
+            }
+
+            // ── Claim ──
+            function claimTokens() {
+                if (claimed) return;
+                if (clicks < MAX_CLICKS) {
+                    showToast('Keep tapping to build tension!', '👆');
+                    return;
+                }
+
+                // Claim!
+                claimed = true;
+                balance = TOTAL_TOKENS;
+
+                // Effects
+                fireConfetti(150);
+                fireFlash();
+                showCrack();
+
+                // Update UI
+                updateUI();
+                showToast('🎉 You claimed 1,000,000 $NeckT!', '🦒');
+                document.getElementById('blockInfo').textContent = '⛓️ Block: #' + (4202069 + Math.floor(Math.random() *
+                1000));
+
+                // Enable cashout if Bybit ID is entered
+                if (bybitInput.value.trim().length > 0) {
+                    cashoutBtn.disabled = false;
+                }
+            }
+
+            // ── Cash Out ──
+            function cashOut() {
+                if (cashoutUsed) {
+                    showToast('Already cashed out!', '⚠️');
+                    return;
+                }
+                if (!claimed) {
+                    showToast('Claim your tokens first!', '🔒');
+                    return;
+                }
+                if (balance <= 0) {
+                    showToast('No tokens to cash out.', '😅');
+                    return;
+                }
+                const id = bybitInput.value.trim();
+                if (!id) {
+                    showToast('Please enter your Bybit ID.', '✏️');
+                    return;
+                }
+                if (id.length < 4) {
+                    showToast('Bybit ID must be at least 4 characters.', '⚠️');
+                    return;
+                }
+
+                // Process cashout
+                cashoutUsed = true;
+                const amount = balance;
+                balance = 0;
+                cashoutBtn.disabled = true;
+
+                cashoutMessage.innerHTML = `
+                    <i class="fa-regular fa-circle-check text-green-400 mr-1"></i>
+                    ✅ <strong class="text-green-400">${amount.toLocaleString()} $NeckT</strong>
+                    sent to Bybit ID <strong class="text-yellow-400">${id}</strong>!
+                    <span class="text-gray-500 text-[11px] ml-2">(tx: 0x${Math.random().toString(16).slice(2, 10)}…)</span>
+                `;
+
+                showToast(`💸 Cashed out ${amount.toLocaleString()} $NeckT to Bybit!`, '🚀');
+
+                // Update UI
+                updateUI();
+
+                // Disable input
+                bybitInput.disabled = true;
+                bybitInput.style.opacity = '0.5';
+            }
+
+            // ── Create Bybit Account ──
+            function createBybitAccount() {
+                showToast('🔗 Redirecting to Bybit sign-up...', '🚀');
+                setTimeout(() => {
+                    // 👇 UPDATED: affiliate link
+                    window.open('https://partner.bybit.com/b/KENEY007', '_blank');
+                    showToast('📝 Complete sign-up on Bybit!', '📝');
+                }, 600);
+            }
+
+            // ── Copy Wallet ──
+            function copyWallet() {
+                const fullAddr = walletAddr;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(fullAddr).then(() => {
+                        showToast('📋 Wallet address copied!', '📋');
+                    }).catch(() => {
+                        fallbackCopy(fullAddr);
+                    });
+                } else {
+                    fallbackCopy(fullAddr);
+                }
+            }
+
+            function fallbackCopy(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                ta.style.top = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('📋 Wallet address copied!', '📋');
+                } catch (_) {
+                    showToast('Could not copy. Select and copy manually.', '⚠️');
+                }
+                document.body.removeChild(ta);
+            }
+
+            // ── Button click handler ──
+            function handleCrackClick(e) {
+                if (claimed) {
+                    showToast('Already claimed! 🎉', '🦒');
+                    return;
+                }
+
+                // Ripple
+                const rect = crackBtn.getBoundingClientRect();
+                const x = (e.clientX || e.pageX) - rect.left;
+                const y = (e.clientY || e.pageY) - rect.top;
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const size = Math.max(rect.width, rect.height) * 0.8;
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (x - size / 2) + 'px';
+                ripple.style.top = (y - size / 2) + 'px';
+                crackBtn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 700);
+
+                // Increment
+                if (clicks < MAX_CLICKS) {
+                    clicks++;
+                    updateUI();
+                    // Haptic feedback (vibration)
+                    if (navigator.vibrate) {
+                        navigator.vibrate(8);
+                    }
+                    // Small flash on each tap
+                    if (clicks === MAX_CLICKS) {
+                        // Ready to crack
+                        showToast('💥 The neck is ready! Click to crack!', '⚡');
+                    } else if (clicks % 2 === 0) {
+                        showToast(`💪 ${clicks}/${MAX_CLICKS} tension!`, '🔥');
+                    }
+                }
+
+                // If at max, auto-crack on next click
+                if (clicks >= MAX_CLICKS && !claimed) {
+                    // The button now says "CRACK IT!"
+                    // Next click will claim
+                }
+            }
+
+            // ── Direct claim when clicking at max ──
+            function handleCrackClickFinal(e) {
+                if (claimed) return;
+                if (clicks >= MAX_CLICKS) {
+                    claimTokens();
+                } else {
+                    handleCrackClick(e);
+                }
+            }
+
+            // ── Init ──
+            function init() {
+                maxClicksEl.textContent = MAX_CLICKS;
+                walletAddress.textContent = formatAddr(walletAddr);
+                updateUI();
+
+                // Events
+                crackBtn.addEventListener('click', handleCrackClickFinal);
+
+                copyWalletBtn.addEventListener('click', copyWallet);
+
+                bybitInput.addEventListener('input', function() {
+                    const val = this.value.trim();
+                    bybitId = val;
+                    if (claimed && val.length > 0 && balance > 0 && !cashoutUsed) {
+                        cashoutBtn.disabled = false;
+                    } else {
+                        cashoutBtn.disabled = true;
+                    }
+                    if (val.length > 0) {
+                        cashoutMessage.innerHTML =
+                            `<i class="fa-regular fa-circle-check text-green-400 mr-1"></i> Ready to cash out to Bybit ID: <strong class="text-yellow-400">${val}</strong>`;
+                    } else {
+                        cashoutMessage.innerHTML =
+                            `<i class="fa-regular fa-circle-check text-green-400 mr-1"></i> Enter your Bybit ID to withdraw your $NeckT.`;
+                    }
+                });
+
+                cashoutBtn.addEventListener('click', cashOut);
+
+                createBybitBtn.addEventListener('click', createBybitAccount);
+
+                // Keyboard shortcut: Enter on bybit input triggers cashout
+                bybitInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !cashoutBtn.disabled) {
+                        cashOut();
+                    }
+                });
+
+                // Initial toast
+                setTimeout(() => {
+                    showToast('🦒 Tap "Crack the Neck" to claim!', '👋');
+                }, 500);
+
+                console.log('🦒 NeckT Airdrop — Claim 1,000,000 $NeckT');
+                console.log('📝 Wallet:', walletAddr);
+            }
+
+            // ── Run ──
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+   <!-- Default Statcounter code for Ghana
+https://signalstrike.online/ghana.html -->
+<script type="text/javascript">
+var sc_project=13338929; 
+var sc_invisible=1; 
+var sc_security="e02d84e1"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics"
+href="https://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="https://c.statcounter.com/13338929/0/e02d84e1/1/"
+alt="Web Analytics"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+</body>
+</html>
