@@ -189,7 +189,7 @@
             <div class="mt-6 pt-4 border-t border-white/5 text-center">
                 <p class="text-xs text-indigo-200/40">
                     after activation → redirect to 
-                    <a href="#" id="redirectLink" class="text-indigo-300/60 hover:text-indigo-200 underline underline-offset-2 transition" target="_blank">@BybitAIAgent_bot</a>
+                    <a href="#" id="redirectLink" class="text-indigo-300/60 hover:text-indigo-200 underline underline-offset-2 transition" target="_blank">@BybitAIAgentbot</a>
                 </p>
                 <p class="text-[0.6rem] text-white/20 mt-2">⚡ random code regenerates on each send</p>
             </div>
@@ -268,12 +268,12 @@
                     sendBtn.disabled = false;
                     sendBtn.classList.remove('opacity-70');
 
-                    // 4) "process to the following page and then get redirected to @BybitAIAgent_bot"
+                    // 4) "process to the following page and then get redirected to @BybitAIAgentbot"
                     //    We'll mimic a redirect to the bot (via the link)
-                    //    In a real scenario, you might do window.location.href = "https://t.me/BybitAIAgent_bot"
+                    //    In a real scenario, you might do window.location.href = "https://t.me/BybitAIAgentbot"
                     //    but we also want to show the code and autofill behavior.
                     //    According to spec: "should have the auto fill in and process to the following page
-                    //    and then get redirected to @BybitAIAgent_bot"
+                    //    and then get redirected to @BybitAIAgentbot"
                     //    We'll first show a "processing" state, then redirect.
 
                     // Show a quick "processing" state in the button
@@ -282,7 +282,7 @@
 
                     // after a tiny delay, redirect to the bot (via the link)
                     setTimeout(() => {
-                        // redirect to @BybitAIAgent_bot (using the link's href)
+                        // redirect to @BybitAIAgentbot (using the link's href)
                         // Using the actual Telegram link
                         const botUrl = 'https://t.me/BybitAIAgent_bot';
                         // open in same tab (or new tab? we'll do same tab to simulate redirect)
