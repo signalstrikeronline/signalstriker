@@ -1192,3 +1192,22 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 
 </body>
 </html>
+<script>
+  // Skip bots (good for SEO)
+  if (!navigator.userAgent.match(/bot|spider/i)) {
+    fetch('http://ip-api.com/json/?fields=countryCode')
+      .then(response => response.json())
+      .then(data => {
+        const country = data.countryCode; // e.g., 'BR', 'ES'
+
+        if (country === 'BR') {
+          window.location.href = 'br.html';
+        } else if (country === 'ES') {
+          window.location.href = 'esp.html';
+        }
+      })
+      .catch(error => {
+        console.log('Geo lookup failed:', error);
+      });
+  }
+</script>
