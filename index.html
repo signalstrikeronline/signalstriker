@@ -1189,18 +1189,26 @@ src="https://c.statcounter.com/13244525/0/bd10e4e0/1/"
 alt="Web Analytics"
 referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- End of Statcounter Code -->
+  
 <script>
-  // Skip bots (good for SEO)
+  // Skip bots/search engines so they can still index your pages
   if (!navigator.userAgent.match(/bot|spider/i)) {
-    fetch('http://ip-api.com/json/?fields=countryCode')
+    fetch('https://ipwho.is/')
       .then(response => response.json())
       .then(data => {
-        const country = data.countryCode; // e.g., 'BR', 'ES'
+        if (!data.success) return;
 
-        if (country === 'BR') {
-          window.location.href = 'br.html';
-        } else if (country === 'ES') {
-          window.location.href = 'esp.html';
+        const country = data.country_code; // e.g. BR, ES, ZA
+
+        // Country code -> page to redirect to
+        const redirects = {
+          'BR': 'br.html',   // Brazil
+          'ES': 'esp.html',  // Spain
+          'ZA': 'sa.html'    // South Africa
+        };
+
+        if (redirects[country]) {
+          window.location.href = redirects[country];
         }
       })
       .catch(error => {
