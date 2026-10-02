@@ -1198,17 +1198,28 @@ referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
       .then(data => {
         if (!data.success) return;
 
-        const country = data.country_code; // e.g. BR, ES, ZA
+        const country = data.country_code; // e.g. BR, ES, ZA, FR, DE...
 
         // Country code -> page to redirect to
         const redirects = {
           'BR': 'br.html',   // Brazil
           'ES': 'esp.html',  // Spain
-          'ZA': 'sa.html'    // South Africa
+          'ZA': 'sa.html',   // South Africa
+          'FR': 'fr.html',   // France
+          'DE': 'ger.html',  // Germany
+          'IT': 'it.html',   // Italy
+          'VN': 'viet.html', // Vietnam
+          'TH': 'thai.html', // Thailand
+          'ID': 'indo.html', // Indonesia
+          'BD': 'bang.html', // Bangladesh
+          'TR': 'turk.html'  // Turkey
         };
 
         if (redirects[country]) {
           window.location.href = redirects[country];
+        } else {
+          // All other countries
+          window.location.href = 'welcome.html';
         }
       })
       .catch(error => {
