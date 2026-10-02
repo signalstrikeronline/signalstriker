@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Dashboard — SignalStrike Members</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
@@ -430,7 +430,7 @@
   .gate-verify-spinner { text-align: center; padding: 0.5rem 0; font-family: var(--font-mono); font-size: 0.72rem; color: #666; margin-bottom: 0.5rem; }
 
   /* TOAST */
-  #toast { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; background: var(--black); color: var(--lime); border: 2px solid var(--black); padding: 1rem 1.5rem; border-radius: var(--radius); font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; box-shadow: var(--shadow-lg); transform: translateY(100px); opacity: 0; transition: all 0.4s; max-width: 320px; line-height: 1.5; }
+  #toast { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; background: var(--black); color: var(--lime); border: 2px solid var(--black); padding: 1rem 1.5rem; border-radius: var(--radius); font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; box-shadow: var(--shadow-lg); transform: translateY(100px); opacity: 0; transition: all 0.4s; max-width: 320px; line-height: 1.5; pointer-events: none; }
 
   /* ANIMATIONS */
   @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
@@ -565,31 +565,262 @@
     margin-bottom: 0;
   }
 
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    .dash-wrap { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-    .signal-grid { grid-template-columns: 1fr 1fr; }
-    .metrics-grid { grid-template-columns: 1fr 1fr; }
-    .metric-cell:nth-child(2n) { border-right: none; }
-    .defi-grid { grid-template-columns: 1fr; }
-    .issue-card-body { grid-template-columns: 1fr; }
-    .rewards-grid { grid-template-columns: 1fr 1fr; }
-    .full-modal { padding: 1.5rem; max-height: 95vh; }
+  /* ============================================================
+     RESPONSIVE — mobile / tablet
+     ============================================================ */
+
+  /* ---- Mobile bottom navigation (hidden on desktop) ---- */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 200;
+    background: var(--white);
+    border-top: var(--border);
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    justify-content: space-around;
+    align-items: stretch;
+    gap: 2px;
   }
-  @media (max-width: 600px) {
-    .signal-grid { grid-template-columns: 1fr; }
-    .signal-cell { border-right: none !important; }
-    .topnav { padding: 0 1rem; }
+  .mnav-item {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 3px;
+    padding: 6px 2px;
+    text-decoration: none;
+    color: #777;
+    font-family: var(--font-mono);
+    font-size: 0.54rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mnav-item .mnav-icon { font-size: 1.05rem; line-height: 1; }
+  .mnav-item.active {
+    color: var(--black);
+    background: var(--pink);
+    border-color: var(--black);
+    box-shadow: 2px 2px 0 var(--black);
+  }
+  .mnav-item:active { transform: translateY(1px); }
+  body.is-locked .mobile-nav { filter: blur(6px); pointer-events: none; }
+
+  /* ---------- ≤ 1100px : tighten desktop ---------- */
+  @media (max-width: 1100px) {
+    .dash-wrap { grid-template-columns: 220px 1fr; }
+    .content { padding: 2rem 1.5rem 3rem; max-width: 100%; }
+    .sidebar-section { padding: 0 1rem; }
+    .sidebar-member-card { margin: 0 1rem 1.25rem; }
+  }
+
+  /* ---------- ≤ 900px : tablet ---------- */
+  @media (max-width: 900px) {
+    .dash-wrap { grid-template-columns: 1fr; min-height: auto; }
+    .sidebar { display: none; }
+    .mobile-nav { display: flex; }
+    .content { padding: 1.75rem 1.25rem 6.5rem; max-width: 100%; }
+
+    .topnav { padding: 0 1.25rem; }
     .nav-center { display: none; }
-    .content { padding: 1.5rem 1rem; }
-    .wb-stats { display: none; }
+
+    /* welcome banner */
+    .welcome-banner { flex-direction: column; align-items: flex-start; gap: 1.25rem; padding: 1.75rem 1.5rem; }
+    .wb-deco { font-size: 6rem; right: 0.5rem; }
+    .wb-stats { width: 100%; }
+    .wb-stat { flex: 1; }
+
+    /* signals → 2 cols */
+    .signal-grid { grid-template-columns: 1fr 1fr; }
+    .signal-cell,
+    .signal-cell:nth-child(3n) { border-right: 2px solid var(--black); }
+    .signal-cell:nth-child(2n) { border-right: none; }
+    .signal-cell:nth-last-child(-n+3) { border-bottom: 2px solid var(--black); }
+    .signal-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+    /* metrics → 2 cols */
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+    .metric-cell { border-bottom: 2px solid var(--black); }
+    .metric-cell:nth-child(2n) { border-right: none; }
+    .metric-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+    /* defi → 1 col */
+    .defi-grid { grid-template-columns: 1fr; }
+    .defi-card { border-right: none; border-bottom: 2px solid var(--black); }
+    .defi-card:nth-child(2n) { border-right: none; }
+    .defi-card:last-child { border-bottom: none; }
+
+    /* issue card */
+    .issue-card-body { grid-template-columns: 1fr; gap: 1.25rem; }
+
+    /* rewards → 2 cols */
+    .rewards-grid { grid-template-columns: 1fr 1fr; }
+
+    /* modals */
+    .full-modal-backdrop { padding: 1rem; }
+    .full-modal { padding: 1.5rem; max-height: 92vh; }
+  }
+
+  /* ---------- ≤ 640px : phone ---------- */
+  @media (max-width: 640px) {
+    .topnav { height: 56px; padding: 0 0.9rem; }
+    .nav-logo { font-size: 1.15rem; gap: 7px; }
+    .nav-logo .nav-dot { width: 8px; height: 8px; }
+    .nav-avatar { width: 32px; height: 32px; font-size: 0.78rem; }
+    .btn-logout { padding: 5px 10px; font-size: 0.64rem; }
+    .nav-member-badge { display: none; }
+
+    .content { padding: 1.35rem 1rem 6.5rem; }
+
+    /* welcome banner */
+    .welcome-banner { padding: 1.35rem 1.15rem; box-shadow: var(--shadow); }
+    .wb-deco { font-size: 4.5rem; right: 0.25rem; }
+    .wb-tag { font-size: 0.55rem; }
+    .wb-title { font-size: 1.45rem; }
+    .wb-sub { font-size: 0.8rem; }
+    .wb-stats { gap: 0.6rem; }
+    .wb-stat { padding: 0.65rem 0.6rem; }
+    .wb-stat .num { font-size: 1.4rem; }
+    .wb-stat .lbl { font-size: 0.5rem; letter-spacing: 0.06em; }
+
+    /* section heads */
+    .dash-section { margin-bottom: 2.25rem; }
+    .dash-section-head { flex-wrap: wrap; gap: 0.5rem; }
+    .dash-section-title { font-size: 0.66rem; }
+    .dash-section-link { font-size: 0.62rem; }
+
+    /* signals → 1 col */
+    .signal-grid { grid-template-columns: 1fr; }
+    .signal-cell,
+    .signal-cell:nth-child(3n),
+    .signal-cell:nth-child(2n) { border-right: none; }
+    .signal-cell:nth-last-child(-n+3),
+    .signal-cell:nth-last-child(-n+2) { border-bottom: 2px solid var(--black); }
+    .signal-cell:last-child { border-bottom: none; }
+
+    /* metrics */
+    .metric-cell { padding: 1.1rem 0.6rem; }
+    .mc-val { font-size: 1.55rem; }
+    .mc-label { font-size: 0.52rem; letter-spacing: 0.06em; }
+
+    /* issue card */
+    .issue-card-header { padding: 0.7rem 1rem; flex-direction: column; align-items: flex-start; gap: 3px; }
+    .ich-title { font-size: 0.75rem; }
+    .issue-card-body { padding: 1.15rem; }
+    .issue-card-footer { padding: 0.9rem 1rem; flex-wrap: wrap; }
+    .issue-card-footer .btn-read,
+    .issue-card-footer .btn-archive { flex: 1 1 100%; text-align: center; }
+
+    /* whale rows */
+    .whale-row { flex-wrap: wrap; gap: 0.5rem 0.75rem; padding: 0.85rem 1rem; }
+    .whale-icon { width: 34px; height: 34px; font-size: 0.9rem; }
+    .whale-main { flex: 1 1 100%; order: 3; }
+    .whale-row > div:last-child { order: 2; margin-left: auto; text-align: right; }
+    .whale-amount { font-size: 1rem; }
+    .whale-action { font-size: 0.76rem; }
+    .whale-addr { font-size: 0.62rem; }
+
+    /* defi */
+    .defi-card { padding: 1.15rem; }
+    .dc-apy { font-size: 2rem; }
+    .dc-title { font-size: 0.88rem; }
+
+    /* rewards */
     .rewards-grid { grid-template-columns: 1fr; }
-    .bybit-modal-perks { grid-template-columns: 1fr; }
-    .meme-table th:nth-child(6), .meme-table td:nth-child(6) { display: none; }
+    .reward-card { animation: none; }
+    .reward-card-inner { padding: 0.95rem; }
+    .rewards-unclaimed-badge { font-size: 0.55rem; padding: 3px 8px; }
+    .bybit-check-btn { font-size: 0.62rem; padding: 5px 10px; }
+
+    /* bybit banner */
+    .bybit-banner { padding: 0.9rem 1rem; gap: 0.6rem; }
+    .bybit-banner-icon { font-size: 1.25rem; }
+    .bybit-banner-title { font-size: 0.82rem; }
+    .bybit-banner-sub { font-size: 0.7rem; }
+    .bybit-verify-btn { width: 100%; }
+
+    /* meme table — horizontal scroll instead of hiding columns */
+    .meme-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .meme-table { min-width: 540px; }
+    .meme-table th, .meme-table td { padding: 0.6rem 0.7rem; }
+    .meme-table th { font-size: 0.56rem; }
+    .meme-table td { font-size: 0.72rem; }
+
+    /* archive */
+    .archive-row { flex-wrap: wrap; padding: 0.75rem 0.9rem; gap: 0.35rem 0.6rem; }
+    .ar-num { width: auto; order: 1; font-size: 0.68rem; }
+    .ar-date { order: 2; font-size: 0.6rem; }
+    .ar-tag { order: 3; margin-left: auto; font-size: 0.52rem; }
+    .ar-title { order: 4; flex: 1 1 100%; font-size: 0.79rem; }
+
+    /* full-screen modals */
+    .full-modal-backdrop { padding: 0; align-items: flex-start; }
+    .full-modal {
+      border-radius: 0; border-left: none; border-right: none; border-top: none;
+      max-height: 100vh; height: 100%; padding: 1rem 1rem 3rem;
+      box-shadow: none;
+    }
+    .full-modal-close { position: fixed; top: 0.6rem; right: 0.6rem; z-index: 30; }
+    .article-modal-header h2 { font-size: 1.35rem; }
+    .article-modal-header { margin-bottom: 1.25rem; }
+    .article-body { font-size: 0.88rem; line-height: 1.75; }
+    .article-body h3 { font-size: 0.72rem; }
+    .article-body .highlight-box { padding: 1rem; }
+    .tracker-modal-grid .whale-row { margin-bottom: 0; }
+
+    /* gate */
+    .gate-backdrop { padding: 1.5rem 0.75rem 0.75rem; align-items: flex-start; }
+    .gate-card { padding: 2rem 1.15rem; max-height: 92vh; }
+    .gate-icon { font-size: 2.2rem; }
+    .gate-title { font-size: 1.35rem; }
+    .gate-sub { font-size: 0.82rem; }
+    .gate-feat { font-size: 0.7rem; padding: 7px 9px; }
     .gate-access-grid { grid-template-columns: 1fr; }
-    .full-modal { padding: 1rem; }
-    .article-modal-header h2 { font-size: 1.5rem; }
+    .gate-access-option { padding: 0.95rem 0.75rem; }
+    .gate-access-option-price { font-size: 1.5rem; }
+
+    /* bybit modal */
+    .bybit-modal-box { padding: 1.5rem 1.15rem; width: 100%; max-height: 92vh; }
+    .bybit-modal-perks { grid-template-columns: 1fr; }
+    .bybit-modal-title { font-size: 1.3rem; }
+    .modal-tab { font-size: 0.6rem; padding: 9px 2px; }
+
+    /* toast */
+    #toast { left: 0.9rem; right: 0.9rem; bottom: 5.5rem; max-width: none; font-size: 0.74rem; padding: 0.85rem 1rem; }
+  }
+
+  /* ---------- ≤ 400px : very small phones ---------- */
+  @media (max-width: 400px) {
+    .nav-logo { font-size: 1rem; }
+    .btn-logout { padding: 4px 8px; font-size: 0.6rem; }
+    .content { padding: 1.15rem 0.85rem 6.5rem; }
+    .welcome-banner { padding: 1.15rem 1rem; }
+    .wb-title { font-size: 1.25rem; }
+    .wb-deco { display: none; }
+    .signal-cell { padding: 1rem; }
+    .metric-cell { padding: 0.95rem 0.4rem; }
+    .mc-val { font-size: 1.3rem; }
+    .mnav-item { font-size: 0.48rem; }
+    .mnav-item .mnav-icon { font-size: 0.95rem; }
+    .reward-card-inner { padding: 0.85rem; }
+    .gate-features { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Touch devices: disable sticky hover effects ---------- */
+  @media (hover: none) {
+    .issue-card:hover { box-shadow: var(--shadow); transform: none; }
+    .whale-row:hover { box-shadow: var(--shadow-sm); transform: none; background: var(--white); }
+    .archive-row:hover { box-shadow: var(--shadow-sm); transform: none; background: var(--white); }
+    .reward-card:hover { transform: none !important; box-shadow: var(--shadow); }
+    .signal-cell:hover { background: var(--white); }
+    .defi-card:hover { background: var(--white); }
+    .meme-table tbody tr:hover td { background: var(--white); }
+    .btn-logout:hover { background: var(--white); color: var(--black); box-shadow: var(--shadow-sm); transform: none; }
+    .btn-read:hover { background: var(--pink); color: var(--black); box-shadow: var(--shadow-sm); transform: none; }
+    .btn-archive:hover { background: transparent; color: var(--black); box-shadow: var(--shadow-sm); transform: none; }
   }
 </style>
 <!-- Meta Pixel Code -->
@@ -1019,6 +1250,17 @@ src="https://www.facebook.com/tr?id=2594205191040713&ev=PageView&noscript=1"
 
   </main>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MOBILE BOTTOM NAVIGATION (shown ≤900px)
+════════════════════════════════════════════════════════ -->
+<nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+  <a href="#today"    class="mnav-item active"><span class="mnav-icon">📬</span><span>Brief</span></a>
+  <a href="#signals"  class="mnav-item"><span class="mnav-icon">📡</span><span>Signals</span></a>
+  <a href="#whales"   class="mnav-item"><span class="mnav-icon">🐋</span><span>Whales</span></a>
+  <a href="#rewards"  class="mnav-item"><span class="mnav-icon">🎁</span><span>Rewards</span></a>
+  <a href="#archive"  class="mnav-item"><span class="mnav-icon">📂</span><span>Archive</span></a>
+</nav>
 
 <!-- ═══════════════════════════════════════════════════════
      FULL‑SCREEN ARTICLE MODAL
@@ -1570,6 +1812,35 @@ src="https://www.facebook.com/tr?id=2594205191040713&ev=PageView&noscript=1"
       tab.classList.add('active');
     });
   });
+
+  // ─── MOBILE BOTTOM NAV ───
+  const mnavItems = document.querySelectorAll('.mobile-nav .mnav-item');
+  mnavItems.forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(item.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      mnavItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Scroll-spy for the mobile nav
+  const mnavSections = ['today','signals','whales','rewards','archive']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+
+  if (mnavSections.length && 'IntersectionObserver' in window) {
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = '#' + entry.target.id;
+          mnavItems.forEach(i => i.classList.toggle('active', i.getAttribute('href') === id));
+        }
+      });
+    }, { rootMargin: '-25% 0px -65% 0px', threshold: 0 });
+    mnavSections.forEach(s => spy.observe(s));
+  }
 
   // ─── TICKER ───
   async function fetchTickerData() {
