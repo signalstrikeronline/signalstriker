@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SignalStrike — AI-চালিত ক্রিপ্টো ইন্টেলিজেন্স</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#ffffff;
+  --surface:#f5f5f5;
+  --surface2:#ececec;
+  --surface3:#e0e0e0;
+  --border:#00000018;
+  --border2:#0000002a;
+  --pink:#F7A707;
+  --pink-dim:#F7A70714;
+  --yellow:#F7A707;
+  --yellow-dim:#F7A70722;
+  --green:#0d9e5b;
+  --green-dim:#0d9e5b14;
+  --green-light:#22c55e;
+  --bybit:#F7A707;
+  --bybit-dark:#c47f00;
+  --black:#000000;
+  --cream:#ffffff;
+  --text:#000000;
+  --text2:#4a4a4a;
+  --text3:#8a8a8a;
+  --r:12px;--r2:16px;--r3:20px;
+}
+body{font-family:'Space Grotesk','Noto Sans Bengali',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;}
+img{max-width:100%;display:block;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.outfit{font-family:'Outfit','Noto Sans Bengali',sans-serif;}
+.mono{font-family:'JetBrains Mono','Noto Sans Bengali',monospace;}
+
+/* ─── NAV ─────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border2);
+}
+.nav-logo{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;}
+.nav-logo .accent{color:var(--pink);}
+.live-badge{display:flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid #22c55e44;border-radius:20px;padding:3px 8px;font-size:0.6rem;font-weight:700;color:var(--green);letter-spacing:0.06em;text-transform:uppercase;}
+.live-dot{width:5px;height:5px;background:var(--green-light);border-radius:50%;animation:pulse 1.8s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;align-items:center;gap:4px;}
+.nav-links a{padding:6px 12px;border-radius:8px;font-size:0.82rem;font-weight:500;color:var(--text2);transition:all 0.2s;}
+.nav-links a:hover{color:var(--text);background:var(--surface2);}
+.btn-nav-ghost{padding:8px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border2);transition:all 0.2s;display:flex;align-items:center;gap:5px;}
+.btn-nav-ghost:hover{background:var(--surface2);}
+.btn-nav-bybit{
+  padding:8px 14px;border-radius:8px;font-size:0.78rem;font-weight:800;
+  color:#000;background:var(--bybit);border:none;transition:all 0.2s;
+  display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.btn-nav-bybit:hover{background:#ffb800;transform:translateY(-1px);}
+.btn-nav-bybit .free-tag{background:#000;color:var(--bybit);font-size:0.58rem;font-weight:900;padding:2px 5px;border-radius:4px;letter-spacing:0.04em;text-transform:uppercase;}
+.btn-nav-paid{padding:8px 14px;border-radius:8px;font-size:0.78rem;font-weight:700;color:#fff;background:var(--black);border:none;transition:all 0.2s;white-space:nowrap;}
+.btn-nav-paid:hover{background:#222;transform:translateY(-1px);}
+
+.ham{display:none;width:36px;height:36px;align-items:center;justify-content:center;background:var(--surface);border-radius:8px;border:1px solid var(--border2);cursor:pointer;flex-direction:column;gap:5px;}
+.ham span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
+.ham.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.ham.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.ham.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;z-index:199;background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:16px;flex-direction:column;gap:6px;opacity:0;transform:translateY(-8px);transition:all 0.25s;pointer-events:none;}
+.mobile-menu.open{opacity:1;transform:translateY(0);pointer-events:all;}
+.mobile-menu a{padding:12px 16px;border-radius:10px;font-size:0.95rem;font-weight:500;color:var(--text2);display:block;border:1px solid transparent;transition:all 0.2s;}
+.mobile-menu a:hover{background:var(--surface2);border-color:var(--border2);color:var(--text);}
+.mobile-menu-ctas{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border2);}
+.mobile-menu-ctas a{flex:1;text-align:center;padding:12px 10px;border-radius:10px;font-size:0.85rem;font-weight:700;}
+.mob-bybit{background:var(--bybit);color:#000 !important;}
+.mob-paid{background:var(--surface2);color:var(--text) !important;border:1px solid var(--border2);}
+
+/* ─── TICKER ──────────────────────────────────────────────── */
+.ticker-wrap{margin-top:60px;background:var(--yellow);border-bottom:2px solid var(--black);overflow:hidden;padding:10px 0;}
+.ticker-inner{display:inline-flex;gap:2.5rem;animation:ticker 35s linear infinite;}
+.ticker-item{font-family:'JetBrains Mono','Noto Sans Bengali',monospace;font-size:0.7rem;font-weight:700;color:var(--black);display:flex;align-items:center;gap:8px;white-space:nowrap;text-transform:uppercase;letter-spacing:0.06em;}
+.ticker-item .sym{font-weight:800;}
+.up{color:#0a6b3e;}.dn{color:#8a1c1c;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ─── HERO ────────────────────────────────────────────────── */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:80px 20px 60px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 60% 50% at 70% 30%,#F7A70710 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 20% 80%,#F7A70714 0%,transparent 60%);}
+.hero-grid-bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse at center,black 0%,transparent 75%);}
+.hero-content{position:relative;z-index:1;max-width:700px;margin:0 auto;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--yellow);border:2px solid var(--black);border-radius:20px;padding:6px 14px;font-size:0.72rem;font-weight:700;color:var(--black);letter-spacing:0.04em;margin-bottom:24px;}
+.hero-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.8s infinite;}
+.hero-h1{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:clamp(2.4rem,6vw,4.5rem);font-weight:900;line-height:1.3;letter-spacing:-0.02em;margin-bottom:20px;}
+.hero-h1 .accent{color:var(--pink);}
+.hero-sub{font-size:clamp(0.9rem,2vw,1.05rem);color:var(--text2);line-height:2;max-width:540px;margin:0 auto 32px;}
+
+/* ─── DUAL CTA BLOCK ──────────────────────────────────────── */
+.dual-cta-wrap{
+  margin-bottom:36px;
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  align-items:stretch;
+}
+.cta-card-bybit{
+  flex:1;min-width:220px;max-width:300px;
+  background:var(--bybit);
+  border:2px solid var(--black);
+  border-radius:var(--r2);
+  padding:20px 18px 16px;
+  box-shadow:5px 5px 0 var(--black);
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;
+  transition:all 0.2s;
+}
+.cta-card-bybit:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--black);}
+.rec-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--black);color:var(--yellow);
+  font-size:0.6rem;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;white-space:nowrap;
+}
+.cta-card-bybit .cta-label{font-size:0.65rem;font-weight:700;color:#3d2a00;letter-spacing:0.06em;text-transform:uppercase;}
+.cta-card-bybit .cta-headline{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:1.35rem;font-weight:900;color:#000;line-height:1.3;letter-spacing:-0.02em;}
+.cta-card-bybit .cta-sub{font-size:0.74rem;color:#3d2a00;line-height:1.75;}
+.btn-bybit-full{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  background:#000;color:var(--bybit);
+  border-radius:10px;padding:12px 16px;
+  font-size:0.85rem;font-weight:800;
+  border:none;cursor:pointer;transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-bybit-full:hover{background:#1a1a1a;color:#ffb800;}
+
+.cta-card-paid{
+  flex:1;min-width:200px;max-width:260px;
+  background:var(--cream);
+  border:2px solid var(--border2);
+  border-radius:var(--r2);
+  padding:20px 18px 16px;
+  display:flex;flex-direction:column;gap:10px;
+  transition:all 0.2s;
+}
+.cta-card-paid:hover{border-color:var(--black);background:var(--surface);}
+.cta-card-paid .cta-label{font-size:0.65rem;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;}
+.cta-card-paid .cta-headline{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:1.35rem;font-weight:900;color:var(--text);line-height:1.3;letter-spacing:-0.02em;}
+.cta-card-paid .cta-sub{font-size:0.74rem;color:var(--text2);line-height:1.75;}
+.btn-paid-full{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  background:var(--black);color:#fff;
+  border-radius:10px;padding:12px 16px;
+  font-size:0.85rem;font-weight:700;
+  border:none;cursor:pointer;transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-paid-full:hover{background:#222;}
+
+.cta-divider{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:700;color:var(--text3);
+  letter-spacing:0.04em;gap:6px;
+}
+.cta-divider::before,.cta-divider::after{content:'';width:1px;height:30px;background:var(--border2);}
+
+.hero-stats{display:flex;justify-content:center;gap:0;background:var(--cream);border:2px solid var(--black);border-radius:var(--r2);overflow:hidden;}
+.stat-item{flex:1;padding:18px 12px;text-align:center;border-right:2px solid var(--black);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;}
+.stat-num .accent{color:var(--pink);}
+.stat-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;font-weight:600;}
+
+/* ─── SIGNAL PREVIEW CARD ──────────────────────────────────── */
+.signal-preview-section{padding:0 20px 60px;}
+.signal-preview-inner{max-width:900px;margin:0 auto;}
+.sp-card{background:var(--cream);border:2px solid var(--black);border-radius:var(--r3);overflow:hidden;box-shadow:6px 6px 0 var(--black);}
+.sp-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:2px solid var(--black);background:var(--surface);}
+.sp-header-title{font-size:0.78rem;font-weight:700;color:var(--text);letter-spacing:0.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.sp-grid{padding:16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.sp-tile{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px;transition:all 0.2s;position:relative;overflow:hidden;}
+.sp-tile:hover{border-color:var(--black);background:var(--surface2);}
+.sp-tile-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.sp-coin{font-weight:700;font-size:0.9rem;display:flex;align-items:center;gap:6px;color:var(--text);}
+.signal-chip{padding:3px 8px;border-radius:6px;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;}
+.chip-buy{background:#dcfce7;color:#15803d;border:1px solid #86efac;}
+.chip-watch{background:var(--yellow-dim);color:#92400e;border:1px solid var(--yellow);}
+.chip-sell{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;}
+.sp-blur-num{height:20px;width:60px;border-radius:6px;background:var(--surface3);position:relative;overflow:hidden;}
+.sp-blur-num::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.45) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2s infinite linear;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.sp-bar-wrap{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.sp-bar{height:100%;border-radius:2px;position:relative;overflow:hidden;}
+.bar-green{background:linear-gradient(90deg,#0d9e5b,#22c55e);}
+.bar-yellow{background:linear-gradient(90deg,#c47f00,var(--yellow));}
+.bar-pink{background:linear-gradient(90deg,#b91c1c,#ef4444);}
+.sp-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.4) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2s infinite linear;}
+
+.sp-footer{
+  padding:14px 16px;
+  border-top:2px solid var(--black);
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;
+  background:var(--surface);
+}
+.sp-footer-text{font-size:0.74rem;color:var(--text2);font-weight:600;flex:1;min-width:120px;line-height:1.75;}
+.sp-unlock-bybit{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--bybit);color:#000;
+  border-radius:8px;padding:7px 13px;
+  font-size:0.72rem;font-weight:800;
+  white-space:nowrap;border:1px solid var(--bybit-dark);
+  transition:all 0.2s;text-decoration:none;
+}
+.sp-unlock-bybit:hover{background:#ffb800;}
+.sp-unlock-paid{
+  display:inline-flex;align-items:center;gap:5px;
+  background:transparent;color:var(--text2);
+  border-radius:8px;padding:7px 13px;
+  font-size:0.72rem;font-weight:600;
+  white-space:nowrap;border:1px solid var(--border2);
+  transition:all 0.2s;text-decoration:none;
+}
+.sp-unlock-paid:hover{background:var(--surface2);color:var(--text);}
+
+/* ─── MARQUEE ─────────────────────────────────────────────── */
+.marquee-wrap{border-top:2px solid var(--black);border-bottom:2px solid var(--black);overflow:hidden;padding:12px 0;background:var(--yellow);}
+.marquee-inner{display:inline-flex;gap:2.5rem;animation:marquee 30s linear infinite;}
+.marquee-item{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--black);white-space:nowrap;display:flex;align-items:center;gap:10px;}
+.marquee-item::after{content:'✦';color:var(--black);opacity:0.55;}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ─── SECTIONS ────────────────────────────────────────────── */
+section{padding:64px 20px;}
+.container{max-width:960px;margin:0 auto;}
+.section-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pink);margin-bottom:16px;}
+.section-eyebrow::before{content:'';width:20px;height:2px;background:var(--pink);border-radius:1px;}
+.section-title{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.35;letter-spacing:-0.02em;margin-bottom:12px;}
+.section-title .accent{color:var(--pink);}
+.section-sub{font-size:0.95rem;color:var(--text2);line-height:1.95;max-width:520px;}
+
+/* features */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:40px;}
+.feature-card{background:var(--cream);border:2px solid var(--black);border-radius:var(--r2);padding:22px;transition:all 0.25s;position:relative;overflow:hidden;box-shadow:4px 4px 0 var(--black);}
+.feature-card::before{content:'';position:absolute;inset:0;background:var(--yellow);opacity:0;transition:opacity 0.3s;}
+.feature-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--black);}
+.feature-card:hover::before{opacity:1;}
+.f-icon{width:42px;height:42px;background:var(--yellow);border:2px solid var(--black);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:16px;position:relative;z-index:1;}
+.f-num{font-family:'JetBrains Mono','Noto Sans Bengali',monospace;font-size:0.65rem;font-weight:700;color:var(--text3);letter-spacing:0.08em;margin-bottom:8px;position:relative;z-index:1;}
+.f-title{font-size:0.95rem;font-weight:700;margin-bottom:8px;color:var(--text);position:relative;z-index:1;line-height:1.5;}
+.f-desc{font-size:0.8rem;color:var(--text2);line-height:1.9;position:relative;z-index:1;}
+
+/* why */
+.why-section{background:var(--surface);}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+.big-quote{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-style:italic;font-size:1.2rem;line-height:1.9;color:var(--text2);padding-left:18px;border-left:4px solid var(--pink);margin-bottom:28px;}
+.why-list{list-style:none;}
+.why-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:2px solid var(--black);font-size:0.85rem;line-height:1.9;color:var(--text2);}
+.why-list li:last-child{border-bottom:none;}
+.why-list li::before{content:'✦';color:var(--pink);flex-shrink:0;font-size:0.8rem;margin-top:6px;font-weight:700;}
+.why-list li strong{color:var(--text);}
+
+.dash-card{background:var(--cream);border:2px solid var(--black);border-radius:var(--r2);overflow:hidden;box-shadow:6px 6px 0 var(--pink);}
+.dash-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:2px solid var(--black);background:var(--surface);gap:8px;}
+.dash-signal-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border2);gap:10px;transition:background 0.2s;}
+.dash-signal-row:last-child{border-bottom:none;}
+.dash-signal-row:hover{background:var(--surface);}
+.dash-coin{flex:1;display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:var(--text);}
+.dash-pct-blur{min-width:56px;height:18px;border-radius:5px;background:var(--surface3);position:relative;overflow:hidden;}
+.dash-pct-blur::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.5) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2s infinite linear;}
+
+.dash-unlock-footer{
+  padding:12px 14px;
+  border-top:2px solid var(--black);
+  background:var(--surface2);
+  display:flex;flex-direction:column;gap:8px;
+}
+.dash-unlock-row{display:flex;gap:8px;align-items:center;}
+.dash-unlock-bybit{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--bybit);color:#000;
+  border-radius:8px;padding:9px 12px;
+  font-size:0.75rem;font-weight:800;
+  border:1px solid var(--bybit-dark);transition:all 0.2s;
+  text-decoration:none;position:relative;
+}
+.dash-unlock-bybit:hover{background:#ffb800;}
+.dash-rec-tag{
+  position:absolute;top:-8px;right:8px;
+  background:var(--black);color:var(--yellow);
+  font-size:0.52rem;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;
+}
+.dash-unlock-paid{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:transparent;color:var(--text2);
+  border-radius:8px;padding:9px 12px;
+  font-size:0.75rem;font-weight:600;
+  border:1px solid var(--border2);transition:all 0.2s;
+  text-decoration:none;
+}
+.dash-unlock-paid:hover{background:var(--surface3);color:var(--text);}
+.dash-unlock-note{font-size:0.66rem;color:var(--text3);text-align:center;line-height:1.7;}
+
+/* compare */
+.compare-wrap{overflow-x:auto;margin-top:36px;border-radius:var(--r2);border:1px solid var(--border2);}
+.compare-table{width:100%;border-collapse:collapse;min-width:580px;}
+.compare-table th{padding:14px 16px;text-align:left;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border2);}
+.compare-table th.hl{color:var(--pink);}
+.compare-table td{padding:12px 16px;font-size:0.82rem;color:var(--text2);border-bottom:1px solid var(--border);line-height:1.7;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table td.hl{color:var(--text);font-weight:600;background:#F7A70714;}
+.compare-table tr:hover td{background:var(--surface);}
+.check{color:var(--green);font-weight:700;}
+.cross{color:var(--text3);}
+.partial{color:#b45309;}
+
+/* sample */
+.sample-section{background:var(--surface);}
+.sample-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;margin-top:36px;}
+.issue-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden;}
+.issue-topbar{background:var(--yellow);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+.issue-topbar .title{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-weight:800;font-size:0.85rem;letter-spacing:0.04em;color:#000;}
+.issue-topbar .date{font-size:0.65rem;color:#3d2a00;font-weight:600;}
+.issue-body{padding:16px;}
+.issue-section-head{font-family:'JetBrains Mono','Noto Sans Bengali',monospace;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;color:var(--yellow);text-transform:uppercase;margin-top:16px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.issue-section-head:first-child{margin-top:0;}
+.issue-line{font-size:0.78rem;color:var(--text2);line-height:1.9;padding:4px 0;border-bottom:1px solid var(--border)88;}
+.issue-line:last-child{border-bottom:none;}
+.issue-line strong{color:var(--text);font-weight:600;}
+.sample-bullets{list-style:none;}
+.sample-bullets li{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);font-size:0.85rem;color:var(--text2);line-height:1.9;}
+.sample-bullets li:last-child{border-bottom:none;}
+.sample-bullets li .bul{color:var(--pink);flex-shrink:0;font-weight:700;margin-top:3px;}
+.sample-bullets li strong{color:var(--text);}
+
+/* how */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:36px;}
+.how-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:22px;position:relative;transition:all 0.25s;}
+.how-step:hover{border-color:#F7A70744;transform:translateY(-2px);}
+.step-num{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:2.5rem;font-weight:900;color:#F7A70722;line-height:1;margin-bottom:12px;}
+.step-icon{font-size:1.4rem;margin-bottom:10px;}
+.step-title{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.03em;line-height:1.5;}
+.step-desc{font-size:0.78rem;color:var(--text2);line-height:1.9;}
+
+/* testimonials */
+.testi-section{background:var(--surface);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:36px;}
+.testi-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);padding:22px;transition:all 0.25s;}
+.testi-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.t-stars{color:var(--yellow);font-size:0.9rem;margin-bottom:14px;letter-spacing:2px;}
+.t-quote{font-size:0.85rem;line-height:1.9;color:var(--text2);font-style:italic;margin-bottom:18px;}
+.t-author{display:flex;align-items:center;gap:10px;}
+.t-avatar{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'Outfit','Noto Sans Bengali',sans-serif;font-weight:800;font-size:0.85rem;color:var(--pink);flex-shrink:0;}
+.t-name{font-size:0.85rem;font-weight:700;color:var(--text);}
+.t-role{font-size:0.72rem;color:var(--text3);line-height:1.6;}
+.t-pnl{margin-top:4px;display:inline-flex;align-items:center;gap:4px;background:var(--green-dim);border:1px solid #0d9e5b33;border-radius:6px;padding:2px 7px;font-size:0.65rem;font-weight:700;color:var(--green);letter-spacing:0.03em;}
+
+/* ai */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:36px;}
+.ai-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;}
+.ai-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:0.75rem;font-weight:600;color:var(--text2);transition:all 0.2s;line-height:1.5;}
+.ai-pill:hover{background:var(--surface3);color:var(--text);}
+.ai-metrics-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:22px;}
+.ai-metrics-title{font-size:0.7rem;font-weight:700;color:var(--yellow);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.ai-metric{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.ai-metric:last-child{border-bottom:none;}
+.ai-metric-label{flex:1;font-size:0.72rem;color:var(--text2);font-weight:500;line-height:1.6;}
+.ai-metric-bar{flex:2;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ai-metric-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
+.fill-green{background:linear-gradient(90deg,#0d9e5b,#4dffb4);}
+.fill-yellow{background:linear-gradient(90deg,#c47f00,#F7A707);}
+.fill-pink{background:linear-gradient(90deg,#F7A707,#ff8a3d);}
+.ai-metric-val{font-family:'JetBrains Mono','Noto Sans Bengali',monospace;font-size:0.82rem;font-weight:700;min-width:56px;text-align:right;}
+.ai-note{margin-top:16px;padding:12px;background:var(--yellow-dim);border:1px solid #F7A70722;border-radius:8px;font-size:0.75rem;color:var(--text2);line-height:1.85;}
+.ai-note strong{color:#b45309;}
+
+/* ─── PRICING ─────────────────────────────────────────────── */
+.pricing-section{background:var(--surface);}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px;}
+
+.pricing-card-bybit{
+  background:var(--bybit);
+  border:2px solid var(--black);
+  border-radius:var(--r2);
+  padding:28px;
+  position:relative;overflow:hidden;
+  box-shadow:6px 6px 0 var(--black);
+}
+.pricing-card-bybit:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--black);}
+.pricing-recommended-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--black);border-radius:8px;
+  padding:5px 12px;font-size:0.7rem;font-weight:800;
+  color:var(--yellow);letter-spacing:0.04em;text-transform:uppercase;
+  margin-bottom:18px;
+}
+.pricing-card-bybit .pricing-name{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:6px;color:#000;}
+.pricing-card-bybit .pricing-desc{font-size:0.82rem;color:#3d2a00;line-height:1.9;margin-bottom:20px;}
+.price-free-block{
+  margin-bottom:20px;
+  display:flex;align-items:flex-end;gap:10px;
+}
+.price-free-main{
+  font-family:'Outfit','Noto Sans Bengali',sans-serif;
+  font-size:4rem;font-weight:900;line-height:1;color:#000;letter-spacing:-0.03em;
+}
+.price-free-tag{
+  background:#000;color:var(--bybit);
+  font-size:0.65rem;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;
+  padding:4px 9px;border-radius:6px;margin-bottom:8px;
+}
+.price-free-condition{font-size:0.75rem;color:#3d2a00;line-height:1.85;margin-bottom:20px;}
+.price-free-condition strong{color:#000;}
+.pricing-features-bybit{list-style:none;margin-bottom:24px;}
+.pricing-features-bybit li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.12);font-size:0.82rem;color:#1a1200;line-height:1.6;}
+.pricing-features-bybit li:last-child{border-bottom:none;}
+.pricing-features-bybit li .check-icon{color:#0a5c2e;font-size:0.9rem;flex-shrink:0;}
+
+.pricing-card-paid{
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);
+  padding:28px;
+  position:relative;overflow:hidden;
+}
+.pricing-card-paid .pricing-name{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:6px;color:var(--text);}
+.pricing-card-paid .pricing-desc{font-size:0.82rem;color:var(--text2);line-height:1.9;margin-bottom:20px;}
+.price-block{margin-bottom:20px;}
+.price-was{font-size:0.8rem;color:var(--text3);text-decoration:line-through;margin-bottom:4px;}
+.price-main{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:3.5rem;font-weight:900;line-height:1;color:var(--text);}
+.price-main sup{font-size:1.5rem;vertical-align:super;color:var(--text2);}
+.price-period{font-size:0.8rem;color:var(--text2);margin-top:4px;line-height:1.6;}
+.pricing-features{list-style:none;margin-bottom:24px;}
+.pricing-features li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.82rem;color:var(--text2);line-height:1.6;}
+.pricing-features li:last-child{border-bottom:none;}
+.pricing-features li .check-icon{color:var(--green);font-size:0.9rem;flex-shrink:0;}
+.btn-full-bybit{
+  width:100%;padding:14px;border-radius:12px;
+  font-size:0.95rem;font-weight:800;color:#000;
+  background:var(--black);color:var(--bybit);
+  border:none;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;cursor:pointer;text-decoration:none;
+}
+.btn-full-bybit:hover{background:#222;color:#ffb800;}
+.btn-full-paid{
+  width:100%;padding:14px;border-radius:12px;
+  font-size:0.9rem;font-weight:700;color:#fff;
+  background:var(--black);border:none;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;box-shadow:0 4px 20px #00000022;
+  text-decoration:none;
+}
+.btn-full-paid:hover{transform:translateY(-2px);box-shadow:0 8px 28px #00000033;background:#222;}
+.guarantee-note{margin-top:12px;font-size:0.75rem;color:var(--text3);text-align:center;line-height:1.7;}
+
+/* faq */
+.faq-list{margin-top:36px;display:flex;flex-direction:column;gap:8px;}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color 0.2s;}
+.faq-item.open{border-color:var(--border2);}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--text);gap:12px;line-height:1.6;}
+.faq-icon{width:24px;height:24px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--text2);transition:transform 0.3s,background 0.2s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:var(--pink);border-color:var(--pink);color:#fff;}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s;font-size:0.85rem;color:var(--text2);line-height:1.95;padding:0 20px;}
+.faq-item.open .faq-a{max-height:500px;padding:0 20px 16px;}
+
+/* ─── CTA SECTION ─────────────────────────────────────────── */
+.cta-section{
+  padding:80px 20px;text-align:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%,#F7A70710 0%,transparent 70%);
+  border-top:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.cta-section h2{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.3;letter-spacing:-0.02em;margin-bottom:18px;position:relative;z-index:1;}
+.cta-section p{font-size:1rem;color:var(--text2);margin-bottom:36px;position:relative;z-index:1;line-height:1.9;}
+
+.cta-dual{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:12px;}
+.btn-cta-bybit{
+  padding:16px 32px;border-radius:12px;
+  font-size:0.95rem;font-weight:800;color:#000;
+  background:var(--bybit);
+  border:2px solid var(--black);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all 0.2s;box-shadow:4px 4px 0 var(--black);
+  text-decoration:none;
+}
+.btn-cta-bybit:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--black);background:#ffb800;}
+.btn-cta-bybit .free-pill{background:#000;color:var(--bybit);font-size:0.62rem;font-weight:900;padding:3px 7px;border-radius:5px;letter-spacing:0.06em;text-transform:uppercase;}
+.btn-cta-paid{
+  padding:16px 28px;border-radius:12px;
+  font-size:0.9rem;font-weight:600;color:var(--text);
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all 0.2s;text-decoration:none;
+}
+.btn-cta-paid:hover{background:var(--surface3);}
+.cta-sub{margin-top:14px;font-size:0.72rem;color:var(--text3);letter-spacing:0.04em;text-transform:uppercase;position:relative;z-index:1;line-height:1.9;}
+
+/* footer */
+footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var(--border);}
+.footer-grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;padding-bottom:32px;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.footer-logo{font-family:'Outfit','Noto Sans Bengali',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:10px;}
+.footer-logo .accent{color:var(--pink);}
+.footer-desc{font-size:0.82rem;color:var(--text3);line-height:1.9;margin-bottom:16px;}
+.footer-social{display:flex;gap:8px;}
+.social-btn{width:34px;height:34px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--text2);cursor:pointer;transition:all 0.2s;}
+.social-btn:hover{background:var(--pink);border-color:var(--pink);color:#000;}
+.footer-col h4{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--yellow);margin-bottom:14px;}
+.footer-col a{display:block;font-size:0.8rem;color:var(--text3);margin-bottom:8px;transition:color 0.2s;line-height:1.7;}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;color:var(--text3);flex-wrap:wrap;gap:8px;}
+.disclaimer{color:var(--pink);font-weight:700;font-size:0.68rem;letter-spacing:0.04em;}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ─── MOBILE ───────────────────────────────────────────────── */
+@media(max-width:768px){
+  .nav-links,.btn-nav-ghost,.btn-nav-paid{display:none;}
+  .btn-nav-bybit{display:none;}
+  .ham{display:flex;}
+  .mobile-menu{display:flex;}
+
+  .dual-cta-wrap{flex-direction:column;align-items:stretch;}
+  .cta-card-bybit,.cta-card-paid{max-width:100%;}
+  .cta-divider{flex-direction:row;gap:10px;}
+  .cta-divider::before,.cta-divider::after{width:30px;height:1px;}
+
+  .sp-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .why-grid{grid-template-columns:1fr;gap:32px;}
+  .sample-grid{grid-template-columns:1fr;gap:24px;}
+  .how-grid{grid-template-columns:1fr 1fr;}
+  .testi-grid{grid-template-columns:1fr;}
+  .ai-grid{grid-template-columns:1fr;gap:28px;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .cta-dual{flex-direction:column;align-items:center;}
+  .btn-cta-bybit,.btn-cta-paid{width:100%;max-width:320px;justify-content:center;}
+}
+@media(max-width:480px){
+  .stat-item{width:50%;border-bottom:1px solid var(--border);}
+  .stat-item:nth-child(odd){border-right:1px solid var(--border);}
+  .stat-item:nth-child(even){border-right:none;}
+  .sp-grid{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:1fr;}
+  .how-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .section-title{font-size:1.7rem;}
+  .sp-footer{flex-direction:column;align-items:stretch;}
+  .sp-footer-text{min-width:unset;}
+}
+@supports(padding:max(0px)){
+  nav{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));}
+  footer{padding-bottom:max(24px,env(safe-area-inset-bottom));}
+}
+
+/* ===== UNIVERSAL MODAL POPUP ===== */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  visibility: hidden; opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s ease;
+}
+.modal-overlay.active { visibility: visible; opacity: 1; }
+.modal-container {
+  background: var(--bg); max-width: 720px; width: calc(100% - 32px);
+  border-radius: 32px; border: 2px solid var(--black);
+  box-shadow: 16px 16px 0 var(--black); position: relative;
+  padding: 28px 28px 36px; transform: scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  max-height: 90vh; overflow-y: auto;
+}
+.modal-overlay.active .modal-container { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 20px; right: 24px; width: 34px; height: 34px;
+  background: var(--surface); border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 1.2rem;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--surface2); color: var(--pink); transform: rotate(90deg); }
+.modal-badge {
+  display: inline-block; background: var(--yellow); border: 1px solid var(--black);
+  border-radius: 30px; padding: 5px 14px; font-size: 0.7rem; font-weight: 800;
+  letter-spacing: 0.06em; color: var(--black); margin-bottom: 18px;
+}
+.modal-title {
+  font-family: 'Outfit','Noto Sans Bengali',sans-serif; font-size: 2rem; font-weight: 800;
+  letter-spacing: -0.02em; margin-bottom: 12px; line-height: 1.4;
+}
+.modal-title .accent { color: var(--pink); }
+.modal-sub {
+  font-size: 0.9rem; color: var(--text2); line-height: 1.85;
+  margin-bottom: 24px; border-left: 3px solid var(--bybit); padding-left: 14px;
+}
+.modal-dual { display: flex; gap: 20px; flex-wrap: wrap; margin: 16px 0 12px; }
+.modal-option {
+  flex: 1; background: var(--surface); border-radius: 24px; padding: 20px 18px;
+  transition: all 0.2s; border: 1px solid var(--border2);
+}
+.modal-option.highlight {
+  background: linear-gradient(145deg, #fff3d6, #F7A70708);
+  border: 2px solid var(--bybit); position: relative;
+  box-shadow: 0 8px 20px rgba(247,167,7,0.15);
+}
+.rec-flag {
+  position: absolute; top: -12px; left: 20px; background: var(--black);
+  color: var(--bybit); font-size: 0.6rem; font-weight: 800;
+  padding: 3px 12px; border-radius: 30px; letter-spacing: 0.06em;
+}
+.modal-option h3 {
+  font-family: 'Outfit','Noto Sans Bengali',sans-serif; font-size: 1.5rem; font-weight: 800;
+  margin: 8px 0 4px; color: var(--text);
+}
+.modal-price {
+  font-size: 1rem; font-weight: 700; background: var(--green-dim);
+  display: inline-block; padding: 2px 12px; border-radius: 40px;
+  margin: 8px 0 10px; color: var(--green);
+}
+.modal-option .highlight-price { background: var(--bybit); color: #000; }
+.modal-desc { font-size: 0.78rem; color: var(--text2); line-height: 1.95; margin: 12px 0; }
+.modal-cta {
+  display: block; width: 100%; text-align: center; padding: 12px;
+  border-radius: 14px; font-weight: 800; font-size: 0.85rem;
+  margin-top: 12px; transition: all 0.2s; cursor: pointer;
+}
+.cta-bybit-modal {
+  background: var(--bybit); color: #000; border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
+}
+.cta-bybit-modal:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--black); background: #ffb800; }
+.cta-paid-modal { background: var(--black); color: #fff; border: none; }
+.cta-paid-modal:hover { background: #222; transform: translateY(-2px); }
+.modal-note {
+  font-size: 0.7rem; text-align: center; margin-top: 28px;
+  color: var(--text3); border-top: 1px solid var(--border2); padding-top: 18px; line-height: 1.9;
+}
+@media (max-width: 600px) {
+  .modal-dual { flex-direction: column; }
+  .modal-title { font-size: 1.6rem; }
+  .modal-container { padding: 20px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ───────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">Signal<span class="accent">Strike</span><div class="live-badge"><div class="live-dot"></div>লাইভ</div></div>
+  <div class="nav-links">
+    <a href="#features">ফিচার</a>
+    <a href="#pricing">মূল্য</a>
+    <a href="#sample">নমুনা</a>
+    <a href="#testimonials">রিভিউ</a>
+    <a href="#faq">প্রশ্নোত্তর</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="btn-nav-ghost">🔐 সদস্য</a>
+    <a href="#" class="btn-nav-bybit modal-trigger">Bybit-এ ফ্রি <span class="free-tag">ফ্রি</span></a>
+    <a href="#" class="btn-nav-paid modal-trigger">$29.99/মাস</a>
+    <div class="ham" id="hamBtn" onclick="toggleMobileMenu()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- ─── MOBILE MENU ────────────────────────────────────────── -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" onclick="closeMobileMenu()">ফিচার</a>
+  <a href="#pricing" onclick="closeMobileMenu()">মূল্য</a>
+  <a href="#sample" onclick="closeMobileMenu()">নমুনা সংখ্যা</a>
+  <a href="#testimonials" onclick="closeMobileMenu()">রিভিউ</a>
+  <a href="#faq" onclick="closeMobileMenu()">সাধারণ জিজ্ঞাসা</a>
+  <div class="mobile-menu-ctas">
+    <a href="#" class="mob-bybit modal-trigger">🆓 Bybit-এ ফ্রি</a>
+    <a href="#" class="mob-paid modal-trigger">$29.99/মাস</a>
+  </div>
+</div>
+
+<!-- ─── TICKER ─────────────────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="sym">BTC</span><span class="up">▲+2.47%</span></span>
+    <span class="ticker-item"><span class="sym">ETH</span><span class="up">▲+1.89%</span></span>
+    <span class="ticker-item"><span class="sym">SOL</span><span class="dn">▼−0.73%</span></span>
+    <span class="ticker-item"><span class="sym">BNB</span><span class="up">▲+0.95%</span></span>
+    <span class="ticker-item"><span class="sym">DOGE</span><span class="up">▲+5.12%</span></span>
+    <span class="ticker-item"><span class="sym">ADA</span><span class="dn">▼−1.20%</span></span>
+    <span class="ticker-item"><span class="sym">AVAX</span><span class="up">▲+3.30%</span></span>
+    <span class="ticker-item"><span class="sym">LINK</span><span class="up">▲+4.15%</span></span>
+    <span class="ticker-item"><span class="sym">MATIC</span><span class="dn">▼−0.42%</span></span>
+    <span class="ticker-item"><span class="sym">RENDER</span><span class="up">▲+7.44%</span></span>
+    <span class="ticker-item"><span class="sym">BTC</span><span class="up">▲+2.47%</span></span>
+    <span class="ticker-item"><span class="sym">ETH</span><span class="up">▲+1.89%</span></span>
+    <span class="ticker-item"><span class="sym">SOL</span><span class="dn">▼−0.73%</span></span>
+    <span class="ticker-item"><span class="sym">BNB</span><span class="up">▲+0.95%</span></span>
+    <span class="ticker-item"><span class="sym">DOGE</span><span class="up">▲+5.12%</span></span>
+    <span class="ticker-item"><span class="sym">ADA</span><span class="dn">▼−1.20%</span></span>
+    <span class="ticker-item"><span class="sym">AVAX</span><span class="up">▲+3.30%</span></span>
+    <span class="ticker-item"><span class="sym">LINK</span><span class="up">▲+4.15%</span></span>
+    <span class="ticker-item"><span class="sym">MATIC</span><span class="dn">▼−0.42%</span></span>
+    <span class="ticker-item"><span class="sym">RENDER</span><span class="up">▲+7.44%</span></span>
+  </div>
+</div>
+
+<!-- ─── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="dot"></div>AI-চালিত · প্রতিদিন ডেলিভারি · 14,800+ ট্রেডার</div>
+    <h1 class="hero-h1 outfit">যে ক্রিপ্টো নিউজলেটার <span class="accent">আপনার চেয়ে বুদ্ধিমানের সাথে ট্রেড করে</span></h1>
+    <p class="hero-sub">রিয়েল-টাইম AI সিগন্যাল স্ক্যানিং। প্রাতিষ্ঠানিক মানের বিশ্লেষণ। অন-চেইন হোয়েল অ্যালার্ট। প্রতিদিন সকালে বাজার খোলার আগেই ডেলিভারি — যাতে আপনি আর কখনোই কোনো মুভমেন্ট মিস না করেন।</p>
+
+    <!-- DUAL CTA BLOCK -->
+    <div class="dual-cta-wrap reveal">
+      <div class="cta-card-bybit modal-trigger">
+        <div class="rec-badge">⭐ প্রস্তাবিত</div>
+        <div class="cta-label">সেরা মূল্য</div>
+        <div class="cta-headline">ফ্রি পান</div>
+        <div class="cta-sub">আমাদের লিংক দিয়ে Bybit-এ সাইন-আপ করুন — SignalStrike Pro আমাদের পক্ষ থেকে। কোনো মাসিক ফি নেই, কখনোই না।</div>
+        <div class="btn-bybit-full">🆓 Bybit-এ ফ্রি →</div>
+      </div>
+      <div class="cta-divider">অথবা</div>
+      <div class="cta-card-paid modal-trigger">
+        <div class="cta-label">সরাসরি সাবস্ক্রিপশন</div>
+        <div class="cta-headline">$29.99<span style="font-size:1rem;font-weight:500;color:var(--text2)">/মাস</span></div>
+        <div class="cta-sub">কোনো এক্সচেঞ্জ লাগবে না। সরাসরি সাবস্ক্রাইব করুন আর যখন খুশি বাতিল করুন।</div>
+        <div class="btn-paid-full">এখনই সাবস্ক্রাইব করুন →</div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">14,800<span class="accent">+</span></div><div class="stat-label">সাবস্ক্রাইবার</div></div>
+      <div class="stat-item"><div class="stat-num">97.2<span class="accent">%</span></div><div class="stat-label">নির্ভুলতা</div></div>
+      <div class="stat-item"><div class="stat-num">500<span class="accent">+</span></div><div class="stat-label">অল্টকয়েন</div></div>
+      <div class="stat-item"><div class="stat-num">3<span class="accent">মিনিট</span></div><div class="stat-label">দৈনিক পড়া</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SIGNAL PREVIEW ──────────────────────────────────────── -->
+<div class="signal-preview-section">
+  <div class="signal-preview-inner">
+    <div class="sp-card reveal">
+      <div class="sp-header">
+        <div class="sp-header-title">⚡ আজকের AI সিগন্যাল প্রিভিউ</div>
+        <div class="live-badge"><div class="live-dot"></div>লাইভ</div>
+      </div>
+      <div class="sp-grid">
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">₿ Bitcoin</div><div class="signal-chip chip-buy">কিনুন</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="82"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">Ξ Ethereum</div><div class="signal-chip chip-watch">নজরে রাখুন</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-yellow" style="width:0%" data-w="57"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">◎ Solana</div><div class="signal-chip chip-buy">জোরালো কিনুন</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="91"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">🔗 Chainlink</div><div class="signal-chip chip-buy">ব্রেকআউট</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="75"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">⬡ AVAX</div><div class="signal-chip chip-sell">কমান</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-pink" style="width:0%" data-w="28"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">⬡ Render</div><div class="signal-chip chip-buy">AI প্লে</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="94"></div></div></div>
+      </div>
+      <div class="sp-footer">
+        <div class="sp-footer-text">🔒 পূর্ণ বিশ্লেষণ, এন্ট্রি/এক্সিট জোন ও কনফিডেন্স স্কোর — নিচে থেকে আনলক করুন</div>
+        <a href="#" class="sp-unlock-bybit modal-trigger">🆓 Bybit-এ ফ্রি ⭐</a>
+        <a href="#" class="sp-unlock-paid modal-trigger">$29.99/মাস</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MARQUEE ────────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <span class="marquee-item">AI সিগন্যাল স্ক্যানিং</span><span class="marquee-item">হোয়েল ওয়ালেট অ্যালার্ট</span><span class="marquee-item">DeFi আলফা</span><span class="marquee-item">অন-চেইন ডেটা</span><span class="marquee-item">অল্টকয়েন ডিপ ডাইভ</span><span class="marquee-item">ম্যাক্রো বিশ্লেষণ</span><span class="marquee-item">NFT ইন্টেলিজেন্স</span><span class="marquee-item">রেগুলেটরি রাডার</span><span class="marquee-item">পোর্টফোলিও স্ট্র্যাটেজি</span>
+    <span class="marquee-item">AI সিগন্যাল স্ক্যানিং</span><span class="marquee-item">হোয়েল ওয়ালেট অ্যালার্ট</span><span class="marquee-item">DeFi আলফা</span><span class="marquee-item">অন-চেইন ডেটা</span><span class="marquee-item">অল্টকয়েন ডিপ ডাইভ</span><span class="marquee-item">ম্যাক্রো বিশ্লেষণ</span><span class="marquee-item">NFT ইন্টেলিজেন্স</span><span class="marquee-item">রেগুলেটরি রাডার</span><span class="marquee-item">পোর্টফোলিও স্ট্র্যাটেজি</span>
+  </div>
+</div>
+
+<!-- ─── FEATURES ───────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="section-eyebrow">আপনি যা পাবেন</div>
+    <h2 class="section-title outfit">বুদ্ধিমত্তা যা <span class="accent">বাজার নাড়ায়</span></h2>
+    <p class="section-sub">প্রতিটি সংখ্যা চলে আমাদের মালিকানাধীন AI ইঞ্জিন দ্বারা — যা বাজার খোলার আগেই লক্ষ লক্ষ অন-চেইন সিগন্যাল, খবরের ঘটনা ও সোশ্যাল সেন্টিমেন্ট স্ক্যান করে।</p>
+    <div class="features-grid">
+      <div class="feature-card reveal"><div class="f-num">// 01</div><div class="f-icon">🤖</div><div class="f-title">AI সিগন্যাল ইঞ্জিন</div><p class="f-desc">আমাদের ML মডেল প্রতিদিন ৫০,০০০+ ডেটা পয়েন্ট প্রসেস করে — রিটেইল বোঝার আগেই কয়েক ঘণ্টা আগে সিগন্যাল বের করে আনে।</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 02</div><div class="f-icon">🐋</div><div class="f-title">হোয়েল ওয়ালেট ট্র্যাকার</div><p class="f-desc">$১ মিলিয়নের বেশি ধারণ করা ওয়ালেট কখন নড়ে তা জেনে নিন। প্রতিটি বড় আক্কুমুলেশন, ডিস্ট্রিবিউশন ও ব্রিজ ফ্ল্যাগ করা হয়।</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 03</div><div class="f-icon">📊</div><div class="f-title">দৈনিক মার্কেট ব্রিফিং</div><p class="f-desc">ম্যাক্রো অবস্থা, BTC ডমিনেন্স, ফিয়ার অ্যান্ড গ্রিড, এবং সেরা ট্রেড — সকালে ৩ মিনিটের পড়ায়।</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 04</div><div class="f-icon">🔬</div><div class="f-title">অল্টকয়েন ডিপ ডাইভ</div><p class="f-desc">সাপ্তাহিক গভীর বিশ্লেষণ উচ্চ-আত্মবিশ্বাসের অল্টকয়েনে — টোকেনোমিক্স, আনলক শিডিউল, ডেভ অ্যাক্টিভিটি।</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 05</div><div class="f-icon">⚡</div><div class="f-title">ফ্ল্যাশ অ্যালার্ট</div><p class="f-desc">হঠাৎ মুভমেন্ট আগামীকালের জন্য অপেক্ষা করে না। গুরুত্বপূর্ণ প্রাইস ইভেন্ট, হ্যাক, রেগুলেটরি শক — সাথে সাথে পাঠানো।</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 06</div><div class="f-icon">🧠</div><div class="f-title">DeFi ও NFT আলফা</div><p class="f-desc">ইল্ড ফার্মিং সুযোগ, প্রোটোকল লঞ্চ, লিকুইডিটি পরিবর্তন — যে আলফা বেশিরভাগ নিউজলেটার মিস করে।</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY ──────────────────────────────────────────────────── -->
+<section class="why-section" id="why">
+  <div class="container">
+    <div class="why-grid">
+      <div>
+        <div class="section-eyebrow">কেন SignalStrike</div>
+        <h2 class="section-title outfit">আশায় ভর করে <span class="accent">ট্রেডিং বন্ধ করুন</span></h2>
+        <p class="big-quote">"বেশিরভাগ ক্রিপ্টো ট্রেডার ব্যর্থ হয় দুর্ভাগ্যের কারণে নয় — বরং কারণ তারা সবসময় খবর জানার শেষ মানুষ।"</p>
+        <ul class="why-list">
+          <li>আমাদের AI রিয়েল-টাইমে ব্লকচেইন পড়ে — ভিড় প্রতিক্রিয়া জানানোর <strong>আগেই</strong> আপনি সিগন্যাল পান</li>
+          <li>সাধারণ নিউজলেটারের বিপরীতে, আমরা <strong>৫০০+ অল্টকয়েন</strong> ট্র্যাক করি কাস্টম স্কোরিং মডেল দিয়ে</li>
+          <li>সম্পাদকীয় দলে আছেন Binance, CoinGecko, এবং TradFi quant-এর সাবেক অ্যানালিস্ট</li>
+          <li>কোনো ভরাট কথা নেই, টোকেন শিল নেই, পেইড প্রমোশন নেই — বিশুদ্ধ ডেটা-চালিত বুদ্ধিমত্তা</li>
+          <li><strong>Bybit দিয়ে সাইন-আপ করুন, সম্পূর্ণ ফ্রি</strong> — অথবা সরাসরি $29.99/মাসে সাবস্ক্রাইব করুন, ১৪ দিনের মানি-ব্যাক গ্যারান্টিসহ</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <div class="dash-card">
+          <div class="dash-header">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;">✦ সিগন্যাল ড্যাশবোর্ড</div>
+            <div class="live-badge"><div class="live-dot"></div>লাইভ</div>
+          </div>
+          <div class="dash-signal-row"><div class="dash-coin">₿ Bitcoin</div><div class="signal-chip chip-buy">কেনার জোন</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">Ξ Ethereum</div><div class="signal-chip chip-watch">নজরে রাখুন</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">◎ Solana</div><div class="signal-chip chip-buy">জোরালো কিনুন</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">⬡ AVAX</div><div class="signal-chip chip-sell">কমান</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">🔗 Chainlink</div><div class="signal-chip chip-buy">ব্রেকআউট</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">⬡ Render</div><div class="signal-chip chip-buy">AI প্লে</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-unlock-footer">
+            <div class="dash-unlock-row">
+              <a href="#" class="dash-unlock-bybit modal-trigger">
+                <span class="dash-rec-tag">⭐ প্রস্তাবিত</span>
+                🆓 Bybit দিয়ে ফ্রি আনলক করুন
+              </a>
+              <a href="#" class="dash-unlock-paid modal-trigger">$29.99/মাস</a>
+            </div>
+            <div class="dash-unlock-note">আমাদের লিংক দিয়ে Bybit-এ সাইন-আপ করুন — SignalStrike Pro বিনামূল্যে পান</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMPARE ──────────────────────────────────────────────── -->
+<section>
+  <div class="container">
+    <div class="section-eyebrow">তুলনা</div>
+    <h2 class="section-title outfit">SignalStrike বনাম <span class="accent">বাকিরা</span></h2>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr><th style="width:28%">ফিচার</th><th class="hl">SignalStrike ★</th><th>Bankless</th><th>Milk Road</th><th>Messari</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AI সিগন্যাল ইঞ্জিন</td><td class="hl"><span class="check">✓</span> মালিকানাধীন AI</td><td class="cross">✗</td><td class="cross">✗</td><td class="partial">~ বেসিক</td></tr>
+          <tr><td>হোয়েল ওয়ালেট অ্যালার্ট</td><td class="hl"><span class="check">✓</span> রিয়েল-টাইম</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>অন-চেইন অ্যানালিটিক্স</td><td class="hl"><span class="check">✓</span> গভীর</td><td class="partial">~ সীমিত</td><td class="cross">✗</td><td class="partial">~ পেইড টায়ার</td></tr>
+          <tr><td>দৈনিক ফ্ল্যাশ অ্যালার্ট</td><td class="hl"><span class="check">✓</span> অন্তর্ভুক্ত</td><td class="cross">✗</td><td class="partial">~ মাঝে মাঝে</td><td class="partial">~ শুধু Pro</td></tr>
+          <tr><td>৫০০+ অল্টকয়েন কভারেজ</td><td class="hl"><span class="check">✓</span> সব টায়ারে</td><td class="cross">✗</td><td class="partial">~ টপ ৫০</td><td class="partial">~ সীমিত</td></tr>
+          <tr><td>DeFi আলফা</td><td class="hl"><span class="check">✓</span> সাপ্তাহিক</td><td class="check">✓</td><td class="cross">✗</td><td class="partial">~ আংশিক</td></tr>
+          <tr><td>মূল্য / মাস</td><td class="hl" style="color:var(--green);font-weight:800;">Bybit-এ ফ্রি <span style="color:var(--text3);font-weight:400;font-size:0.75rem;">/ $29.99</span></td><td>$22</td><td>ফ্রি</td><td>$29</td></tr>
+          <tr><td>মানি-ব্যাক গ্যারান্টি</td><td class="hl"><span class="check">✓</span> ১৪ দিন (পেইড)</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SAMPLE ──────────────────────────────────────────────── -->
+<section class="sample-section" id="sample">
+  <div class="container">
+    <div class="section-eyebrow">নমুনা সংখ্যা</div>
+    <h2 class="section-title outfit">আপনার ইনবক্সে <span class="accent">যা আসে</span></h2>
+    <div class="sample-grid">
+      <div class="issue-card reveal">
+        <div class="issue-topbar"><div class="title">⚡ SIGNALSTRIKE ডেইলি</div><div class="date">সংখ্যা #284 · বুধ ১৯ মার্চ ২০২৬</div></div>
+        <div class="issue-body">
+          <div class="issue-section-head">// ম্যাক্রো পালস</div>
+          <div class="issue-line"><strong>BTC ডমিনেন্স:</strong> 54.2% (↑ 0.8%) — অল্টকয়েন সিজন ঠান্ডা হচ্ছে, রোটেশনে সতর্ক</div>
+          <div class="issue-line"><strong>ভয় ও লোভ:</strong> 72 — লোভ জোন, বেশি ভোলাটিলিটি প্রত্যাশিত</div>
+          <div class="issue-line"><strong>Fed নজরে:</strong> সুদের হার অপরিবর্তিত। রিস্ক-অন অ্যাসেটে চাহিদা</div>
+          <div class="issue-section-head">// আজকের AI সিগন্যাল</div>
+          <div class="issue-line"><strong>BTC:</strong> $85K সাপোর্ট ধরে রেখেছে। AI কনফিডেন্স 88%। টার্গেট: $92K</div>
+          <div class="issue-line"><strong>SOL:</strong> ব্রেকআউট প্যাটার্ন তৈরি হচ্ছে। হোয়েল আক্কুমুলেশন +$47M (24 ঘণ্টা)</div>
+          <div class="issue-line"><strong>RENDER:</strong> AI ন্যারেটিভ প্লে। ডেভ অ্যাক্টিভিটি ↑ 340%। $7.50-এ নজর</div>
+          <div class="issue-line"><strong>AVAX:</strong> শুক্রবার টোকেন আনলক, ১৮ কোটি টোকেন। এক্সপোজার কমান</div>
+          <div class="issue-section-head">// হোয়েল রাডার</div>
+          <div class="issue-line"><strong>0x8f2a...</strong> 12,400 ETH Binance-এ সরিয়েছে — সম্ভাব্য সেল প্রেসার</div>
+          <div class="issue-line"><strong>0x44cc...</strong> ৩ দিনে $8.2M LINK কিনেছে — স্মার্ট মানি</div>
+          <div class="issue-section-head">// DeFi আলফা</div>
+          <div class="issue-line"><strong>Aave v4</strong> Base-এ লঞ্চ — 48 ঘণ্টার জন্য USDC-এ 14.2% APY</div>
+          <div class="issue-line"><strong>নতুন Uniswap পুল:</strong> RENDER/ETH 0.3% ফি টায়ার সুযোগ</div>
+        </div>
+      </div>
+      <div>
+        <ul class="sample-bullets">
+          <li><span class="bul">→</span><span><strong>সকালের ম্যাক্রো স্ন্যাপশট</strong> — বিটকয়েন ডমিনেন্স, ফিয়ার/গ্রিড ইনডেক্স, Fed সংকেত ৩ বাক্যে।</span></li>
+          <li><span class="bul">→</span><span><strong>সেরা AI সিগন্যাল</strong> — আপনার ৪–৬টি সর্বোচ্চ আত্মবিশ্বাসের সেটআপ, কনফিডেন্স স্কোর, এন্ট্রি জোন ও ক্যাটালিস্ট সহ।</span></li>
+          <li><span class="bul">→</span><span><strong>হোয়েল রাডার</strong> — ২–৩টি সবচেয়ে বড় অন-চেইন মুভ এবং স্বল্পমেয়াদী প্রাইস অ্যাকশনে সেগুলোর তাৎপর্য।</span></li>
+          <li><span class="bul">→</span><span><strong>DeFi আলফা পিক</strong> — প্রতিদিন একটি DeFi সুযোগ — উচ্চ APY পুল, নতুন প্রোটোকল লঞ্চ, বা লিকুইডিটি উইন্ডো।</span></li>
+          <li><span class="bul">→</span><span><strong>সাপ্তাহিক ডিপ ডাইভ</strong> (বুধবার) — অল্টকয়েনের সম্পূর্ণ বিশ্লেষণ: টোকেনোমিক্স, অন-চেইন অ্যাক্টিভিটি, এবং ৩ মাসের থিসিস।</span></li>
+          <li><span class="bul">→</span><span><strong>রেগুলেটরি রাডার</strong> — বৈশ্বিক নীতির পদক্ষেপ সহজ ভাষায় ও কার্যকরভাবে ব্যাখ্যা।</span></li>
+        </ul>
+        <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="#" class="btn-bybit-full modal-trigger" style="flex:1;min-width:160px;">🆓 Bybit-এ ফ্রি</a>
+          <a href="#" class="btn-paid-full modal-trigger" style="flex:1;min-width:120px;">$29.99/মাস →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ────────────────────────────────────────── -->
+<section id="how">
+  <div class="container">
+    <div class="section-eyebrow">সহজ প্রক্রিয়া</div>
+    <h2 class="section-title outfit"><span class="accent">৬০ সেকেন্ডে</span> চালু</h2>
+    <div class="how-grid">
+      <div class="how-step reveal"><div class="step-num">01</div><div class="step-icon">🔗</div><div class="step-title">Bybit-এ সাইন-আপ</div><p class="step-desc">আমাদের Bybit রেফারেল লিংকে ক্লিক করুন এবং বিনামূল্যে অ্যাকাউন্ট খুলুন। SignalStrike অ্যাক্সেস আনলক করতে কোনো ডিপোজিট লাগবে না।</p></div>
+      <div class="how-step reveal"><div class="step-num">02</div><div class="step-icon">✉️</div><div class="step-title">অ্যাক্সেস দাবি করুন</div><p class="step-desc">সাইন-আপের পরে আপনার ইমেইল জমা দিন। আমরা আপনার Bybit রেফারেল যাচাই করি এবং SignalStrike Pro সাবস্ক্রিপশন সক্রিয় করি — ফ্রি।</p></div>
+      <div class="how-step reveal"><div class="step-num">03</div><div class="step-icon">🌅</div><div class="step-title">সকালের ব্রিফ</div><p class="step-desc">প্রতিদিন ট্রেডিং দিনে সকাল 6:00 EST-এ আপনার AI-কিউরেটেড ব্রিফ আসে। ৩ মিনিটে পড়ুন। বাজার যা জানে না তা জানুন।</p></div>
+      <div class="how-step reveal"><div class="step-num">04</div><div class="step-icon">📈</div><div class="step-title">স্মার্টভাবে ট্রেড</div><p class="step-desc">ডেটা-সমর্থিত সিদ্ধান্ত নিন। আমাদের প্রকাশ্যে ট্র্যাক করা সিগন্যাল নির্ভুলতা: ১৮ মাসে 97.2%।</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ────────────────────────────────────────── -->
+<section class="testi-section" id="testimonials">
+  <div class="container">
+    <div class="section-eyebrow">সোশ্যাল প্রুফ</div>
+    <h2 class="section-title outfit">যে ট্রেডাররা <span class="accent">সিগন্যালে ভরসা করেন</span></h2>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"শুধু হোয়েল ওয়ালেট অংশটাই সাবস্ক্রিপশনের ১০ গুণ মূল্যবান। আমি একটি LINK অ্যালার্ট অনুসরণ করেছি এবং ৪৮ ঘণ্টায় ২৮% মুভ ধরে ফেলেছি। এই নিউজলেটার প্রতিদিন নিজেই নিজের খরচ উঠিয়ে দেয়।"</p><div class="t-author"><div class="t-avatar">RK</div><div><div class="t-name">Ryan K.</div><div class="t-role">সুইং ট্রেডার, ক্রিপ্টোতে ৪ বছর</div><div class="t-pnl">▲ শেষ ৩০ দিনে +$14,200</div></div></div></div>
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"আমি Bankless, Milk Road, Messari চেষ্টা করেছি — SignalStrike-এর সিগন্যাল গুণমানের কাছে কিছুই আসে না। AI সবাই কথা বলার ৩ দিন আগেই Render-এর মুভ ধরেছিল।"</p><div class="t-author"><div class="t-avatar">JP</div><div><div class="t-name">Jessica P.</div><div class="t-role">পোর্টফোলিও ম্যানেজার ও DeFi স্ট্র্যাটেজিস্ট</div><div class="t-pnl">▲ Q1 2026-এ +$31,500</div></div></div></div>
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"যিনি সারাদিন চার্ট দেখার সময় পান না, তার জন্য SignalStrike গেম-চেঞ্জার। ৩ মিনিটের ফরম্যাট পারফেক্ট। আমি কফির সাথে পড়ি এবং দিনটি প্রস্তুত।"</p><div class="t-author"><div class="t-avatar">MT</div><div><div class="t-name">Marcus T.</div><div class="t-role">উদ্যোক্তা ও পার্ট-টাইম ট্রেডার</div><div class="t-pnl">▲ সাবস্ক্রাইবের পর থেকে +$8,700</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── AI SECTION ──────────────────────────────────────────── -->
+<section id="ai">
+  <div class="container">
+    <div class="section-eyebrow">প্রযুক্তি</div>
+    <h2 class="section-title outfit">কেন আমাদের AI <span class="accent">জেতে</span></h2>
+    <div class="ai-grid">
+      <div>
+        <p style="font-size:0.9rem;color:var(--text2);line-height:1.95;margin-bottom:20px;">SignalStrike কোনো একজন অ্যানালিস্ট নয় যার মতামত আছে। এটি এমন একটি যন্ত্র যা এমন ডেটা প্রসেস করে যা কোনো মানুষ পারত না — তারপর আমাদের এডিটোরিয়াল দল তা এমন বুদ্ধিমত্তায় অনুবাদ করে যা আপনি সত্যিই ব্যবহার করতে পারেন।</p>
+        <div class="ai-pills">
+          <div class="ai-pill">🔍 অন-চেইন প্যাটার্ন রিকগনিশন</div><div class="ai-pill">📡 সোশ্যাল সেন্টিমেন্ট NLP</div><div class="ai-pill">📰 নিউজ ইম্প্যাক্ট স্কোরিং</div><div class="ai-pill">📊 অর্ডার বুক অ্যানালাইসিস</div><div class="ai-pill">🐋 হোয়েল বিহেভিয়ার মডেলিং</div><div class="ai-pill">⚙️ ক্রস-এক্সচেঞ্জ আরবিট্রাজ</div><div class="ai-pill">🌐 ম্যাক্রো কোরিলেশন ইঞ্জিন</div><div class="ai-pill">🎯 এন্ট্রি/এক্সিট জোন ক্যালকুলেটর</div>
+        </div>
+      </div>
+      <div class="ai-metrics-card reveal">
+        <div class="ai-metrics-title">✦ AI পারফরম্যান্স মেট্রিক্স</div>
+        <div class="ai-metric"><div class="ai-metric-label">সিগন্যাল নির্ভুলতা (১৮ মাস)</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-green" data-width="97"></div></div><div class="ai-metric-val" style="color:var(--green);">97.2%</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">গড় সিগন্যাল লিড টাইম</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-yellow" data-width="75"></div></div><div class="ai-metric-val" style="color:#b45309;">4.2 ঘণ্টা</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">ডেটা পয়েন্ট / দিন</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-pink" data-width="90"></div></div><div class="ai-metric-val">50K+</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">মনিটর করা নেটওয়ার্ক</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-yellow" data-width="65"></div></div><div class="ai-metric-val" style="color:#b45309;">28</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">ট্র্যাক করা অল্টকয়েন</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-green" data-width="80"></div></div><div class="ai-metric-val" style="color:var(--green);">500+</div></div>
+        <div class="ai-note"><strong>✓ সব মেট্রিক্স প্রকাশ্যে যাচাইযোগ্য।</strong> সাবস্ক্রাইবার ড্যাশবোর্ডে আমাদের পূর্ণ সিগন্যাল ইতিহাস ট্র্যাক করুন।</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─────────────────────────────────────────────── -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div class="section-eyebrow">মূল্য</div>
+    <h2 class="section-title outfit">অ্যাক্সেস পাওয়ার <span class="accent">দুই উপায়</span></h2>
+    <p class="section-sub">আপনার জন্য যা কাজ করে তা বেছে নিন — Bybit-এ ফ্রি পান, অথবা সরাসরি সাবস্ক্রাইব করুন। একই নিউজলেটার, একই সিগন্যাল, একই আলফা।</p>
+    <div class="pricing-grid">
+      <div class="pricing-card-bybit reveal">
+        <div class="pricing-recommended-badge">⭐ প্রস্তাবিত — সেরা মূল্য</div>
+        <div class="pricing-name">Bybit-এ ফ্রি</div>
+        <div class="pricing-desc">আমাদের রেফারেল লিংক দিয়ে Bybit-এ সাইন-আপ করুন এবং আপনার SignalStrike Pro সাবস্ক্রিপশন সম্পূর্ণ ফ্রি — চিরকালের জন্য।</div>
+        <div class="price-free-block">
+          <div class="price-free-main">$0</div>
+          <div class="price-free-tag">ফ্রি</div>
+        </div>
+        <div class="price-free-condition">আমাদের রেফারেল লিংক দিয়ে <strong>বিনামূল্যে Bybit অ্যাকাউন্ট</strong> প্রয়োজন। কোনো ডিপোজিট নেই, কোনো ট্রেডিং মিনিমাম নেই।</div>
+        <ul class="pricing-features-bybit">
+          <li><span class="check-icon">✓</span>দৈনিক AI সিগন্যাল ব্রিফ (সকাল 6:00 EST)</li>
+          <li><span class="check-icon">✓</span>হোয়েল ওয়ালেট ট্র্যাকার ও অ্যালার্ট</li>
+          <li><span class="check-icon">✓</span>৫০০+ অল্টকয়েন AI কভারেজ</li>
+          <li><span class="check-icon">✓</span>সাপ্তাহিক অল্টকয়েন ডিপ ডাইভ</li>
+          <li><span class="check-icon">✓</span>রিয়েল-টাইম ফ্ল্যাশ অ্যালার্ট</li>
+          <li><span class="check-icon">✓</span>DeFi ও NFT আলফা সেকশন</li>
+          <li><span class="check-icon">✓</span>সম্পূর্ণ আর্কাইভ (২৮০+ সংখ্যা)</li>
+          <li><span class="check-icon">✓</span>AI সিগন্যাল ড্যাশবোর্ড</li>
+        </ul>
+        <a href="#" class="btn-full-bybit modal-trigger">🆓 Bybit-এ ফ্রি →</a>
+        <div class="guarantee-note" style="color:#3d2a00;">বিনামূল্যে Bybit অ্যাকাউন্ট · কোনো পেমেন্ট তথ্য নেই</div>
+      </div>
+      <div class="pricing-card-paid reveal">
+        <div class="pricing-name">সরাসরি সাবস্ক্রিপশন</div>
+        <div class="pricing-desc">এক্সচেঞ্জ ব্যবহার করতে চান না? সরাসরি সাবস্ক্রাইব করুন। সবকিছু অন্তর্ভুক্ত, যখন খুশি বাতিল করুন।</div>
+        <div class="price-block">
+          <div class="price-was">প্রতিদিন $1.00-রও কম</div>
+          <div class="price-main outfit"><sup>$</sup>29.99</div>
+          <div class="price-period">প্রতি মাসে · অথবা $299/বছর (১৭% সাশ্রয়)</div>
+        </div>
+        <ul class="pricing-features">
+          <li><span class="check-icon">✓</span>দৈনিক AI সিগন্যাল ব্রিফ (সকাল 6:00 EST)</li>
+          <li><span class="check-icon">✓</span>হোয়েল ওয়ালেট ট্র্যাকার ও অ্যালার্ট</li>
+          <li><span class="check-icon">✓</span>৫০০+ অল্টকয়েন AI কভারেজ</li>
+          <li><span class="check-icon">✓</span>সাপ্তাহিক অল্টকয়েন ডিপ ডাইভ</li>
+          <li><span class="check-icon">✓</span>রিয়েল-টাইম ফ্ল্যাশ অ্যালার্ট</li>
+          <li><span class="check-icon">✓</span>DeFi ও NFT আলফা সেকশন</li>
+          <li><span class="check-icon">✓</span>সম্পূর্ণ আর্কাইভ (২৮০+ সংখ্যা)</li>
+          <li><span class="check-icon">✓</span>AI সিগন্যাল ড্যাশবোর্ড</li>
+        </ul>
+        <a href="#" class="btn-full-paid modal-trigger">এখনই সাবস্ক্রাইব করুন →</a>
+        <div class="guarantee-note">১৪-দিনের মানি-ব্যাক গ্যারান্টি · যখন খুশি বাতিল করুন</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-eyebrow">প্রশ্ন ও উত্তর</div>
+    <h2 class="section-title outfit">সাধারণ <span class="accent">জিজ্ঞাসা</span></h2>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Bybit-এর ফ্রি অপশন কীভাবে কাজ করে?</span><div class="faq-icon">+</div></div><div class="faq-a">শুধু আমাদের রেফারেল লিংক দিয়ে Bybit-এ সাইন-আপ করুন এবং একটি বিনামূল্যে অ্যাকাউন্ট খুলুন। সাইন-আপের পরে আমাদের ক্লেইম পেজে আপনার ইমেইল জমা দিন, আমরা বিনা খরচে আপনার SignalStrike Pro সাবস্ক্রিপশন সক্রিয় করে দেব। কোনো ডিপোজিট বা ট্রেডিং অ্যাক্টিভিটি লাগবে না।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>পেইড প্ল্যানে মানি-ব্যাক গ্যারান্টি আছে?</span><div class="faq-icon">+</div></div><div class="faq-a">হ্যাঁ। আপনি যদি সরাসরি সাবস্ক্রাইব করেন এবং প্রথম ১৪ দিনে সম্পূর্ণ সন্তুষ্ট না হন, আমাদের ইমেইল করুন — কোনো প্রশ্ন ছাড়াই সম্পূর্ণ রিফান্ড।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>ফ্রি ক্রিপ্টো নিউজলেটারের থেকে SignalStrike কীভাবে আলাদা?</span><div class="faq-icon">+</div></div><div class="faq-a">ফ্রি নিউজলেটার সবার জানা তথ্য একত্রিত করে। SignalStrike অন-চেইন ডেটা, হোয়েল মুভমেন্ট এবং AI প্যাটার্ন রিকগনিশন প্রসেস করে সেটআপ খুঁজে বের করে — মূলধারার খবর হওয়ার আগেই।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>এটি কি আর্থিক পরামর্শ? 97.2% নির্ভুলতা মানে কী?</span><div class="faq-icon">+</div></div><div class="faq-a">SignalStrike কোনো আর্থিক পরামর্শ নয়। 97.2% মানে ১৮ মাসের ব্যাকটেস্ট পিরিয়ডে আমাদের AI সিগন্যালের দিকনির্দেশনার সঠিকতা। সর্বদা সঠিক রিস্ক ম্যানেজমেন্ট চর্চা করুন।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>আমি কত ঘন ঘন সংখ্যা পাব?</span><div class="faq-icon">+</div></div><div class="faq-a">সোমবার থেকে শুক্রবার আপনি সকাল 6:00 EST-এ ডেইলি ব্রিফ পাবেন। শনিবার সাপ্তাহিক র্যাপ-আপ থাকে। ফ্ল্যাশ অ্যালার্ট প্রয়োজনে পাঠানো হয় — সপ্তাহে গড়ে ৬–৮টি ইমেইল, কোনো প্রোমোশনাল নয়।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>দুটি প্ল্যান কি একই কনটেন্ট পায়?</span><div class="faq-icon">+</div></div><div class="faq-a">হ্যাঁ — ১০০% অভিন্ন। আপনি Bybit রেফারেল পথে যান বা সরাসরি সাবস্ক্রিপশনে — আপনি ঠিক একই দৈনিক ব্রিফ, হোয়েল অ্যালার্ট, ফ্ল্যাশ অ্যালার্ট, ডিপ ডাইভ এবং ড্যাশবোর্ড অ্যাক্সেস পান।</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>আমি কি পেইড প্ল্যান যখন খুশি বাতিল করতে পারি?</span><div class="faq-icon">+</div></div><div class="faq-a">অবশ্যই। আপনার অ্যাকাউন্ট ড্যাশবোর্ড থেকে বা যেকোনো নিউজলেটার রিপ্লাই দিয়ে বাতিল করুন। কোনো কল নেই, ফর্ম নেই, অপরাধবোধ নেই।</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2 class="outfit">প্রতিক্রিয়া বন্ধ করুন।<br><em style="font-style:italic;color:var(--pink);">আক্রমণ শুরু করুন।</em></h2>
+  <p>১৪,৮০০+ ট্রেডার ইতিমধ্যেই প্রতি সকালে SignalStrike পড়েন। পরবর্তী বড় মুভমেন্ট এই মুহূর্তেই ম্যাপ করা হচ্ছে।</p>
+  <div class="cta-dual">
+    <a href="#" class="btn-cta-bybit modal-trigger">🆓 Bybit-এ ফ্রি <span class="free-pill">প্রস্তাবিত</span></a>
+    <a href="#" class="btn-cta-paid modal-trigger">$29.99/মাসে সাবস্ক্রাইব করুন →</a>
+  </div>
+  <div class="cta-sub">Bybit-এ ফ্রি · অথবা $29.99/মাস · যখন খুশি বাতিল করুন · AI-চালিত · ১৪,৮০০+ ট্রেডার</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Signal<span class="accent">Strike</span></div>
+      <p class="footer-desc">AI-চালিত ক্রিপ্টো ইন্টেলিজেন্স নিউজলেটার, যা ১৪,৮০০+ ট্রেডার ভরসা করেন। দৈনিক সিগন্যাল। হোয়েল অ্যালার্ট। DeFi আলফা। Bybit-এ ফ্রি বা $29.99/মাস সরাসরি।</p>
+      <div class="footer-social"><div class="social-btn">𝕏</div><div class="social-btn">in</div><div class="social-btn">📱</div><div class="social-btn">💬</div></div>
+    </div>
+    <div class="footer-col"><h4>প্রোডাক্ট</h4><a href="#features">ফিচার</a><a href="#pricing">মূল্য</a><a href="#sample">নমুনা সংখ্যা</a><a href="#ai">AI প্রযুক্তি</a><a href="#" class="modal-trigger">Bybit-এ ফ্রি</a></div>
+    <div class="footer-col"><h4>কোম্পানি</h4><a href="#">আমাদের সম্পর্কে</a><a href="#">সিগন্যাল ট্র্যাক রেকর্ড</a><a href="#">প্রেস কিট</a><a href="#">ব্লগ</a><a href="#">যোগাযোগ</a></div>
+    <div class="footer-col"><h4>আইনি</h4><a href="#">প্রাইভেসি পলিসি</a><a href="#">পরিষেবার শর্তাবলী</a><a href="#">ডিসক্লেইমার</a><a href="#">রিফান্ড পলিসি</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 SignalStrike · signalstrike.online · সর্বস্বত্ব সংরক্ষিত</span><span class="disclaimer">আর্থিক পরামর্শ নয় · DYOR</span></div>
+</footer>
+
+<!-- UNIVERSAL MODAL -->
+<div id="universalModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-close" id="closeModalBtn">✕</div>
+    <div class="modal-badge">⚡ মাসে $29.99 সাশ্রয় করুন</div>
+    <div class="modal-title outfit"><span class="accent">SignalStrike Pro</span> আনলক করুন — আপনার পথ বেছে নিন</div>
+    <div class="modal-sub">১৪,৮০০+ ট্রেডারের সাথে যোগ দিন যারা প্রতিদিন AI সিগন্যাল, হোয়েল অ্যালার্ট ও ডিপ ডাইভ পান।</div>
+    <div class="modal-dual">
+      <div class="modal-option highlight">
+        <div class="rec-flag">⭐ প্রস্তাবিত</div>
+        <h3 class="outfit">Bybit-এ ফ্রি</h3>
+        <div class="modal-price highlight-price">$0 / মাস</div>
+        <div class="modal-desc">আমাদের রেফারেল লিংক দিয়ে বিনামূল্যে Bybit অ্যাকাউন্ট খুলুন — আপনি বিনা খরচে সম্পূর্ণ SignalStrike Pro অ্যাক্সেস পান। কোনো ডিপোজিট লাগবে না, কোনো ট্রেডিং মিনিমাম নেই।</div>
+        <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="modal-cta cta-bybit-modal" id="modalBybitBtn">🆓 ফ্রি অ্যাক্সেস পান →</a>
+      </div>
+      <div class="modal-option">
+        <h3 class="outfit">সরাসরি সাবস্ক্রিপশন</h3>
+        <div class="modal-price">$29.99 / মাস</div>
+        <div class="modal-desc">সরাসরি সাবস্ক্রাইব করতে চান? একই প্রিমিয়াম নিউজলেটার, যখন খুশি বাতিল করুন। ১৪-দিনের মানি-ব্যাক গ্যারান্টি।</div>
+        <a href="https://signalstrike.online/pay.html" target="_blank" class="modal-cta cta-paid-modal" id="modalPaidBtn">$29.99/মাসে সাবস্ক্রাইব করুন →</a>
+      </div>
+    </div>
+    <div class="modal-note">🔒 Bybit-এর ফ্রি অপশন আপনাকে ঠিক একই সিগন্যাল + হোয়েল অ্যালার্ট + দৈনিক ব্রিফ দেয়। বছরে $360 সাশ্রয় করুন।</div>
+  </div>
+</div>
+
+<script>
+function toggleMobileMenu(){
+  const btn=document.getElementById('hamBtn');
+  const menu=document.getElementById('mobileMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('hamBtn').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+function toggleFaq(el){
+  const item=el.parentElement;
+  document.querySelectorAll('.faq-item').forEach(i=>{if(i!==item)i.classList.remove('open');});
+  item.classList.toggle('open');
+}
+const revealObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+const spBarObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.sp-bar[data-w]').forEach((bar,i)=>{
+        setTimeout(()=>{bar.style.transition='width 1.2s cubic-bezier(0.4,0,0.2,1)';bar.style.width=bar.dataset.w+'%';},i*100);
+      });
+      spBarObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.2});
+document.querySelectorAll('.sp-card').forEach(el=>spBarObs.observe(el));
+const barObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.ai-metric-fill[data-width]').forEach(bar=>{
+        bar.style.width='0%';
+        setTimeout(()=>{bar.style.width=bar.getAttribute('data-width')+'%';},120);
+      });
+    }
+  });
+},{threshold:0.3});
+document.querySelectorAll('.ai-metrics-card').forEach(el=>barObs.observe(el));
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  nav.style.background=window.scrollY>20?'rgba(255,255,255,0.97)':'rgba(255,255,255,0.92)';
+},{passive:true});
+
+// Modal handling
+function showModal() { document.getElementById('universalModal').classList.add('active'); }
+function hideModal() { document.getElementById('universalModal').classList.remove('active'); }
+document.querySelectorAll('.modal-trigger').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    showModal();
+  });
+});
+document.getElementById('closeModalBtn').addEventListener('click', hideModal);
+document.getElementById('universalModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('universalModal')) hideModal();
+});
+</script>
+<!-- Default Statcounter code for Signal1
+https://signalstrike.online -->
+<script type="text/javascript">
+var sc_project=13244525; 
+var sc_invisible=1; 
+var sc_security="bd10e4e0"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics"
+href="https://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="https://c.statcounter.com/13244525/0/bd10e4e0/1/"
+alt="Web Analytics"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+</body>
+</html>
