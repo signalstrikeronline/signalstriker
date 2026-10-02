@@ -1190,32 +1190,7 @@ alt="Web Analytics"
 referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
 <!-- End of Statcounter Code -->
   
-<script>
-  // Skip bots/search engines so they can still index your pages
-  if (!navigator.userAgent.match(/bot|spider/i)) {
-    fetch('https://ipwho.is/')
-      .then(response => response.json())
-      .then(data => {
-        if (!data.success) return;
 
-        const country = data.country_code; // e.g. BR, ES, ZA
-
-        // Country code -> page to redirect to
-        const redirects = {
-          'BR': 'br.html',   // Brazil
-          'ES': 'esp.html',  // Spain
-          'ZA': 'sa.html'    // South Africa
-        };
-
-        if (redirects[country]) {
-          window.location.href = redirects[country];
-        }
-      })
-      .catch(error => {
-        console.log('Geo lookup failed:', error);
-      });
-  }
-</script>
 
 </body>
 </html>
