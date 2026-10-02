@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SignalStrike — Intelligence Crypto Propulsée par l'IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#ffffff;
+  --surface:#f5f5f5;
+  --surface2:#ececec;
+  --surface3:#e0e0e0;
+  --border:#00000018;
+  --border2:#0000002a;
+  --pink:#F7A707;
+  --pink-dim:#F7A70714;
+  --yellow:#F7A707;
+  --yellow-dim:#F7A70722;
+  --green:#0d9e5b;
+  --green-dim:#0d9e5b14;
+  --green-light:#22c55e;
+  --bybit:#F7A707;
+  --bybit-dark:#c47f00;
+  --black:#000000;
+  --cream:#ffffff;
+  --text:#000000;
+  --text2:#4a4a4a;
+  --text3:#8a8a8a;
+  --r:12px;--r2:16px;--r3:20px;
+}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;border:none;}
+img{max-width:100%;display:block;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.outfit{font-family:'Outfit',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+/* ─── NAV ─────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border2);
+}
+.nav-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;}
+.nav-logo .accent{color:var(--pink);}
+.live-badge{display:flex;align-items:center;gap:5px;background:var(--green-dim);border:1px solid #22c55e44;border-radius:20px;padding:3px 8px;font-size:0.6rem;font-weight:700;color:var(--green);letter-spacing:0.08em;text-transform:uppercase;}
+.live-dot{width:5px;height:5px;background:var(--green-light);border-radius:50%;animation:pulse 1.8s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;align-items:center;gap:4px;}
+.nav-links a{padding:6px 12px;border-radius:8px;font-size:0.82rem;font-weight:500;color:var(--text2);transition:all 0.2s;}
+.nav-links a:hover{color:var(--text);background:var(--surface2);}
+.btn-nav-ghost{padding:8px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border2);transition:all 0.2s;display:flex;align-items:center;gap:5px;}
+.btn-nav-ghost:hover{background:var(--surface2);}
+.btn-nav-bybit{
+  padding:8px 14px;border-radius:8px;font-size:0.78rem;font-weight:800;
+  color:#000;background:var(--bybit);border:none;transition:all 0.2s;
+  display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.btn-nav-bybit:hover{background:#ffb800;transform:translateY(-1px);}
+.btn-nav-bybit .free-tag{background:#000;color:var(--bybit);font-size:0.58rem;font-weight:900;padding:2px 5px;border-radius:4px;letter-spacing:0.06em;text-transform:uppercase;}
+.btn-nav-paid{padding:8px 14px;border-radius:8px;font-size:0.78rem;font-weight:700;color:#fff;background:var(--black);border:none;transition:all 0.2s;white-space:nowrap;}
+.btn-nav-paid:hover{background:#222;transform:translateY(-1px);}
+
+.ham{display:none;width:36px;height:36px;align-items:center;justify-content:center;background:var(--surface);border-radius:8px;border:1px solid var(--border2);cursor:pointer;flex-direction:column;gap:5px;}
+.ham span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
+.ham.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.ham.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.ham.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;z-index:199;background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:16px;flex-direction:column;gap:6px;opacity:0;transform:translateY(-8px);transition:all 0.25s;pointer-events:none;}
+.mobile-menu.open{opacity:1;transform:translateY(0);pointer-events:all;}
+.mobile-menu a{padding:12px 16px;border-radius:10px;font-size:0.95rem;font-weight:500;color:var(--text2);display:block;border:1px solid transparent;transition:all 0.2s;}
+.mobile-menu a:hover{background:var(--surface2);border-color:var(--border2);color:var(--text);}
+.mobile-menu-ctas{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border2);}
+.mobile-menu-ctas a{flex:1;text-align:center;padding:12px 10px;border-radius:10px;font-size:0.85rem;font-weight:700;}
+.mob-bybit{background:var(--bybit);color:#000 !important;}
+.mob-paid{background:var(--surface2);color:var(--text) !important;border:1px solid var(--border2);}
+
+/* ─── TICKER ──────────────────────────────────────────────── */
+.ticker-wrap{margin-top:60px;background:var(--yellow);border-bottom:2px solid var(--black);overflow:hidden;padding:10px 0;}
+.ticker-inner{display:inline-flex;gap:2.5rem;animation:ticker 35s linear infinite;}
+.ticker-item{font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:700;color:var(--black);display:flex;align-items:center;gap:8px;white-space:nowrap;text-transform:uppercase;letter-spacing:0.06em;}
+.ticker-item .sym{font-weight:800;}
+.up{color:#0a6b3e;}.dn{color:#8a1c1c;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ─── HERO ────────────────────────────────────────────────── */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:80px 20px 60px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 60% 50% at 70% 30%,#F7A70710 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 20% 80%,#F7A70714 0%,transparent 60%);}
+.hero-grid-bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse at center,black 0%,transparent 75%);}
+.hero-content{position:relative;z-index:1;max-width:700px;margin:0 auto;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--yellow);border:2px solid var(--black);border-radius:20px;padding:6px 14px;font-size:0.72rem;font-weight:700;color:var(--black);letter-spacing:0.06em;margin-bottom:24px;}
+.hero-badge .dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.8s infinite;}
+.hero-h1{font-family:'Outfit',sans-serif;font-size:clamp(2.4rem,6vw,4.5rem);font-weight:900;line-height:1.05;letter-spacing:-0.03em;margin-bottom:20px;}
+.hero-h1 .accent{color:var(--pink);}
+.hero-sub{font-size:clamp(0.9rem,2vw,1.05rem);color:var(--text2);line-height:1.75;max-width:540px;margin:0 auto 32px;}
+
+/* ─── DUAL CTA BLOCK ──────────────────────────────────────── */
+.dual-cta-wrap{
+  margin-bottom:36px;
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  align-items:stretch;
+}
+.cta-card-bybit{
+  flex:1;min-width:220px;max-width:300px;
+  background:var(--bybit);
+  border:2px solid var(--black);
+  border-radius:var(--r2);
+  padding:20px 18px 16px;
+  box-shadow:5px 5px 0 var(--black);
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;
+  transition:all 0.2s;
+}
+.cta-card-bybit:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--black);}
+.rec-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--black);color:var(--yellow);
+  font-size:0.6rem;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;white-space:nowrap;
+}
+.cta-card-bybit .cta-label{font-size:0.65rem;font-weight:700;color:#3d2a00;letter-spacing:0.1em;text-transform:uppercase;}
+.cta-card-bybit .cta-headline{font-family:'Outfit',sans-serif;font-size:1.35rem;font-weight:900;color:#000;line-height:1.1;letter-spacing:-0.02em;}
+.cta-card-bybit .cta-sub{font-size:0.74rem;color:#3d2a00;line-height:1.5;}
+.btn-bybit-full{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  background:#000;color:var(--bybit);
+  border-radius:10px;padding:12px 16px;
+  font-size:0.85rem;font-weight:800;
+  border:none;cursor:pointer;transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-bybit-full:hover{background:#1a1a1a;color:#ffb800;}
+
+.cta-card-paid{
+  flex:1;min-width:200px;max-width:260px;
+  background:var(--cream);
+  border:2px solid var(--border2);
+  border-radius:var(--r2);
+  padding:20px 18px 16px;
+  display:flex;flex-direction:column;gap:10px;
+  transition:all 0.2s;
+}
+.cta-card-paid:hover{border-color:var(--black);background:var(--surface);}
+.cta-card-paid .cta-label{font-size:0.65rem;font-weight:700;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;}
+.cta-card-paid .cta-headline{font-family:'Outfit',sans-serif;font-size:1.35rem;font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-0.02em;}
+.cta-card-paid .cta-sub{font-size:0.74rem;color:var(--text2);line-height:1.5;}
+.btn-paid-full{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  background:var(--black);color:#fff;
+  border-radius:10px;padding:12px 16px;
+  font-size:0.85rem;font-weight:700;
+  border:none;cursor:pointer;transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-paid-full:hover{background:#222;}
+
+.cta-divider{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:0.7rem;font-weight:700;color:var(--text3);
+  letter-spacing:0.06em;gap:6px;
+}
+.cta-divider::before,.cta-divider::after{content:'';width:1px;height:30px;background:var(--border2);}
+
+.hero-stats{display:flex;justify-content:center;gap:0;background:var(--cream);border:2px solid var(--black);border-radius:var(--r2);overflow:hidden;}
+.stat-item{flex:1;padding:18px 12px;text-align:center;border-right:2px solid var(--black);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;}
+.stat-num .accent{color:var(--pink);}
+.stat-label{font-size:0.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
+
+/* ─── SIGNAL PREVIEW CARD ──────────────────────────────────── */
+.signal-preview-section{padding:0 20px 60px;}
+.signal-preview-inner{max-width:900px;margin:0 auto;}
+.sp-card{background:var(--cream);border:2px solid var(--black);border-radius:var(--r3);overflow:hidden;box-shadow:6px 6px 0 var(--black);}
+.sp-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:2px solid var(--black);background:var(--surface);}
+.sp-header-title{font-size:0.78rem;font-weight:700;color:var(--text);letter-spacing:0.08em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.sp-grid{padding:16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.sp-tile{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px;transition:all 0.2s;position:relative;overflow:hidden;}
+.sp-tile:hover{border-color:var(--black);background:var(--surface2);}
+.sp-tile-top{display:flex;align-items:center;justify-content:space-between;}
+.sp-coin{font-weight:700;font-size:0.9rem;display:flex;align-items:center;gap:6px;color:var(--text);}
+.signal-chip{padding:3px 8px;border-radius:6px;font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+.chip-buy{background:#dcfce7;color:#15803d;border:1px solid #86efac;}
+.chip-watch{background:var(--yellow-dim);color:#92400e;border:1px solid var(--yellow);}
+.chip-sell{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;}
+.sp-blur-num{height:20px;width:60px;border-radius:6px;background:var(--surface3);position:relative;overflow:hidden;}
+.sp-blur-num::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.45) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2s infinite linear;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.sp-bar-wrap{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.sp-bar{height:100%;border-radius:2px;position:relative;overflow:hidden;}
+.bar-green{background:linear-gradient(90deg,#0d9e5b,#22c55e);}
+.bar-yellow{background:linear-gradient(90deg,#c47f00,var(--yellow));}
+.bar-pink{background:linear-gradient(90deg,#b91c1c,#ef4444);}
+.sp-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.4) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2s infinite linear;}
+
+.sp-footer{
+  padding:14px 16px;
+  border-top:2px solid var(--black);
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;
+  background:var(--surface);
+}
+.sp-footer-text{font-size:0.74rem;color:var(--text2);font-weight:600;flex:1;min-width:120px;}
+.sp-unlock-bybit{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--bybit);color:#000;
+  border-radius:8px;padding:7px 13px;
+  font-size:0.72rem;font-weight:800;
+  white-space:nowrap;border:1px solid var(--bybit-dark);
+  transition:all 0.2s;text-decoration:none;
+}
+.sp-unlock-bybit:hover{background:#ffb800;}
+.sp-unlock-paid{
+  display:inline-flex;align-items:center;gap:5px;
+  background:transparent;color:var(--text2);
+  border-radius:8px;padding:7px 13px;
+  font-size:0.72rem;font-weight:600;
+  white-space:nowrap;border:1px solid var(--border2);
+  transition:all 0.2s;text-decoration:none;
+}
+.sp-unlock-paid:hover{background:var(--surface2);color:var(--text);}
+
+/* ─── MARQUEE ─────────────────────────────────────────────── */
+.marquee-wrap{border-top:2px solid var(--black);border-bottom:2px solid var(--black);overflow:hidden;padding:12px 0;background:var(--yellow);}
+.marquee-inner{display:inline-flex;gap:2.5rem;animation:marquee 30s linear infinite;}
+.marquee-item{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--black);white-space:nowrap;display:flex;align-items:center;gap:10px;}
+.marquee-item::after{content:'✦';color:var(--black);opacity:0.55;}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ─── SECTIONS ────────────────────────────────────────────── */
+section{padding:64px 20px;}
+.container{max-width:960px;margin:0 auto;}
+.section-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--pink);margin-bottom:16px;}
+.section-eyebrow::before{content:'';width:20px;height:2px;background:var(--pink);border-radius:1px;}
+.section-title{font-family:'Outfit',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.025em;margin-bottom:12px;}
+.section-title .accent{color:var(--pink);}
+.section-sub{font-size:0.95rem;color:var(--text2);line-height:1.7;max-width:520px;}
+
+/* features */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:40px;}
+.feature-card{background:var(--cream);border:2px solid var(--black);border-radius:var(--r2);padding:22px;transition:all 0.25s;position:relative;overflow:hidden;box-shadow:4px 4px 0 var(--black);}
+.feature-card::before{content:'';position:absolute;inset:0;background:var(--yellow);opacity:0;transition:opacity 0.3s;}
+.feature-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--black);}
+.feature-card:hover::before{opacity:1;}
+.f-icon{width:42px;height:42px;background:var(--yellow);border:2px solid var(--black);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:16px;position:relative;z-index:1;}
+.f-num{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;color:var(--text3);letter-spacing:0.1em;margin-bottom:8px;position:relative;z-index:1;}
+.f-title{font-size:0.95rem;font-weight:700;margin-bottom:8px;color:var(--text);position:relative;z-index:1;}
+.f-desc{font-size:0.8rem;color:var(--text2);line-height:1.65;position:relative;z-index:1;}
+
+/* why */
+.why-section{background:var(--surface);}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+.big-quote{font-family:'Outfit',sans-serif;font-style:italic;font-size:1.2rem;line-height:1.55;color:var(--text2);padding-left:18px;border-left:4px solid var(--pink);margin-bottom:28px;}
+.why-list{list-style:none;}
+.why-list li{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:2px solid var(--black);font-size:0.85rem;line-height:1.6;color:var(--text2);}
+.why-list li:last-child{border-bottom:none;}
+.why-list li::before{content:'✦';color:var(--pink);flex-shrink:0;font-size:0.8rem;margin-top:2px;font-weight:700;}
+.why-list li strong{color:var(--text);}
+
+.dash-card{background:var(--cream);border:2px solid var(--black);border-radius:var(--r2);overflow:hidden;box-shadow:6px 6px 0 var(--pink);}
+.dash-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:2px solid var(--black);background:var(--surface);}
+.dash-signal-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border2);gap:10px;transition:background 0.2s;}
+.dash-signal-row:last-child{border-bottom:none;}
+.dash-signal-row:hover{background:var(--surface);}
+.dash-coin{flex:1;display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.85rem;color:var(--text);}
+.dash-pct-blur{min-width:56px;height:18px;border-radius:5px;background:var(--surface3);position:relative;overflow:hidden;}
+.dash-pct-blur::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.5) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2s infinite linear;}
+
+.dash-unlock-footer{
+  padding:12px 14px;
+  border-top:2px solid var(--black);
+  background:var(--surface2);
+  display:flex;flex-direction:column;gap:8px;
+}
+.dash-unlock-row{display:flex;gap:8px;align-items:center;}
+.dash-unlock-bybit{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--bybit);color:#000;
+  border-radius:8px;padding:9px 12px;
+  font-size:0.75rem;font-weight:800;
+  border:1px solid var(--bybit-dark);transition:all 0.2s;
+  text-decoration:none;position:relative;
+}
+.dash-unlock-bybit:hover{background:#ffb800;}
+.dash-rec-tag{
+  position:absolute;top:-8px;right:8px;
+  background:var(--black);color:var(--yellow);
+  font-size:0.52rem;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;
+}
+.dash-unlock-paid{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:transparent;color:var(--text2);
+  border-radius:8px;padding:9px 12px;
+  font-size:0.75rem;font-weight:600;
+  border:1px solid var(--border2);transition:all 0.2s;
+  text-decoration:none;
+}
+.dash-unlock-paid:hover{background:var(--surface3);color:var(--text);}
+.dash-unlock-note{font-size:0.66rem;color:var(--text3);text-align:center;}
+
+/* compare */
+.compare-wrap{overflow-x:auto;margin-top:36px;border-radius:var(--r2);border:1px solid var(--border2);}
+.compare-table{width:100%;border-collapse:collapse;min-width:580px;}
+.compare-table th{padding:14px 16px;text-align:left;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border2);}
+.compare-table th.hl{color:var(--pink);}
+.compare-table td{padding:12px 16px;font-size:0.82rem;color:var(--text2);border-bottom:1px solid var(--border);}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table td.hl{color:var(--text);font-weight:600;background:#F7A70714;}
+.compare-table tr:hover td{background:var(--surface);}
+.check{color:var(--green);font-weight:700;}
+.cross{color:var(--text3);}
+.partial{color:#b45309;}
+
+/* sample */
+.sample-section{background:var(--surface);}
+.sample-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;margin-top:36px;}
+.issue-card{background:var(--bg);border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden;}
+.issue-topbar{background:var(--yellow);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
+.issue-topbar .title{font-family:'Outfit',sans-serif;font-weight:800;font-size:0.85rem;letter-spacing:0.04em;color:#000;}
+.issue-topbar .date{font-size:0.65rem;color:#3d2a00;font-weight:600;}
+.issue-body{padding:16px;}
+.issue-section-head{font-family:'JetBrains Mono',monospace;font-size:0.62rem;font-weight:700;letter-spacing:0.14em;color:var(--yellow);text-transform:uppercase;margin-top:16px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.issue-section-head:first-child{margin-top:0;}
+.issue-line{font-size:0.78rem;color:var(--text2);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--border)88;}
+.issue-line:last-child{border-bottom:none;}
+.issue-line strong{color:var(--text);font-weight:600;}
+.sample-bullets{list-style:none;}
+.sample-bullets li{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);font-size:0.85rem;color:var(--text2);line-height:1.6;}
+.sample-bullets li:last-child{border-bottom:none;}
+.sample-bullets li .bul{color:var(--pink);flex-shrink:0;font-weight:700;margin-top:1px;}
+.sample-bullets li strong{color:var(--text);}
+
+/* how */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:36px;}
+.how-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:22px;position:relative;transition:all 0.25s;}
+.how-step:hover{border-color:#F7A70744;transform:translateY(-2px);}
+.step-num{font-family:'Outfit',sans-serif;font-size:2.5rem;font-weight:900;color:#F7A70722;line-height:1;margin-bottom:12px;}
+.step-icon{font-size:1.4rem;margin-bottom:10px;}
+.step-title{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
+.step-desc{font-size:0.78rem;color:var(--text2);line-height:1.65;}
+
+/* testimonials */
+.testi-section{background:var(--surface);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:36px;}
+.testi-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);padding:22px;transition:all 0.25s;}
+.testi-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.t-stars{color:var(--yellow);font-size:0.9rem;margin-bottom:14px;letter-spacing:2px;}
+.t-quote{font-size:0.85rem;line-height:1.65;color:var(--text2);font-style:italic;margin-bottom:18px;}
+.t-author{display:flex;align-items:center;gap:10px;}
+.t-avatar{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:800;font-size:0.85rem;color:var(--pink);flex-shrink:0;}
+.t-name{font-size:0.85rem;font-weight:700;color:var(--text);}
+.t-role{font-size:0.72rem;color:var(--text3);}
+.t-pnl{margin-top:4px;display:inline-flex;align-items:center;gap:4px;background:var(--green-dim);border:1px solid #0d9e5b33;border-radius:6px;padding:2px 7px;font-size:0.65rem;font-weight:700;color:var(--green);letter-spacing:0.04em;}
+
+/* ai */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:36px;}
+.ai-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;}
+.ai-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:0.75rem;font-weight:600;color:var(--text2);transition:all 0.2s;}
+.ai-pill:hover{background:var(--surface3);color:var(--text);}
+.ai-metrics-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r2);padding:22px;}
+.ai-metrics-title{font-size:0.7rem;font-weight:700;color:var(--yellow);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.ai-metric{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.ai-metric:last-child{border-bottom:none;}
+.ai-metric-label{flex:1;font-size:0.72rem;color:var(--text2);font-weight:500;}
+.ai-metric-bar{flex:2;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.ai-metric-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
+.fill-green{background:linear-gradient(90deg,#0d9e5b,#4dffb4);}
+.fill-yellow{background:linear-gradient(90deg,#c47f00,#F7A707);}
+.fill-pink{background:linear-gradient(90deg,#F7A707,#ff8a3d);}
+.ai-metric-val{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:700;min-width:56px;text-align:right;}
+.ai-note{margin-top:16px;padding:12px;background:var(--yellow-dim);border:1px solid #F7A70722;border-radius:8px;font-size:0.75rem;color:var(--text2);line-height:1.6;}
+.ai-note strong{color:#b45309;}
+
+/* ─── PRICING ─────────────────────────────────────────────── */
+.pricing-section{background:var(--surface);}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px;}
+
+.pricing-card-bybit{
+  background:var(--bybit);
+  border:2px solid var(--black);
+  border-radius:var(--r2);
+  padding:28px;
+  position:relative;overflow:hidden;
+  box-shadow:6px 6px 0 var(--black);
+}
+.pricing-card-bybit:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--black);}
+.pricing-recommended-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--black);border-radius:8px;
+  padding:5px 12px;font-size:0.7rem;font-weight:800;
+  color:var(--yellow);letter-spacing:0.06em;text-transform:uppercase;
+  margin-bottom:18px;
+}
+.pricing-card-bybit .pricing-name{font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:6px;color:#000;}
+.pricing-card-bybit .pricing-desc{font-size:0.82rem;color:#3d2a00;line-height:1.6;margin-bottom:20px;}
+.price-free-block{
+  margin-bottom:20px;
+  display:flex;align-items:flex-end;gap:10px;
+}
+.price-free-main{
+  font-family:'Outfit',sans-serif;
+  font-size:4rem;font-weight:900;line-height:1;color:#000;letter-spacing:-0.03em;
+}
+.price-free-tag{
+  background:#000;color:var(--bybit);
+  font-size:0.65rem;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:6px;margin-bottom:8px;
+}
+.price-free-condition{font-size:0.75rem;color:#3d2a00;line-height:1.5;margin-bottom:20px;}
+.price-free-condition strong{color:#000;}
+.pricing-features-bybit{list-style:none;margin-bottom:24px;}
+.pricing-features-bybit li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.12);font-size:0.82rem;color:#1a1200;}
+.pricing-features-bybit li:last-child{border-bottom:none;}
+.pricing-features-bybit li .check-icon{color:#0a5c2e;font-size:0.9rem;flex-shrink:0;}
+
+.pricing-card-paid{
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:var(--r2);
+  padding:28px;
+  position:relative;overflow:hidden;
+}
+.pricing-card-paid .pricing-name{font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:6px;color:var(--text);}
+.pricing-card-paid .pricing-desc{font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.price-block{margin-bottom:20px;}
+.price-was{font-size:0.8rem;color:var(--text3);text-decoration:line-through;margin-bottom:4px;}
+.price-main{font-family:'Outfit',sans-serif;font-size:3.5rem;font-weight:900;line-height:1;color:var(--text);}
+.price-main sup{font-size:1.5rem;vertical-align:super;color:var(--text2);}
+.price-period{font-size:0.8rem;color:var(--text2);margin-top:4px;}
+.pricing-features{list-style:none;margin-bottom:24px;}
+.pricing-features li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.82rem;color:var(--text2);}
+.pricing-features li:last-child{border-bottom:none;}
+.pricing-features li .check-icon{color:var(--green);font-size:0.9rem;flex-shrink:0;}
+.btn-full-bybit{
+  width:100%;padding:14px;border-radius:12px;
+  font-size:0.95rem;font-weight:800;color:#000;
+  background:var(--black);color:var(--bybit);
+  border:none;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;cursor:pointer;text-decoration:none;
+}
+.btn-full-bybit:hover{background:#222;color:#ffb800;}
+.btn-full-paid{
+  width:100%;padding:14px;border-radius:12px;
+  font-size:0.9rem;font-weight:700;color:#fff;
+  background:var(--black);border:none;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;box-shadow:0 4px 20px #00000022;
+  text-decoration:none;
+}
+.btn-full-paid:hover{transform:translateY(-2px);box-shadow:0 8px 28px #00000033;background:#222;}
+.guarantee-note{margin-top:12px;font-size:0.75rem;color:var(--text3);text-align:center;}
+
+/* faq */
+.faq-list{margin-top:36px;display:flex;flex-direction:column;gap:8px;}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color 0.2s;}
+.faq-item.open{border-color:var(--border2);}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--text);gap:12px;}
+.faq-icon{width:24px;height:24px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--text2);transition:transform 0.3s,background 0.2s;}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:var(--pink);border-color:var(--pink);color:#fff;}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s;font-size:0.85rem;color:var(--text2);line-height:1.7;padding:0 20px;}
+.faq-item.open .faq-a{max-height:300px;padding:0 20px 16px;}
+
+/* ─── CTA SECTION ─────────────────────────────────────────── */
+.cta-section{
+  padding:80px 20px;text-align:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%,#F7A70710 0%,transparent 70%);
+  border-top:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.cta-section h2{font-family:'Outfit',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.05;letter-spacing:-0.025em;margin-bottom:18px;position:relative;z-index:1;}
+.cta-section p{font-size:1rem;color:var(--text2);margin-bottom:36px;position:relative;z-index:1;}
+
+.cta-dual{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:12px;}
+.btn-cta-bybit{
+  padding:16px 32px;border-radius:12px;
+  font-size:0.95rem;font-weight:800;color:#000;
+  background:var(--bybit);
+  border:2px solid var(--black);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all 0.2s;box-shadow:4px 4px 0 var(--black);
+  text-decoration:none;
+}
+.btn-cta-bybit:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--black);background:#ffb800;}
+.btn-cta-bybit .free-pill{background:#000;color:var(--bybit);font-size:0.62rem;font-weight:900;padding:3px 7px;border-radius:5px;letter-spacing:0.08em;text-transform:uppercase;}
+.btn-cta-paid{
+  padding:16px 28px;border-radius:12px;
+  font-size:0.9rem;font-weight:600;color:var(--text);
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:all 0.2s;text-decoration:none;
+}
+.btn-cta-paid:hover{background:var(--surface3);}
+.cta-sub{margin-top:14px;font-size:0.72rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;position:relative;z-index:1;}
+
+/* footer */
+footer{background:var(--surface);padding:48px 20px 24px;border-top:1px solid var(--border);}
+.footer-grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;padding-bottom:32px;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.footer-logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:10px;}
+.footer-logo .accent{color:var(--pink);}
+.footer-desc{font-size:0.82rem;color:var(--text3);line-height:1.7;margin-bottom:16px;}
+.footer-social{display:flex;gap:8px;}
+.social-btn{width:34px;height:34px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--text2);cursor:pointer;transition:all 0.2s;}
+.social-btn:hover{background:var(--pink);border-color:var(--pink);color:#000;}
+.footer-col h4{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--yellow);margin-bottom:14px;}
+.footer-col a{display:block;font-size:0.8rem;color:var(--text3);margin-bottom:8px;transition:color 0.2s;}
+.footer-col a:hover{color:var(--text);}
+.footer-bottom{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;color:var(--text3);flex-wrap:wrap;gap:8px;}
+.disclaimer{color:var(--pink);font-weight:700;font-size:0.68rem;letter-spacing:0.06em;}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ─── MOBILE ───────────────────────────────────────────────── */
+@media(max-width:768px){
+  .nav-links,.btn-nav-ghost,.btn-nav-paid{display:none;}
+  .btn-nav-bybit{display:none;}
+  .ham{display:flex;}
+  .mobile-menu{display:flex;}
+
+  .dual-cta-wrap{flex-direction:column;align-items:stretch;}
+  .cta-card-bybit,.cta-card-paid{max-width:100%;}
+  .cta-divider{flex-direction:row;gap:10px;}
+  .cta-divider::before,.cta-divider::after{width:30px;height:1px;}
+
+  .sp-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .why-grid{grid-template-columns:1fr;gap:32px;}
+  .sample-grid{grid-template-columns:1fr;gap:24px;}
+  .how-grid{grid-template-columns:1fr 1fr;}
+  .testi-grid{grid-template-columns:1fr;}
+  .ai-grid{grid-template-columns:1fr;gap:28px;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .cta-dual{flex-direction:column;align-items:center;}
+  .btn-cta-bybit,.btn-cta-paid{width:100%;max-width:320px;justify-content:center;}
+}
+@media(max-width:480px){
+  .stat-item{width:50%;border-bottom:1px solid var(--border);}
+  .stat-item:nth-child(odd){border-right:1px solid var(--border);}
+  .stat-item:nth-child(even){border-right:none;}
+  .sp-grid{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:1fr;}
+  .how-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .section-title{font-size:1.7rem;}
+  .sp-footer{flex-direction:column;align-items:stretch;}
+  .sp-footer-text{min-width:unset;}
+}
+@supports(padding:max(0px)){
+  nav{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));}
+  footer{padding-bottom:max(24px,env(safe-area-inset-bottom));}
+}
+
+/* ===== UNIVERSAL MODAL POPUP ===== */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  visibility: hidden; opacity: 0;
+  transition: visibility 0.2s, opacity 0.2s ease;
+}
+.modal-overlay.active { visibility: visible; opacity: 1; }
+.modal-container {
+  background: var(--bg); max-width: 720px; width: calc(100% - 32px);
+  border-radius: 32px; border: 2px solid var(--black);
+  box-shadow: 16px 16px 0 var(--black); position: relative;
+  padding: 28px 28px 36px; transform: scale(0.96);
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+.modal-overlay.active .modal-container { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 20px; right: 24px; width: 34px; height: 34px;
+  background: var(--surface); border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 1.2rem;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--surface2); color: var(--pink); transform: rotate(90deg); }
+.modal-badge {
+  display: inline-block; background: var(--yellow); border: 1px solid var(--black);
+  border-radius: 30px; padding: 5px 14px; font-size: 0.7rem; font-weight: 800;
+  letter-spacing: 0.1em; color: var(--black); margin-bottom: 18px;
+}
+.modal-title {
+  font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800;
+  letter-spacing: -0.02em; margin-bottom: 12px;
+}
+.modal-title .accent { color: var(--pink); }
+.modal-sub {
+  font-size: 0.9rem; color: var(--text2); line-height: 1.5;
+  margin-bottom: 24px; border-left: 3px solid var(--bybit); padding-left: 14px;
+}
+.modal-dual { display: flex; gap: 20px; flex-wrap: wrap; margin: 16px 0 12px; }
+.modal-option {
+  flex: 1; background: var(--surface); border-radius: 24px; padding: 20px 18px;
+  transition: all 0.2s; border: 1px solid var(--border2);
+}
+.modal-option.highlight {
+  background: linear-gradient(145deg, #fff3d6, #F7A70708);
+  border: 2px solid var(--bybit); position: relative;
+  box-shadow: 0 8px 20px rgba(247,167,7,0.15);
+}
+.rec-flag {
+  position: absolute; top: -12px; left: 20px; background: var(--black);
+  color: var(--bybit); font-size: 0.6rem; font-weight: 800;
+  padding: 3px 12px; border-radius: 30px; letter-spacing: 0.08em;
+}
+.modal-option h3 {
+  font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800;
+  margin: 8px 0 4px; color: var(--text);
+}
+.modal-price {
+  font-size: 1rem; font-weight: 700; background: var(--green-dim);
+  display: inline-block; padding: 2px 12px; border-radius: 40px;
+  margin: 8px 0 10px; color: var(--green);
+}
+.modal-option .highlight-price { background: var(--bybit); color: #000; }
+.modal-desc { font-size: 0.78rem; color: var(--text2); line-height: 1.55; margin: 12px 0; }
+.modal-cta {
+  display: block; width: 100%; text-align: center; padding: 12px;
+  border-radius: 14px; font-weight: 800; font-size: 0.85rem;
+  margin-top: 12px; transition: all 0.2s; cursor: pointer;
+}
+.cta-bybit-modal {
+  background: var(--bybit); color: #000; border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
+}
+.cta-bybit-modal:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--black); background: #ffb800; }
+.cta-paid-modal { background: var(--black); color: #fff; border: none; }
+.cta-paid-modal:hover { background: #222; transform: translateY(-2px); }
+.modal-note {
+  font-size: 0.7rem; text-align: center; margin-top: 28px;
+  color: var(--text3); border-top: 1px solid var(--border2); padding-top: 18px;
+}
+@media (max-width: 600px) {
+  .modal-dual { flex-direction: column; }
+  .modal-title { font-size: 1.6rem; }
+  .modal-container { padding: 20px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ───────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">Signal<span class="accent">Strike</span><div class="live-badge"><div class="live-dot"></div>EN DIRECT</div></div>
+  <div class="nav-links">
+    <a href="#features">Fonctionnalités</a>
+    <a href="#pricing">Tarifs</a>
+    <a href="#sample">Aperçu</a>
+    <a href="#testimonials">Avis</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div class="nav-right">
+    <a href="login.html" class="btn-nav-ghost">🔐 Membres</a>
+    <a href="#" class="btn-nav-bybit modal-trigger">Gratuit via Bybit <span class="free-tag">GRATUIT</span></a>
+    <a href="#" class="btn-nav-paid modal-trigger">29,99 $/mois</a>
+    <div class="ham" id="hamBtn" onclick="toggleMobileMenu()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- ─── MOBILE MENU ────────────────────────────────────────── -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" onclick="closeMobileMenu()">Fonctionnalités</a>
+  <a href="#pricing" onclick="closeMobileMenu()">Tarifs</a>
+  <a href="#sample" onclick="closeMobileMenu()">Édition d'Aperçu</a>
+  <a href="#testimonials" onclick="closeMobileMenu()">Avis</a>
+  <a href="#faq" onclick="closeMobileMenu()">Questions Fréquentes</a>
+  <div class="mobile-menu-ctas">
+    <a href="#" class="mob-bybit modal-trigger">🆓 Gratuit via Bybit</a>
+    <a href="#" class="mob-paid modal-trigger">29,99 $/mois</a>
+  </div>
+</div>
+
+<!-- ─── TICKER ─────────────────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="sym">BTC</span><span class="up">▲+2,47 %</span></span>
+    <span class="ticker-item"><span class="sym">ETH</span><span class="up">▲+1,89 %</span></span>
+    <span class="ticker-item"><span class="sym">SOL</span><span class="dn">▼−0,73 %</span></span>
+    <span class="ticker-item"><span class="sym">BNB</span><span class="up">▲+0,95 %</span></span>
+    <span class="ticker-item"><span class="sym">DOGE</span><span class="up">▲+5,12 %</span></span>
+    <span class="ticker-item"><span class="sym">ADA</span><span class="dn">▼−1,20 %</span></span>
+    <span class="ticker-item"><span class="sym">AVAX</span><span class="up">▲+3,30 %</span></span>
+    <span class="ticker-item"><span class="sym">LINK</span><span class="up">▲+4,15 %</span></span>
+    <span class="ticker-item"><span class="sym">MATIC</span><span class="dn">▼−0,42 %</span></span>
+    <span class="ticker-item"><span class="sym">RENDER</span><span class="up">▲+7,44 %</span></span>
+    <span class="ticker-item"><span class="sym">BTC</span><span class="up">▲+2,47 %</span></span>
+    <span class="ticker-item"><span class="sym">ETH</span><span class="up">▲+1,89 %</span></span>
+    <span class="ticker-item"><span class="sym">SOL</span><span class="dn">▼−0,73 %</span></span>
+    <span class="ticker-item"><span class="sym">BNB</span><span class="up">▲+0,95 %</span></span>
+    <span class="ticker-item"><span class="sym">DOGE</span><span class="up">▲+5,12 %</span></span>
+    <span class="ticker-item"><span class="sym">ADA</span><span class="dn">▼−1,20 %</span></span>
+    <span class="ticker-item"><span class="sym">AVAX</span><span class="up">▲+3,30 %</span></span>
+    <span class="ticker-item"><span class="sym">LINK</span><span class="up">▲+4,15 %</span></span>
+    <span class="ticker-item"><span class="sym">MATIC</span><span class="dn">▼−0,42 %</span></span>
+    <span class="ticker-item"><span class="sym">RENDER</span><span class="up">▲+7,44 %</span></span>
+  </div>
+</div>
+
+<!-- ─── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="dot"></div>Propulsé par l'IA · Livraison Quotidienne · 14 800+ Traders</div>
+    <h1 class="hero-h1 outfit">La newsletter crypto qui <span class="accent">trade plus intelligemment</span> que vous</h1>
+    <p class="hero-sub">Analyse de signaux IA en temps réel. Analyse de niveau institutionnel. Alertes de baleines on-chain. Livrée chaque matin avant l'ouverture du marché — pour que vous ne manquiez plus jamais un mouvement.</p>
+
+    <!-- DUAL CTA BLOCK -->
+    <div class="dual-cta-wrap reveal">
+      <div class="cta-card-bybit modal-trigger">
+        <div class="rec-badge">⭐ Recommandé</div>
+        <div class="cta-label">Meilleur Rapport Qualité-Prix</div>
+        <div class="cta-headline">Obtenez-le Gratuitement</div>
+        <div class="cta-sub">Inscrivez-vous sur Bybit via notre lien — SignalStrike Pro est pour nous. Aucun frais mensuel, jamais.</div>
+        <div class="btn-bybit-full">🆓 Gratuit via Bybit →</div>
+      </div>
+      <div class="cta-divider">OU</div>
+      <div class="cta-card-paid modal-trigger">
+        <div class="cta-label">Abonnement Direct</div>
+        <div class="cta-headline">29,99 $<span style="font-size:1rem;font-weight:500;color:var(--text2)">/mois</span></div>
+        <div class="cta-sub">Aucun exchange requis. Abonnez-vous directement et annulez à tout moment.</div>
+        <div class="btn-paid-full">S'abonner Maintenant →</div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">14 800<span class="accent">+</span></div><div class="stat-label">Abonnés</div></div>
+      <div class="stat-item"><div class="stat-num">97,2<span class="accent"> %</span></div><div class="stat-label">Précision</div></div>
+      <div class="stat-item"><div class="stat-num">500<span class="accent">+</span></div><div class="stat-label">Altcoins</div></div>
+      <div class="stat-item"><div class="stat-num">3<span class="accent">min</span></div><div class="stat-label">Lecture Quotidienne</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SIGNAL PREVIEW ──────────────────────────────────────── -->
+<div class="signal-preview-section">
+  <div class="signal-preview-inner">
+    <div class="sp-card reveal">
+      <div class="sp-header">
+        <div class="sp-header-title">⚡ Aperçu des Signaux IA du Jour</div>
+        <div class="live-badge"><div class="live-dot"></div>EN DIRECT</div>
+      </div>
+      <div class="sp-grid">
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">₿ Bitcoin</div><div class="signal-chip chip-buy">ACHAT</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="82"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">Ξ Ethereum</div><div class="signal-chip chip-watch">SURVEILLER</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-yellow" style="width:0%" data-w="57"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">◎ Solana</div><div class="signal-chip chip-buy">ACHAT FORT</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="91"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">🔗 Chainlink</div><div class="signal-chip chip-buy">CASSURE</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="75"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">⬡ AVAX</div><div class="signal-chip chip-sell">RÉDUIRE</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-pink" style="width:0%" data-w="28"></div></div></div>
+        <div class="sp-tile"><div class="sp-tile-top"><div class="sp-coin">⬡ Render</div><div class="signal-chip chip-buy">COUP IA</div></div><div class="sp-blur-num"></div><div class="sp-bar-wrap"><div class="sp-bar bar-green" style="width:0%" data-w="94"></div></div></div>
+      </div>
+      <div class="sp-footer">
+        <div class="sp-footer-text">🔒 Analyse complète, zones d'entrée/sortie et scores de confiance — débloquez ci-dessous</div>
+        <a href="#" class="sp-unlock-bybit modal-trigger">🆓 Gratuit via Bybit ⭐</a>
+        <a href="#" class="sp-unlock-paid modal-trigger">29,99 $/mois</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MARQUEE ────────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <span class="marquee-item">Analyse de Signaux IA</span><span class="marquee-item">Alertes de Baleines</span><span class="marquee-item">Alpha DeFi</span><span class="marquee-item">Données On-Chain</span><span class="marquee-item">Analyses d'Altcoins</span><span class="marquee-item">Analyse Macro</span><span class="marquee-item">Intelligence NFT</span><span class="marquee-item">Radar Réglementaire</span><span class="marquee-item">Stratégie de Portefeuille</span>
+    <span class="marquee-item">Analyse de Signaux IA</span><span class="marquee-item">Alertes de Baleines</span><span class="marquee-item">Alpha DeFi</span><span class="marquee-item">Données On-Chain</span><span class="marquee-item">Analyses d'Altcoins</span><span class="marquee-item">Analyse Macro</span><span class="marquee-item">Intelligence NFT</span><span class="marquee-item">Radar Réglementaire</span><span class="marquee-item">Stratégie de Portefeuille</span>
+  </div>
+</div>
+
+<!-- ─── FEATURES ───────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <div class="section-eyebrow">Ce Que Vous Recevez</div>
+    <h2 class="section-title outfit">Une Intelligence Qui <span class="accent">Fait Bouger Les Marchés</span></h2>
+    <p class="section-sub">Chaque édition est propulsée par notre moteur IA propriétaire — analysant des millions de signaux on-chain, d'événements d'actualité et de sentiment social avant l'ouverture du marché.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal"><div class="f-num">// 01</div><div class="f-icon">🤖</div><div class="f-title">Moteur de Signaux IA</div><p class="f-desc">Nos modèles de ML traitent plus de 50 000 points de données par jour — révélant des signaux des heures avant que le retail ne les repère.</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 02</div><div class="f-icon">🐋</div><div class="f-title">Traqueur de Baleines</div><p class="f-desc">Sachez quand les portefeuilles détenant plus d'1 M$ se déplacent. Chaque accumulation, distribution et pont important, signalé.</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 03</div><div class="f-icon">📊</div><div class="f-title">Briefing Marché Quotidien</div><p class="f-desc">Conditions macro, dominance BTC, peur et cupidité, et meilleurs trades — condensés en une lecture matinale de 3 minutes.</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 04</div><div class="f-icon">🔬</div><div class="f-title">Analyses Approfondies d'Altcoins</div><p class="f-desc">Analyse hebdomadaire approfondie des altcoins à forte conviction — tokenomics, calendriers de déblocage, activité de développement.</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 05</div><div class="f-icon">⚡</div><div class="f-title">Alertes Flash</div><p class="f-desc">Les mouvements brusques n'attendent pas demain. Événements critiques de prix, hacks, chocs réglementaires — envoyés instantanément.</p></div>
+      <div class="feature-card reveal"><div class="f-num">// 06</div><div class="f-icon">🧠</div><div class="f-title">Alpha DeFi et NFT</div><p class="f-desc">Opportunités de yield farming, lancements de protocoles, changements de liquidité — l'alpha que la plupart des newsletters manquent.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY ──────────────────────────────────────────────────── -->
+<section class="why-section" id="why">
+  <div class="container">
+    <div class="why-grid">
+      <div>
+        <div class="section-eyebrow">Pourquoi SignalStrike</div>
+        <h2 class="section-title outfit">Arrêtez de Trader <span class="accent">à l'Aveugle</span></h2>
+        <p class="big-quote">"La plupart des traders crypto perdent non pas par malchance — mais parce qu'ils sont toujours les derniers à savoir."</p>
+        <ul class="why-list">
+          <li>Notre IA lit la blockchain en temps réel — vous recevez les signaux <strong>avant</strong> que la foule réagisse</li>
+          <li>Contrairement aux newsletters génériques, nous suivons <strong>plus de 500 altcoins</strong> avec des modèles de notation personnalisés</li>
+          <li>Équipe éditoriale composée d'anciens analystes de Binance, CoinGecko et quant de TradFi</li>
+          <li>Aucun remplissage, aucun shill de token, aucune publicité payante — pure intelligence basée sur les données</li>
+          <li><strong>Inscrivez-vous via Bybit et c'est entièrement gratuit</strong> — ou abonnez-vous directement pour 29,99 $/mois avec garantie de remboursement de 14 jours</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <div class="dash-card">
+          <div class="dash-header">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;">✦ Tableau de Signaux</div>
+            <div class="live-badge"><div class="live-dot"></div>EN DIRECT</div>
+          </div>
+          <div class="dash-signal-row"><div class="dash-coin">₿ Bitcoin</div><div class="signal-chip chip-buy">ZONE D'ACHAT</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">Ξ Ethereum</div><div class="signal-chip chip-watch">SURVEILLER</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">◎ Solana</div><div class="signal-chip chip-buy">ACHAT FORT</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">⬡ AVAX</div><div class="signal-chip chip-sell">RÉDUIRE</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">🔗 Chainlink</div><div class="signal-chip chip-buy">CASSURE</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-signal-row"><div class="dash-coin">⬡ Render</div><div class="signal-chip chip-buy">COUP IA</div><div class="dash-pct-blur"></div></div>
+          <div class="dash-unlock-footer">
+            <div class="dash-unlock-row">
+              <a href="#" class="dash-unlock-bybit modal-trigger">
+                <span class="dash-rec-tag">⭐ Recommandé</span>
+                🆓 Débloquez GRATUITEMENT via Bybit
+              </a>
+              <a href="#" class="dash-unlock-paid modal-trigger">29,99 $/mois</a>
+            </div>
+            <div class="dash-unlock-note">Inscrivez-vous sur Bybit via notre lien — recevez SignalStrike Pro sans frais</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMPARE ──────────────────────────────────────────────── -->
+<section>
+  <div class="container">
+    <div class="section-eyebrow">Comparaison</div>
+    <h2 class="section-title outfit">SignalStrike vs <span class="accent">Les Autres</span></h2>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr><th style="width:28%">Fonctionnalité</th><th class="hl">SignalStrike ★</th><th>Bankless</th><th>Milk Road</th><th>Messari</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Moteur de Signaux IA</td><td class="hl"><span class="check">✓</span> IA Propriétaire</td><td class="cross">✗</td><td class="cross">✗</td><td class="partial">~ Basique</td></tr>
+          <tr><td>Alertes de Baleines</td><td class="hl"><span class="check">✓</span> Temps réel</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Analytique On-Chain</td><td class="hl"><span class="check">✓</span> Approfondie</td><td class="partial">~ Limitée</td><td class="cross">✗</td><td class="partial">~ Offre payante</td></tr>
+          <tr><td>Alertes Flash Quotidiennes</td><td class="hl"><span class="check">✓</span> Incluses</td><td class="cross">✗</td><td class="partial">~ Occasionnelles</td><td class="partial">~ Pro uniquement</td></tr>
+          <tr><td>Couverture de 500+ Altcoins</td><td class="hl"><span class="check">✓</span> Toutes formules</td><td class="cross">✗</td><td class="partial">~ Top 50</td><td class="partial">~ Limitée</td></tr>
+          <tr><td>Alpha DeFi</td><td class="hl"><span class="check">✓</span> Hebdomadaire</td><td class="check">✓</td><td class="cross">✗</td><td class="partial">~ Partielle</td></tr>
+          <tr><td>Prix / Mois</td><td class="hl" style="color:var(--green);font-weight:800;">GRATUIT via Bybit <span style="color:var(--text3);font-weight:400;font-size:0.75rem;">/ 29,99 $</span></td><td>22 $</td><td>Gratuit</td><td>29 $</td></tr>
+          <tr><td>Garantie de Remboursement</td><td class="hl"><span class="check">✓</span> 14 jours (payant)</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SAMPLE ──────────────────────────────────────────────── -->
+<section class="sample-section" id="sample">
+  <div class="container">
+    <div class="section-eyebrow">Édition d'Aperçu</div>
+    <h2 class="section-title outfit">Ce Qui Arrive Dans <span class="accent">Votre Boîte Mail</span></h2>
+    <div class="sample-grid">
+      <div class="issue-card reveal">
+        <div class="issue-topbar"><div class="title">⚡ SIGNALSTRIKE QUOTIDIEN</div><div class="date">ÉDITION #284 · MER 19 MARS 2026</div></div>
+        <div class="issue-body">
+          <div class="issue-section-head">// POULS MACRO</div>
+          <div class="issue-line"><strong>Dominance BTC :</strong> 54,2 % (↑ 0,8 %) — Saison des altcoins en refroidissement, prudence sur la rotation</div>
+          <div class="issue-line"><strong>Peur et Cupidité :</strong> 72 — Zone de cupidité, volatilité élevée attendue</div>
+          <div class="issue-line"><strong>Veille Fed :</strong> Maintien des taux confirmé. Actifs à risque recherchés</div>
+          <div class="issue-section-head">// SIGNAUX IA DU JOUR</div>
+          <div class="issue-line"><strong>BTC :</strong> Maintien du support à 85 K$. Confiance IA 88 %. Objectif : 92 K$</div>
+          <div class="issue-line"><strong>SOL :</strong> Formation d'un schéma de cassure. Accumulation de baleines +47 M$ (24 h)</div>
+          <div class="issue-line"><strong>RENDER :</strong> Jeu narratif IA. Activité dev ↑ 340 %. Surveiller 7,50 $</div>
+          <div class="issue-line"><strong>AVAX :</strong> Déblocage de tokens vendredi, 180 M tokens. Réduire l'exposition</div>
+          <div class="issue-section-head">// RADAR DES BALEINES</div>
+          <div class="issue-line"><strong>0x8f2a...</strong> a déplacé 12 400 ETH vers Binance — pression vendeuse potentielle</div>
+          <div class="issue-line"><strong>0x44cc...</strong> a accumulé 8,2 M$ de LINK sur 3 jours — smart money</div>
+          <div class="issue-section-head">// ALPHA DEFI</div>
+          <div class="issue-line"><strong>Aave v4</strong> lancé sur Base — 14,2 % APY sur USDC pendant 48 h</div>
+          <div class="issue-line"><strong>Nouveau pool Uniswap :</strong> opportunité RENDER/ETH, palier de frais 0,3 %</div>
+        </div>
+      </div>
+      <div>
+        <ul class="sample-bullets">
+          <li><span class="bul">→</span><span><strong>Résumé Macro Matinal</strong> — Dominance Bitcoin, indice peur/cupidité, signaux de la Fed en 3 phrases.</span></li>
+          <li><span class="bul">→</span><span><strong>Meilleurs Signaux IA</strong> — Vos 4 à 6 configurations à plus forte conviction avec scores de confiance, zones d'entrée et catalyseur.</span></li>
+          <li><span class="bul">→</span><span><strong>Radar des Baleines</strong> — Les 2 à 3 plus grands mouvements on-chain et ce qu'ils signalent pour l'action du prix à court terme.</span></li>
+          <li><span class="bul">→</span><span><strong>Sélection Alpha DeFi</strong> — Une opportunité DeFi par jour — pools à haut APY, lancements de nouveaux protocoles ou fenêtres de liquidité.</span></li>
+          <li><span class="bul">→</span><span><strong>Analyse Hebdomadaire Approfondie</strong> (Mercredis) — Décryptage complet d'altcoin : tokenomics, activité on-chain et thèse à 3 mois.</span></li>
+          <li><span class="bul">→</span><span><strong>Radar Réglementaire</strong> — Mouvements politiques mondiaux simplifiés et traduits en actions concrètes.</span></li>
+        </ul>
+        <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="#" class="btn-bybit-full modal-trigger" style="flex:1;min-width:160px;">🆓 Gratuit via Bybit</a>
+          <a href="#" class="btn-paid-full modal-trigger" style="flex:1;min-width:120px;">29,99 $/mois →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ────────────────────────────────────────── -->
+<section id="how">
+  <div class="container">
+    <div class="section-eyebrow">Processus Simple</div>
+    <h2 class="section-title outfit">Opérationnel en <span class="accent">60 Secondes</span></h2>
+    <div class="how-grid">
+      <div class="how-step reveal"><div class="step-num">01</div><div class="step-icon">🔗</div><div class="step-title">Inscrivez-vous sur Bybit</div><p class="step-desc">Cliquez sur notre lien de parrainage Bybit et créez votre compte gratuit. Aucun dépôt requis pour débloquer l'accès à SignalStrike.</p></div>
+      <div class="how-step reveal"><div class="step-num">02</div><div class="step-icon">✉️</div><div class="step-title">Réclamez Votre Accès</div><p class="step-desc">Envoyez votre e-mail après l'inscription. Nous vérifions votre parrainage Bybit et activons votre abonnement SignalStrike Pro — gratuitement.</p></div>
+      <div class="how-step reveal"><div class="step-num">03</div><div class="step-icon">🌅</div><div class="step-title">Briefing Matinal</div><p class="step-desc">Chaque jour de trading à 6 h 00 EST, votre briefing curé par IA arrive. Lecture en 3 minutes. Sachez ce que le marché ne sait pas encore.</p></div>
+      <div class="how-step reveal"><div class="step-num">04</div><div class="step-icon">📈</div><div class="step-title">Tradez Plus Intelligemment</div><p class="step-desc">Prenez des décisions éclairées, appuyées par les données. Notre précision de signaux vérifiée publiquement : 97,2 % sur 18 mois.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIALS ────────────────────────────────────────── -->
+<section class="testi-section" id="testimonials">
+  <div class="container">
+    <div class="section-eyebrow">Preuve Sociale</div>
+    <h2 class="section-title outfit">Les Traders Qui <span class="accent">Font Confiance aux Signaux</span></h2>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"La section baleines vaut à elle seule 10x l'abonnement. J'ai suivi une alerte LINK et capté un mouvement de 28 % en 48 heures. Cette newsletter se paie toute seule chaque jour."</p><div class="t-author"><div class="t-avatar">RK</div><div><div class="t-name">Ryan K.</div><div class="t-role">Swing Trader, 4 ans en crypto</div><div class="t-pnl">▲ +14 200 $ sur les 30 derniers jours</div></div></div></div>
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"J'ai essayé Bankless, Milk Road, Messari — rien n'approche la qualité des signaux de SignalStrike. L'IA a identifié le mouvement de Render 3 jours avant que tout le monde n'en parle."</p><div class="t-author"><div class="t-avatar">JP</div><div><div class="t-name">Jessica P.</div><div class="t-role">Gestionnaire de Portefeuille et Stratège DeFi</div><div class="t-pnl">▲ +31 500 $ au T1 2026</div></div></div></div>
+      <div class="testi-card reveal"><div class="t-stars">★★★★★</div><p class="t-quote">"En tant que personne qui n'a pas le temps de regarder les graphiques toute la journée, SignalStrike change la donne. Le format 3 minutes est parfait. Je le lis avec mon café et ma journée est lancée."</p><div class="t-author"><div class="t-avatar">MT</div><div><div class="t-name">Marcus T.</div><div class="t-role">Entrepreneur et Trader à Temps Partiel</div><div class="t-pnl">▲ +8 700 $ depuis l'abonnement</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── AI SECTION ──────────────────────────────────────────── -->
+<section id="ai">
+  <div class="container">
+    <div class="section-eyebrow">La Technologie</div>
+    <h2 class="section-title outfit">Pourquoi Notre IA <span class="accent">Gagne</span></h2>
+    <div class="ai-grid">
+      <div>
+        <p style="font-size:0.9rem;color:var(--text2);line-height:1.75;margin-bottom:20px;">SignalStrike n'est pas un analyste avec des opinions. C'est une machine qui traite des données qu'aucun humain ne pourrait — puis notre équipe éditoriale traduit cela en intelligence que vous pouvez réellement utiliser.</p>
+        <div class="ai-pills">
+          <div class="ai-pill">🔍 Reconnaissance de Motifs On-Chain</div><div class="ai-pill">📡 NLP de Sentiment Social</div><div class="ai-pill">📰 Notation d'Impact des Actualités</div><div class="ai-pill">📊 Analyse du Carnet d'Ordres</div><div class="ai-pill">🐋 Modélisation du Comportement des Baleines</div><div class="ai-pill">⚙️ Arbitrage Cross-Exchange</div><div class="ai-pill">🌐 Moteur de Corrélation Macro</div><div class="ai-pill">🎯 Calculateur de Zones d'Entrée/Sortie</div>
+        </div>
+      </div>
+      <div class="ai-metrics-card reveal">
+        <div class="ai-metrics-title">✦ Métriques de Performance de l'IA</div>
+        <div class="ai-metric"><div class="ai-metric-label">Précision des Signaux (18 m)</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-green" data-width="97"></div></div><div class="ai-metric-val" style="color:var(--green);">97,2 %</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">Délai Moyen d'Anticipation</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-yellow" data-width="75"></div></div><div class="ai-metric-val" style="color:#b45309;">4,2 h</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">Points de Données / Jour</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-pink" data-width="90"></div></div><div class="ai-metric-val">50 K+</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">Réseaux Surveillés</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-yellow" data-width="65"></div></div><div class="ai-metric-val" style="color:#b45309;">28</div></div>
+        <div class="ai-metric"><div class="ai-metric-label">Altcoins Suivis</div><div class="ai-metric-bar"><div class="ai-metric-fill fill-green" data-width="80"></div></div><div class="ai-metric-val" style="color:var(--green);">500+</div></div>
+        <div class="ai-note"><strong>✓ Toutes les métriques sont publiquement vérifiables.</strong> Consultez notre historique complet de signaux dans le tableau de bord abonné.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─────────────────────────────────────────────── -->
+<section class="pricing-section" id="pricing">
+  <div class="container">
+    <div class="section-eyebrow">Tarifs</div>
+    <h2 class="section-title outfit">Deux Façons d'<span class="accent">Obtenir l'Accès</span></h2>
+    <p class="section-sub">Choisissez ce qui vous convient — obtenez-le gratuitement via Bybit, ou abonnez-vous directement. Même newsletter, mêmes signaux, même alpha.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card-bybit reveal">
+        <div class="pricing-recommended-badge">⭐ Recommandé — Meilleur Rapport Qualité-Prix</div>
+        <div class="pricing-name">Gratuit via Bybit</div>
+        <div class="pricing-desc">Inscrivez-vous sur Bybit via notre lien de parrainage et votre abonnement SignalStrike Pro est totalement gratuit — pour toujours.</div>
+        <div class="price-free-block">
+          <div class="price-free-main">0 $</div>
+          <div class="price-free-tag">GRATUIT</div>
+        </div>
+        <div class="price-free-condition">Nécessite un <strong>compte Bybit gratuit</strong> via notre lien de parrainage. Aucun dépôt, aucun minimum de trading requis.</div>
+        <ul class="pricing-features-bybit">
+          <li><span class="check-icon">✓</span>Briefing Quotidien de Signaux IA (6 h EST)</li>
+          <li><span class="check-icon">✓</span>Traqueur et Alertes de Baleines</li>
+          <li><span class="check-icon">✓</span>Couverture IA de 500+ Altcoins</li>
+          <li><span class="check-icon">✓</span>Analyse Hebdomadaire Approfondie d'Altcoins</li>
+          <li><span class="check-icon">✓</span>Alertes Flash en Temps Réel</li>
+          <li><span class="check-icon">✓</span>Section Alpha DeFi et NFT</li>
+          <li><span class="check-icon">✓</span>Archive Complète (280+ éditions)</li>
+          <li><span class="check-icon">✓</span>Tableau de Bord de Signaux IA</li>
+        </ul>
+        <a href="#" class="btn-full-bybit modal-trigger">🆓 Gratuit via Bybit →</a>
+        <div class="guarantee-note" style="color:#3d2a00;">Compte Bybit gratuit · Aucune information de paiement</div>
+      </div>
+      <div class="pricing-card-paid reveal">
+        <div class="pricing-name">Abonnement Direct</div>
+        <div class="pricing-desc">Vous préférez ne pas utiliser d'exchange ? Abonnez-vous directement. Tout est inclus, annulez à tout moment.</div>
+        <div class="price-block">
+          <div class="price-was">Moins de 1,00 $ par jour</div>
+          <div class="price-main outfit"><sup>$</sup>29,99</div>
+          <div class="price-period">par mois · ou 299 $/an (économisez 17 %)</div>
+        </div>
+        <ul class="pricing-features">
+          <li><span class="check-icon">✓</span>Briefing Quotidien de Signaux IA (6 h EST)</li>
+          <li><span class="check-icon">✓</span>Traqueur et Alertes de Baleines</li>
+          <li><span class="check-icon">✓</span>Couverture IA de 500+ Altcoins</li>
+          <li><span class="check-icon">✓</span>Analyse Hebdomadaire Approfondie d'Altcoins</li>
+          <li><span class="check-icon">✓</span>Alertes Flash en Temps Réel</li>
+          <li><span class="check-icon">✓</span>Section Alpha DeFi et NFT</li>
+          <li><span class="check-icon">✓</span>Archive Complète (280+ éditions)</li>
+          <li><span class="check-icon">✓</span>Tableau de Bord de Signaux IA</li>
+        </ul>
+        <a href="#" class="btn-full-paid modal-trigger">S'abonner Maintenant →</a>
+        <div class="guarantee-note">Garantie de Remboursement de 14 Jours · Annulation à Tout Moment</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-eyebrow">Questions et Réponses</div>
+    <h2 class="section-title outfit">Questions <span class="accent">Fréquentes</span></h2>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Comment fonctionne l'option gratuite via Bybit ?</span><div class="faq-icon">+</div></div><div class="faq-a">Inscrivez-vous simplement sur Bybit en utilisant notre lien de parrainage et créez un compte gratuit. Une fois inscrit, envoyez votre e-mail via notre page de réclamation et nous activerons votre abonnement SignalStrike Pro sans frais. Aucun dépôt ni activité de trading requis.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Y a-t-il une garantie de remboursement sur la formule payante ?</span><div class="faq-icon">+</div></div><div class="faq-a">Oui. Si vous vous abonnez directement et que vous n'êtes pas entièrement satisfait au cours des 14 premiers jours, écrivez-nous pour un remboursement intégral — sans questions.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>En quoi SignalStrike est-il différent des newsletters crypto gratuites ?</span><div class="faq-icon">+</div></div><div class="faq-a">Les newsletters gratuites agrègent ce que tout le monde sait déjà. SignalStrike traite les données on-chain, les mouvements de baleines et la reconnaissance de motifs par IA pour identifier des configurations avant qu'elles ne deviennent des actualités mainstream.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Est-ce un conseil financier ? Que signifie 97,2 % de précision ?</span><div class="faq-icon">+</div></div><div class="faq-a">SignalStrike n'est pas un conseil financier. La précision de 97,2 % fait référence à l'exactitude directionnelle de nos signaux IA sur une période de backtest de 18 mois. Pratiquez toujours une gestion de risque adéquate.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>À quelle fréquence vais-je recevoir les éditions ?</span><div class="faq-icon">+</div></div><div class="faq-a">Du lundi au vendredi, vous recevez le Briefing Quotidien à 6 h 00 EST. Les samedis incluent le Récapitulatif Hebdomadaire. Les alertes flash sont envoyées au besoin — 6 à 8 e-mails par semaine en moyenne, aucun promotionnel.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Les deux formules reçoivent-elles le même contenu ?</span><div class="faq-icon">+</div></div><div class="faq-a">Oui — 100 % identique. Que vous accédiez via le parrainage Bybit ou l'abonnement direct, vous recevez exactement le même briefing quotidien, les alertes de baleines, les alertes flash, les analyses approfondies et l'accès au tableau de bord.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Puis-je annuler la formule payante à tout moment ?</span><div class="faq-icon">+</div></div><div class="faq-a">Absolument. Annulez depuis le tableau de bord de votre compte ou en répondant à n'importe quelle newsletter. Pas d'appel, pas de formulaire, pas de culpabilisation.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2 class="outfit">Arrêtez de Réagir.<br><em style="font-style:italic;color:var(--pink);">Commencez à Frapper.</em></h2>
+  <p>Plus de 14 800 traders lisent déjà SignalStrike chaque matin. Le prochain grand mouvement est en train d'être tracé en ce moment même.</p>
+  <div class="cta-dual">
+    <a href="#" class="btn-cta-bybit modal-trigger">🆓 Gratuit via Bybit <span class="free-pill">RECOMMANDÉ</span></a>
+    <a href="#" class="btn-cta-paid modal-trigger">Abonnez-vous pour 29,99 $/mois →</a>
+  </div>
+  <div class="cta-sub">Gratuit via Bybit · Ou 29,99 $/mois · Annulation à Tout Moment · Propulsé par l'IA · 14 800+ Traders</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Signal<span class="accent">Strike</span></div>
+      <p class="footer-desc">La newsletter d'intelligence crypto propulsée par l'IA, en laquelle plus de 14 800 traders ont confiance. Signaux quotidiens. Alertes de baleines. Alpha DeFi. Gratuit via Bybit ou 29,99 $/mois en direct.</p>
+      <div class="footer-social"><div class="social-btn">𝕏</div><div class="social-btn">in</div><div class="social-btn">📱</div><div class="social-btn">💬</div></div>
+    </div>
+    <div class="footer-col"><h4>Produit</h4><a href="#features">Fonctionnalités</a><a href="#pricing">Tarifs</a><a href="#sample">Édition d'Aperçu</a><a href="#ai">Technologie IA</a><a href="#" class="modal-trigger">Gratuit via Bybit</a></div>
+    <div class="footer-col"><h4>Entreprise</h4><a href="#">À Propos</a><a href="#">Historique des Signaux</a><a href="#">Kit Presse</a><a href="#">Blog</a><a href="#">Contact</a></div>
+    <div class="footer-col"><h4>Mentions Légales</h4><a href="#">Politique de Confidentialité</a><a href="#">Conditions d'Utilisation</a><a href="#">Avertissement</a><a href="#">Politique de Remboursement</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 SignalStrike · signalstrike.online · Tous droits réservés</span><span class="disclaimer">PAS UN CONSEIL FINANCIER · DYOR</span></div>
+</footer>
+
+<!-- UNIVERSAL MODAL -->
+<div id="universalModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-close" id="closeModalBtn">✕</div>
+    <div class="modal-badge">⚡ ÉCONOMISEZ 29,99 $ / MOIS</div>
+    <div class="modal-title outfit">Débloquez <span class="accent">SignalStrike Pro</span> — choisissez votre voie</div>
+    <div class="modal-sub">Rejoignez plus de 14 800 traders qui reçoivent chaque jour signaux IA, alertes de baleines et analyses approfondies.</div>
+    <div class="modal-dual">
+      <div class="modal-option highlight">
+        <div class="rec-flag">⭐ RECOMMANDÉ</div>
+        <h3 class="outfit">Gratuit via Bybit</h3>
+        <div class="modal-price highlight-price">0 $ / mois</div>
+        <div class="modal-desc">Créez un compte Bybit gratuit via notre lien de parrainage — vous obtenez un accès complet à SignalStrike Pro sans frais. Aucun dépôt requis, aucun minimum de trading.</div>
+        <a href="https://partner.bybit.com/b/SIGNALSTRIKE" target="_blank" class="modal-cta cta-bybit-modal" id="modalBybitBtn">🆓 Obtenir l'Accès GRATUIT →</a>
+      </div>
+      <div class="modal-option">
+        <h3 class="outfit">Abonnement Direct</h3>
+        <div class="modal-price">29,99 $ / mois</div>
+        <div class="modal-desc">Vous préférez vous abonner directement ? Même newsletter premium, annulez à tout moment. Garantie de remboursement de 14 jours.</div>
+        <a href="https://signalstrike.online/pay.html" target="_blank" class="modal-cta cta-paid-modal" id="modalPaidBtn">S'abonner à 29,99 $/mois →</a>
+      </div>
+    </div>
+    <div class="modal-note">🔒 L'option gratuite Bybit vous offre exactement les mêmes signaux + alertes de baleines + briefing quotidien. Économisez 360 $/an.</div>
+  </div>
+</div>
+
+<script>
+function toggleMobileMenu(){
+  const btn=document.getElementById('hamBtn');
+  const menu=document.getElementById('mobileMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+function closeMobileMenu(){
+  document.getElementById('hamBtn').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+function toggleFaq(el){
+  const item=el.parentElement;
+  document.querySelectorAll('.faq-item').forEach(i=>{if(i!==item)i.classList.remove('open');});
+  item.classList.toggle('open');
+}
+const revealObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+const spBarObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.sp-bar[data-w]').forEach((bar,i)=>{
+        setTimeout(()=>{bar.style.transition='width 1.2s cubic-bezier(0.4,0,0.2,1)';bar.style.width=bar.dataset.w+'%';},i*100);
+      });
+      spBarObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.2});
+document.querySelectorAll('.sp-card').forEach(el=>spBarObs.observe(el));
+const barObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.ai-metric-fill[data-width]').forEach(bar=>{
+        bar.style.width='0%';
+        setTimeout(()=>{bar.style.width=bar.getAttribute('data-width')+'%';},120);
+      });
+    }
+  });
+},{threshold:0.3});
+document.querySelectorAll('.ai-metrics-card').forEach(el=>barObs.observe(el));
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  nav.style.background=window.scrollY>20?'rgba(255,255,255,0.97)':'rgba(255,255,255,0.92)';
+},{passive:true});
+
+// Modal handling
+function showModal() { document.getElementById('universalModal').classList.add('active'); }
+function hideModal() { document.getElementById('universalModal').classList.remove('active'); }
+document.querySelectorAll('.modal-trigger').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    showModal();
+  });
+});
+document.getElementById('closeModalBtn').addEventListener('click', hideModal);
+document.getElementById('universalModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('universalModal')) hideModal();
+});
+</script>
+<!-- Default Statcounter code for Signal1
+https://signalstrike.online -->
+<script type="text/javascript">
+var sc_project=13244525; 
+var sc_invisible=1; 
+var sc_security="bd10e4e0"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics"
+href="https://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="https://c.statcounter.com/13244525/0/bd10e4e0/1/"
+alt="Web Analytics"
+referrerPolicy="no-referrer-when-downgrade"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+</body>
+</html>
