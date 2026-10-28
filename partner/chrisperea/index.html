@@ -1,1 +1,135 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Una cuenta para memecoins, acciones, oro y cripto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d12;--surface:#14171f;--line:#232834;--text:#f3f4f6;--muted:#9aa3b2;--gold:#f7a600;--gold-ink:#1a1200;--up:#2ebd85;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#fff;--surface:#f4f5f7;--line:#e3e6eb;--text:#12151c;--muted:#5b6574;--gold-ink:#1a1200}}
+:root[data-theme="dark"]{color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.6 Manrope,system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{font-weight:800;font-size:18px;text-decoration:none;letter-spacing:-.01em}
+.brand span{color:var(--gold)}
+.btn{display:inline-block;background:var(--gold);color:var(--gold-ink);font-weight:800;text-decoration:none;padding:12px 24px;border-radius:10px;transition:transform .15s,filter .15s}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn.big{padding:16px 32px;font-size:17px}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.offer{background:var(--gold);color:var(--gold-ink);text-align:center;font-weight:800;font-size:14px;padding:8px 16px}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding:72px 0 56px}
+h1{font-size:clamp(36px,6vw,64px);line-height:1.05;letter-spacing:-.03em;margin:0 0 20px;font-weight:800}
+.lead{color:var(--muted);font-size:19px;max-width:520px;margin:0 0 28px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600}
+.chip b{color:var(--gold);font-weight:800;margin-right:6px}
+.card-vis{position:relative;aspect-ratio:1.586;max-width:420px;margin-left:auto;width:100%;border-radius:20px;padding:26px;background:linear-gradient(135deg,#2a2f3b 0,#0f1218 55%,#3a2a05 100%);border:1px solid #3a4150;display:flex;flex-direction:column;justify-content:space-between;color:#fff;box-shadow:0 30px 80px rgba(247,166,0,.15);transform:rotate(-4deg)}
+.card-vis .top{display:flex;justify-content:space-between;font-weight:800}
+.card-vis .num{font-size:20px;letter-spacing:.14em;color:#d8dce4}
+.card-vis .tag{color:var(--gold)}
+.stack{display:flex;gap:6px}
+.stack i{width:34px;height:34px;border-radius:50%;display:block;border:2px solid #0f1218;margin-left:-10px}
+section{padding:64px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;line-height:1.15;margin:0 0 12px}
+.sub{color:var(--muted);max-width:620px;margin:0 0 36px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.tile h3{margin:14px 0 6px;font-size:18px}
+.tile p{margin:0;color:var(--muted);font-size:15px}
+.ico{width:44px;height:44px;border-radius:12px;background:rgba(247,166,0,.14);color:var(--gold);display:grid;place-items:center;font-weight:800;font-size:20px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{border-left:3px solid var(--gold);padding:4px 0 4px 18px}
+.step h3{margin:0 0 4px;font-size:18px}
+.step p{margin:0;color:var(--muted)}
+.gift{background:var(--surface);border:1px solid var(--gold);border-radius:24px;padding:48px 32px;text-align:center}
+.gift p{color:var(--muted);max-width:560px;margin:0 auto 24px}
+.fine{color:var(--muted);font-size:13px;line-height:1.6}
+footer{border-top:1px solid var(--line);padding:32px 0 48px}
+@media (max-width:860px){.hero{grid-template-columns:1fr;padding-top:40px}.card-vis{margin:16px auto 0}.grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr}}
+@media (max-width:520px){.grid{grid-template-columns:1fr}.nav .btn{padding:10px 16px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="offer">Recompensas de bienvenida por tiempo limitado para nuevos registros. Los términos y la elegibilidad los define el exchange.</div>
+<header><div class="wrap nav">
+  <a class="btn" href="https://partner.bybit.com/b/CHRISPEREA" target="_blank" rel="noopener sponsored">Regístrate</a>
+</div></header>
+
+<main>
+<div class="wrap hero">
+  <div>
+    <h1>Memecoins, acciones, oro y cripto. Una cuenta, una tarjeta.</h1>
+    <p class="lead">Opera las monedas de las que todos hablan, suma acciones tokenizadas y oro, y gasta tu saldo con una tarjeta de crédito vinculada a la misma cuenta.</p>
+    <div class="cta-row">
+      <a class="btn big" href="https://partner.bybit.com/b/CHRISPEREA" target="_blank" rel="noopener sponsored">Regístrate y reclama tu regalo</a>
+      <a class="btn big ghost" href="#how">Mira cómo funciona</a>
+    </div>
+    <div class="chips" aria-label="Ejemplos de lo que puedes operar">
+      <span class="chip"><b>MEME</b>DOGE · PEPE · WIF</span>
+      <span class="chip"><b>Acciones</b>AAPL · TSLA · NVDA</span>
+      <span class="chip"><b>Oro</b>XAU</span>
+      <span class="chip"><b>Cripto</b>BTC · ETH · SOL</span>
+    </div>
+  </div>
+  <div class="card-vis" role="img" aria-label="Ilustración de una tarjeta de pago">
+    <div class="top"><span>Tu tarjeta</span><span class="tag">Vinculada a tu cuenta</span></div>
+    <div class="num">•••• •••• •••• 2026</div>
+    <div class="top"><span>Gasta lo que ganas</span><div class="stack"><i style="background:#f7a600"></i><i style="background:#2ebd85"></i></div></div>
+  </div>
+</div>
+
+<section id="markets"><div class="wrap">
+  <h2>Todo lo que quieres operar, en un solo lugar</h2>
+  <p class="sub">Deja de saltar entre aplicaciones. Muévete entre tipos de activos desde un único saldo.</p>
+  <div class="grid">
+    <div class="tile"><div class="ico">🐸</div><h3>Memecoins</h3><p>Entra temprano en los tokens de moda, con ejecución rápida de órdenes y gran liquidez en los pares más populares.</p></div>
+    <div class="tile"><div class="ico">📈</div><h3>Acciones</h3><p>Sigue empresas conocidas junto a tus criptomonedas, sin abrir otra cuenta.</p></div>
+    <div class="tile"><div class="ico">🪙</div><h3>Oro</h3><p>Añade un clásico depósito de valor para equilibrar tus posiciones más volátiles.</p></div>
+    <div class="tile"><div class="ico">₿</div><h3>Cripto</h3><p>Bitcoin, Ethereum y cientos más, desde el trading spot hasta herramientas avanzadas.</p></div>
+  </div>
+</div></section>
+
+<section id="card"><div class="wrap">
+  <h2>Conéctalo todo a tu tarjeta de crédito</h2>
+  <p class="sub">Fondea tu cuenta y gasta tu saldo en el día a día. Tu trading y tus gastos por fin viven en el mismo lugar.</p>
+  <a class="btn" href="https://partner.bybit.com/b/CHRISPEREA" target="_blank" rel="noopener sponsored">Empieza ahora</a>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2>Empieza en tres pasos</h2>
+  <p class="sub">Configurarlo toma unos minutos.</p>
+  <div class="steps">
+    <div class="step"><h3>Crea tu cuenta</h3><p>Usa el botón de esta página para que se apliquen tus recompensas de bienvenida.</p></div>
+    <div class="step"><h3>Verifica y fondea</h3><p>Completa la verificación de identidad y luego añade fondos con tarjeta o transferencia.</p></div>
+    <div class="step"><h3>Opera y gasta</h3><p>Elige tu primer activo y vincula tu tarjeta.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="gift">
+    <h2>Regístrate ahora y recibe un regalo exclusivo</h2>
+    <p>Los nuevos usuarios que se registren a través de esta página pueden calificar para recompensas de bienvenida por tiempo limitado. Revisa los detalles de la oferta en la página de registro antes de inscribirte.</p>
+    <a class="btn big" href="https://partner.bybit.com/b/CHRISPEREA" target="_blank" rel="noopener sponsored">Reclama tu regalo</a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap fine">
+  <p><strong>Divulgación de afiliado:</strong> Esta es una página independiente administrada por un socio de Bybit, no un sitio web oficial de Bybit. Si te registras a través de nuestros enlaces, podemos recibir una comisión sin costo adicional para ti.</p>
+  <p><strong>Advertencia de riesgo:</strong> Operar con criptomonedas, memecoins, acciones tokenizadas y materias primas es de alto riesgo y puedes perder todo tu capital. Las memecoins son especialmente volátiles. Nada de lo aquí expuesto constituye asesoría financiera. Los productos, las recompensas y la tarjeta no están disponibles en todos los países, y la elegibilidad, las comisiones y los términos los determina el proveedor. Verifica qué está disponible en tu región antes de registrarte.</p>
+</div></footer>
+</body>
+</html>
+
