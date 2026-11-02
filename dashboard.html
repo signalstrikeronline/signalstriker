@@ -937,10 +937,13 @@ body.is-locked .ticker-wrap { filter: blur(4px); }
   
 </style>
 <script>
-  // Safe version – does not crash if email is not ready yet
-  try {
-    fbq('track', 'CompleteRegistration');
-  } catch (e) {}
+  // Wait a moment for Firebase Auth to load, then fire the event
+  setTimeout(() => {
+    try {
+      // You can add email later if you want, for now just fire the event
+      fbq('track', 'CompleteRegistration');
+    } catch (e) {}
+  }, 1500);
 </script>
   
 </head>
