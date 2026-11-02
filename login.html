@@ -679,62 +679,77 @@
   const auth = getAuth(app);
 
   // =====================================================
-  // AFFILIATE TRACKING
-  // =====================================================
-  const AFFILIATE_WEBHOOK = "https://script.google.com/macros/s/AKfycbzdEeMyzdZkv3WurijFrU2ajQKgaPakrKkl2dVvXeL-r8JlyPg6c_dDUPhSSQttKNiY8w/exec";
+// AFFILIATE TRACKING (IMPROVED)
+// =====================================================
+const AFFILIATE_WEBHOOK = "https://script.google.com/macros/s/AKfycbzdEeMyzdZkv3WurijFrU2ajQKgaPakrKkl2dVvXeL-r8JlyPg6c_dDUPhSSQttKNiY8w/exec";
 
-  // 1. Capture ?ref= from URL and save it
-  (function captureAffiliateRef() {
-    const params = new URLSearchParams(window.location.search);
-    const ref = params.get("ref");
-    if (ref && ref.trim()) {
-      const cleanRef = ref.trim().toLowerCase();
-      localStorage.setItem("affiliate_ref", cleanRef);
-      // Cookie backup (30 days)
-      document.cookie = `affiliate_ref=${cleanRef}; path=/; max-age=2592000; SameSite=Lax`;
-    }
-  })();
-
-  // 2. Send referral to Google Sheet (only for new accounts)
-  async function logReferralIfNeeded(user, method = "unknown") {
-    let ref = localStorage.getItem("affiliate_ref");
-
-    // Fallback to cookie
-    if (!ref) {
-      const match = document.cookie.match(/(?:^|; )affiliate_ref=([^;]*)/);
-      if (match) ref = decodeURIComponent(match[1]);
-    }
-
-    if (!ref) return; // no affiliate → nothing to do
-
-    // Only count brand-new accounts
-    // (creationTime and lastSignInTime are very close on first login)
-    const creationTime = new Date(user.metadata.creationTime).getTime();
-    const lastSignIn   = new Date(user.metadata.lastSignInTime).getTime();
-    const isNewUser    = (lastSignIn - creationTime) < 90000; // within 90 seconds
-
-    if (!isNewUser) return;
-
-    try {
-      await fetch(AFFILIATE_WEBHOOK, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({
-          affiliate: ref,
-          email: user.email || "",
-          method: method,
-          userId: user.uid
-        })
-      });
-
-      // Clear so it is only counted once
-      localStorage.removeItem("affiliate_ref");
-      document.cookie = "affiliate_ref=; path=/; max-age=0";
-    } catch (err) {
-      console.error("Affiliate log failed:", err);
-    }
+// 1. Capture ?ref= from URL
+(function captureAffiliateRef() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get("ref");
+  if (ref && ref.trim()) {
+    const cleanRef = ref.trim().toLowerCase();
+    localStorage.setItem("affiliate_ref", cleanRef);
+    document.cookie = `affiliate_ref=${cleanRef}; path=/; max-age=2592000; SameSite=Lax`;
+    console.log("✅ Affiliate ref captured:", cleanRef);
+  } else {
+    console.log("ℹ️ No ?ref= found in URL");
   }
+})();
+
+// 2. Send referral to Google Sheet
+async function logReferralIfNeeded(user, method = "unknown") {
+  let ref = localStorage.getItem("affiliate_ref");
+
+  // Fallback to cookie
+  if (!ref) {
+    const match = document.cookie.match(/(?:^|; )affiliate_ref=([^;]*)/);
+    if (match) ref = decodeURIComponent(match[1]);
+  }
+
+  console.log("🔍 Checking referral...", { ref, email: user.email, method });
+
+  if (!ref) {
+    console.log("❌ No affiliate ref found – skipping");
+    return;
+  }
+
+  // Check if this is a new account
+  const creationTime = new Date(user.metadata.creationTime).getTime();
+  const lastSignIn   = new Date(user.metadata.lastSignInTime).getTime();
+  const isNewUser    = (lastSignIn - creationTime) < 120000; // 2 minutes
+
+  console.log("👤 New user?", isNewUser, {
+    creationTime: user.metadata.creationTime,
+    lastSignIn: user.metadata.lastSignInTime
+  });
+
+  if (!isNewUser) {
+    console.log("ℹ️ Existing user – not counting as conversion");
+    return;
+  }
+
+  try {
+    console.log("📤 Sending referral to Google Sheet...");
+    await fetch(AFFILIATE_WEBHOOK, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify({
+        affiliate: ref,
+        email: user.email || "",
+        method: method,
+        userId: user.uid
+      })
+    });
+    console.log("✅ Referral sent successfully");
+
+    // Clear so it only counts once
+    localStorage.removeItem("affiliate_ref");
+    document.cookie = "affiliate_ref=; path=/; max-age=0";
+  } catch (err) {
+    console.error("❌ Failed to send referral:", err);
+  }
+}
 
   // =====================================================
   // AUTH STATE
